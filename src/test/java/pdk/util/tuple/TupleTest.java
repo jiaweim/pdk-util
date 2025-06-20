@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import pdk.util.SerializationUtils;
 
 import java.math.BigDecimal;
+import java.nio.CharBuffer;
 import java.util.AbstractMap;
 import java.util.Objects;
 
@@ -28,33 +29,20 @@ class TupleTest {
     }
 
     @Test
-    public void shouldReturnCorrectSizeOfTuple0() {
+    void equalTuple0() {
+        final Tuple0 t = tuple0();
+        assertEquals(t, t);
+
+        assertNotEquals(null, tuple0());
+        assertNotEquals(new Object(), tuple0());
+        assertEquals(tuple0(), tuple0());
+    }
+
+    @Test
+    public void sizeTuple0() {
         assertEquals(0, Tuple.empty().size());
     }
 
-    @SuppressWarnings("EqualsWithItself")
-    @Test
-    public void shouldEqualSameTuple0Instances() {
-        final Tuple0 t = tuple0();
-        assertEquals(t, t);
-    }
-
-    @SuppressWarnings("ObjectEqualsNull")
-    @Test
-    public void shouldNotTuple0EqualsNull() {
-        assertNotEquals(null, tuple0());
-    }
-
-    @Test
-    public void shouldNotTuple0EqualsObject() {
-        assertNotEquals(new Object(), tuple0());
-    }
-
-    @SuppressWarnings("EqualsWithItself")
-    @Test
-    public void shouldTuple0EqualTuple0() {
-        assertEquals(tuple0(), tuple0());
-    }
 
     @Test
     public void shouldDeserializeSingletonOfTuple0() {
@@ -91,29 +79,17 @@ class TupleTest {
 
     @SuppressWarnings("EqualsWithItself")
     @Test
-    public void shouldEqualSameTuple1Instances() {
+    public void equalTuple1() {
         final Tuple1<?> t = tuple1();
         assertEquals(t, t);
-    }
 
-    @SuppressWarnings("ObjectEqualsNull")
-    @Test
-    public void shouldNotTuple1EqualsNull() {
         assertNotEquals(null, tuple1());
-    }
-
-    @Test
-    public void shouldNotTuple1EqualsObject() {
         assertNotEquals(new Object(), tuple1());
-    }
-
-    @Test
-    public void shouldTuple1EqualTuple1() {
         assertEquals(tuple1(), tuple1());
     }
 
     @Test
-    public void shouldNarrowTuple1() {
+    public void narrowTuple1() {
         final Tuple1<Double> wideTuple = Tuple.of(1.0d);
         final Tuple1<Number> narrowTuple = Tuple.narrow(wideTuple);
         assertEquals(1.0d, narrowTuple._1());
@@ -499,6 +475,49 @@ class TupleTest {
         assertEquals(new BigDecimal(7), narrowTuple._8());
     }
 
+    // tuple 9
+    @Test
+    void createTuple9() {
+        assertEquals("(1, 2, 3, 4, 5, 6, 7, 8, 9)", tuple9().toString());
+    }
+
+    @Test
+    void hashTuple9() {
+        Tuple9<?, ?, ?, ?, ?, ?, ?, ?, ?> t = tuple9();
+        assertEquals(Objects.hash(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9), t.hashCode());
+    }
+
+    @Test
+    void sizeTuple9() {
+        assertEquals(9, tuple9().size());
+    }
+
+    @Test
+    void equalTuple9() {
+        Tuple9<?, ?, ?, ?, ?, ?, ?, ?, ?> t = tuple9();
+        assertEquals(t, t);
+
+        assertNotEquals(null, t);
+        assertNotEquals(new Object(), t);
+        assertEquals(tuple9(), tuple9());
+    }
+
+    @Test
+    void narrowTuple9() {
+        final Tuple9<String, CharBuffer, Double, Float, Integer, Long, Byte, Short, BigDecimal> wideTuple = Tuple.of("zero", CharBuffer.wrap("abc"), 1.0D, 2.0F, 3, 4L, (byte) 5, (short) 6, new BigDecimal(7));
+        final Tuple9<CharSequence, CharSequence, Number, Number, Number, Number, Number, Number, Number> narrowTuple = Tuple.narrow(wideTuple);
+
+        assertEquals("zero", narrowTuple._1());
+        assertEquals(CharBuffer.wrap("abc"), narrowTuple._2);
+        assertEquals(1.0D, narrowTuple._3());
+        assertEquals(2.0F, narrowTuple._4());
+        assertEquals(3, narrowTuple._5());
+        assertEquals(4L, narrowTuple._6());
+        assertEquals((byte) 5, narrowTuple._7());
+        assertEquals((short) 6, narrowTuple._8());
+        assertEquals(new BigDecimal(7), narrowTuple._9());
+    }
+
     // -- nested tuples
 
     @Test
@@ -539,9 +558,11 @@ class TupleTest {
         final Object actual = SerializationUtils.deserialize(SerializationUtils.serialize(Tuple.of(1, 2, 3)));
         final Object expected = Tuple.of(1, 2, 3);
         assertEquals(expected, actual);
-    }
 
-    // -- helpers
+        byte[] serialized = SerializationUtils.serialize(tuple9());
+        Object obj = SerializationUtils.deserialize(serialized);
+        assertEquals(obj, tuple9());
+    }
 
     private Tuple0 tuple0() {
         return Tuple.empty();

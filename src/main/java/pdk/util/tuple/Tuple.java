@@ -339,4 +339,11 @@ public interface Tuple extends Serializable {
     static <T1, T2, T3, T4, T5, T6, T7, T8> Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> narrow(Tuple8<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5, ? extends T6, ? extends T7, ? extends T8> t) {
         return (Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>) t;
     }
+
+    /**
+     * Narrows a widened {@code Tuple9<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5, ? extends T6, ? extends T7, ? extends T8, ? extends T9>} to {@code Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9>}
+     */
+    static <T1, T2, T3, T4, T5, T6, T7, T8, T9> Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9> narrow(Tuple9<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5, ? extends T6, ? extends T7, ? extends T8, ? extends T9> t) {
+        return (Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9>) t;
+    }
 }

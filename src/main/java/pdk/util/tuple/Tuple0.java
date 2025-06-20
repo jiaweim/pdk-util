@@ -31,8 +31,6 @@ public final class Tuple0 implements Tuple, Comparable<Tuple0>, Serializable {
     private Tuple0() {}
 
     /**
-     * Returns the singleton instance of Tuple0.
-     *
      * @return The singleton instance of Tuple0.
      */
     public static Tuple0 instance() {

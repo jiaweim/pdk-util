@@ -1,6 +1,8 @@
 package pdk.util.io;
 
 /**
+ * Buffer UnderflowException
+ *
  * @author Jiawei Mao
  * @version 1.0.0
  * @since 15 Apr 2025, 11:34 AM

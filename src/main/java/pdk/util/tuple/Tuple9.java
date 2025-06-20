@@ -10,6 +10,15 @@ import static java.util.Objects.requireNonNull;
 /**
  * A tuple of 9 elements
  *
+ * @param <T1> type of the 1st element
+ * @param <T2> type of the 2nd element
+ * @param <T3> type of the 3rd element
+ * @param <T4> type of the 4th element
+ * @param <T5> type of the 5th element
+ * @param <T6> type of the 6th element
+ * @param <T7> type of the 7th element
+ * @param <T8> type of the 8th element
+ * @param <T9> type of the 9th element
  * @author Jiawei Mao
  * @version 1.0.0
  * @since 19 Jun 2025, 5:37 PM
