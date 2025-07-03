@@ -111,4 +111,19 @@ public class SerializationUtils {
             throw new SerializationException(ex);
         }
     }
+
+    /**
+     * Serializes an object, and deserializes it, return the deserialized version.
+     * <p>
+     * Used to test whether the object is serialized correctly
+     *
+     * @param serializable {@link Serializable} object
+     * @param <T>          type to return
+     * @return obj
+     */
+    public static <T> T round(Serializable serializable) {
+        requireNonNull(serializable);
+        byte[] bytes = serialize(serializable);
+        return deserialize(bytes);
+    }
 }
