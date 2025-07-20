@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.jiaweim</groupId>
     <artifactId>pdk-util</artifactId>
-    <version>0.14.0</version>
+    <version>0.15.0</version>
     <name>Proteomics Utilities</name>
     <url>https://github.com/jiaweim/pdk-util</url>
     <description>
@@ -24,6 +24,16 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-math3</artifactId>
             <version>3.6.1</version>
+        </dependency>
+        <dependency>
+            <groupId>it.unimi.dsi</groupId>
+            <artifactId>fastutil</artifactId>
+            <version>8.5.16</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jheaps</groupId>
+            <artifactId>jheaps</artifactId>
+            <version>0.14</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
