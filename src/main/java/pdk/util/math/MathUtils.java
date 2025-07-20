@@ -582,6 +582,22 @@ public final class MathUtils {
         return StatUtils.percentile(values, p);
     }
 
+    /**
+     * same as {@link #percentile(double[], double)}
+     *
+     * @param values values
+     * @param p      the percentile value
+     * @return percentile
+     */
+    public static double percentile(Collection<Double> values, final double p) {
+        double[] vs = new double[values.size()];
+        int i = 0;
+        for (Double value : values) {
+            vs[i] = value;
+            i++;
+        }
+        return percentile(vs, p);
+    }
 
     /**
      * Return an estimate of the pth percentile of the values.

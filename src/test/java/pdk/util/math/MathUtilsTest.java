@@ -3,6 +3,8 @@ package pdk.util.math;
 import org.apache.commons.math3.exception.NullArgumentException;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -15,7 +17,10 @@ class MathUtilsTest {
     @Test
     void percentile() {
         double median = MathUtils.percentile(new double[]{223, 235, 235, 268, 274, 285, 290}, 50);
-        assertEquals(median, 268, 0.1);
+        assertEquals(268, median, 0.1);
+
+        median = MathUtils.percentile(List.of(223.0, 235.0, 235.0, 268.0, 274.0, 285.0, 290.0), 50);
+        assertEquals(268, median, 0.1);
 
         double median2 = MathUtils.percentile(new double[]{223, 235, 235, 268, 274, 290}, 50);
         assertEquals(median2, 251.5, 0.01);
