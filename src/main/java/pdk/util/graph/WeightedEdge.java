@@ -7,15 +7,15 @@ package pdk.util.graph;
  * @version 1.0.0
  * @since 23 Nov 2024, 17:05
  */
-public class WeightedEdge extends Edge {
+public class WeightedEdge<V> extends Edge<V> {
 
     private double weight;
 
-    public WeightedEdge(int source, int target) {
+    public WeightedEdge(V source, V target) {
         this(source, target, Edge.DEFAULT_EDGE_WEIGHT);
     }
 
-    public WeightedEdge(int source, int target, double weight) {
+    public WeightedEdge(V source, V target, double weight) {
         super(source, target);
         this.weight = weight;
     }
@@ -29,12 +29,12 @@ public class WeightedEdge extends Edge {
     }
 
     @Override
-    public Edge copy() {
-        return new WeightedEdge(source, target, weight);
+    public Edge<V> copy() {
+        return new WeightedEdge<>(source, target, weight);
     }
 
     @Override
-    public Edge reverse() {
-        return new WeightedEdge(target, source, weight);
+    public Edge<V> reverse() {
+        return new WeightedEdge<>(target, source, weight);
     }
 }

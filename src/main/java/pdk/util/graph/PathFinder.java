@@ -12,30 +12,12 @@ import org.jspecify.annotations.Nullable;
 public interface PathFinder<V> {
 
     /**
-     * Return the index of given node
-     *
-     * @param node a node
-     * @return index of the node
-     */
-    int indexOf(V node);
-
-    /**
      * return the path weight from the start node to given target node
      *
      * @param targetNode target node
      * @return path weight
      */
-    default double getWeight(V targetNode) {
-        return getWeight(indexOf(targetNode));
-    }
-
-    /**
-     * return the path weight from the start node to given target node
-     *
-     * @param targetNode target node
-     * @return path weight
-     */
-    double getWeight(int targetNode);
+    double getWeight(V targetNode);
 
     /**
      * Return true if the graph has a path from source node to target node
@@ -43,17 +25,7 @@ public interface PathFinder<V> {
      * @param targetNode target node
      * @return true if the graph has a path from the source node to this node
      */
-    default boolean hasPathTo(V targetNode) {
-        return hasPathTo(indexOf(targetNode));
-    }
-
-    /**
-     * Return true if the graph has a path from source node to target node
-     *
-     * @param node target node
-     * @return true if the graph has a path from the source node to this node
-     */
-    boolean hasPathTo(int node);
+    boolean hasPathTo(V targetNode);
 
     /**
      * Return the shortest path from the source node to given target node
@@ -62,15 +34,5 @@ public interface PathFinder<V> {
      * @return shortest path
      */
     @Nullable
-    GraphPath<V> getPath(int targetNode);
-
-    /**
-     * Return the shortest path from the source node to given target node
-     *
-     * @param targetNode a node
-     * @return shortest path
-     */
-    default GraphPath<V> getPath(V targetNode) {
-        return getPath(indexOf(targetNode));
-    }
+    GraphPath<V> getPath(V targetNode);
 }

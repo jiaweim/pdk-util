@@ -7,6 +7,7 @@ import pdk.util.graph.Edge;
 import pdk.util.graph.GraphPath;
 import pdk.util.graph.PathFinder;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 
 /**
@@ -21,56 +22,10 @@ import java.util.LinkedList;
  */
 public class DijkstraShortestPath<V> implements PathFinder<V> {
 
-    private final Digraph<V> graph;
-    private final int startNode;
-    private final double[] distTo;
-    private final Edge[] edgeTo;
-
-    /**
-     * Computes a shortest-path from the source node <code>startNode</code> to every other node in the directed weighted
-     * graph.
-     *
-     * @param graph     a {@link Digraph}
-     * @param startNode source node
-     */
-    public DijkstraShortestPath(Digraph<V> graph, int startNode) {
-        this.graph = graph;
-        this.startNode = startNode;
-        for (Edge edge : graph.getEdgeSet()) {
-            if (edge.getWeight() < 0) {
-                throw new IllegalArgumentException("Edge " + edge + " has negative weight");
-            }
-        }
-
-        int V = graph.getNodeCount();
-        distTo = new double[V];
-        edgeTo = new Edge[V];
-        boolean[] visited = new boolean[V];
-        validateNode(startNode);
-
-        for (int v = 0; v < V; v++) {
-            distTo[v] = Double.POSITIVE_INFINITY;
-        }
-        distTo[startNode] = 0;
-
-        PairingHeap<Double, Integer> heap = new PairingHeap<>();
-        heap.insert(distTo[startNode], startNode);
-        while (!heap.isEmpty()) {
-            AddressableHeap.Handle<Double, Integer> handle = heap.deleteMin();
-            Integer v = handle.getValue();
-            for (Edge edge : graph.getOutgoingEdges(v)) {
-                int w = edge.getTarget();
-                if (visited[w])
-                    continue;
-                if (distTo[w] > distTo[v] + edge.getWeight()) {
-                    distTo[w] = distTo[v] + edge.getWeight();
-                    edgeTo[w] = edge;
-                }
-                heap.insert(distTo[w], w);
-            }
-            visited[v] = true;
-        }
-    }
+    private final Digraph<V> graph_;
+    private final V startNode_;
+    private final HashMap<V, Double> distTo_;
+    private final HashMap<V, Edge<V>> edgeTo_;
 
     /**
      * Computes a shortest-path from the source node <code>startNode</code> to every other node in the directed weighted
@@ -80,45 +35,67 @@ public class DijkstraShortestPath<V> implements PathFinder<V> {
      * @param startNode source node
      */
     public DijkstraShortestPath(Digraph<V> graph, V startNode) {
-        this(graph, graph.indexOf(startNode));
+        graph_ = graph;
+        startNode_ = startNode;
+        for (Edge<V> edge : graph.getEdgeSet()) {
+            if (edge.getWeight() < 0) {
+                throw new IllegalArgumentException("Edge " + edge + " has negative weight");
+            }
+        }
+
+        int V = graph.getNodeCount();
+        distTo_ = new HashMap<>(V);
+        edgeTo_ = new HashMap<>(V);
+        HashMap<V, Boolean> visited = new HashMap<>(V);
+        for (V v : graph.getNodeSet()) {
+            distTo_.put(v, Double.POSITIVE_INFINITY);
+            visited.put(v, false);
+        }
+        distTo_.put(startNode, 0.0);
+
+        PairingHeap<Double, V> heap = new PairingHeap<>();
+        heap.insert(distTo_.get(startNode), startNode);
+        while (!heap.isEmpty()) {
+            AddressableHeap.Handle<Double, V> handle = heap.deleteMin();
+            V v = handle.getValue();
+            for (Edge<V> edge : graph.getOutgoingEdges(v)) {
+                V w = edge.getTarget();
+                if (visited.get(w))
+                    continue;
+                // relaxation
+                if (distTo_.get(w) > distTo_.get(v) + edge.getWeight()) {
+                    distTo_.put(w, distTo_.get(v) + edge.getWeight());
+                    edgeTo_.put(w, edge);
+                }
+                heap.insert(distTo_.get(w), w);
+            }
+            visited.put(v, true);
+        }
     }
 
     @Override
-    public int indexOf(V node) {
-        return graph.indexOf(node);
+    public double getWeight(V targetNode) {
+        return distTo_.get(targetNode);
     }
 
     @Override
-    public double getWeight(int targetNode) {
-        validateNode(targetNode);
-        return distTo[targetNode];
+    public boolean hasPathTo(V node) {
+        return distTo_.get(node) < Double.POSITIVE_INFINITY;
     }
 
     @Override
-    public boolean hasPathTo(int node) {
-        return distTo[node] < Double.POSITIVE_INFINITY;
-    }
-
-    @Override
-    public GraphPath<V> getPath(int targetNode) {
-        LinkedList<Edge> edges = new LinkedList<>();
-        LinkedList<Integer> nodeList = new LinkedList<>();
+    public GraphPath<V> getPath(V targetNode) {
+        LinkedList<Edge<V>> edges = new LinkedList<>();
+        LinkedList<V> nodeList = new LinkedList<>();
         nodeList.add(targetNode);
 
-        int tmp = targetNode;
-        while (edgeTo[tmp] != null) {
-            edges.add(edgeTo[tmp]);
-            tmp = edgeTo[tmp].getSource();
+        V tmp = targetNode;
+        while (edgeTo_.get(tmp) != null) {
+            edges.add(edgeTo_.get(tmp));
+            tmp = edgeTo_.get(tmp).getSource();
             nodeList.add(tmp);
         }
-        return new GraphPath<>(graph, graph.getNode(startNode), graph.getNode(targetNode),
-                graph.getNodes(nodeList.reversed()), edges.reversed(),
-                getWeight(graph.getNode(targetNode)));
-    }
-
-    private void validateNode(int v) {
-        if (v < 0 || v >= distTo.length) {
-            throw new IllegalArgumentException("Node " + v + " is not between 0 and " + (distTo.length - 1));
-        }
+        return new GraphPath<>(graph_, startNode_, targetNode, nodeList.reversed(), edges.reversed(),
+                getWeight(targetNode));
     }
 }

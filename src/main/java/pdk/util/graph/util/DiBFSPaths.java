@@ -19,9 +19,9 @@ public class DiBFSPaths<V> {
 
     private static final int INFINITY = Integer.MAX_VALUE;
     // is there an s->v path
-    private boolean[] marked;
-    private int[] edgeTo;
-    private int[] distTo;
+    private HashMap<V, Boolean> marked;
+    private HashMap<V, V> edgeTo;
+    private HashMap<V, Integer> distTo;
 
     /**
      * Computes the shorted path from <code>s</code> to every other node in graph.
@@ -29,15 +29,16 @@ public class DiBFSPaths<V> {
      * @param g a {@link Digraph}
      * @param s source node
      */
-    public DiBFSPaths(Digraph<V> g, int s) {
+    public DiBFSPaths(Digraph<V> g, V s) {
         int V = g.getNodeCount();
-        marked = new boolean[V];
-        edgeTo = new int[V];
-        distTo = new int[V];
-        for (int v = 0; v < V; v++) {
-            distTo[v] = INFINITY;
+        marked = new HashMap<>(V);
+        edgeTo = new HashMap<>(V);
+        distTo = new HashMap<>(V);
+        for (V v : g.getNodeSet()) {
+            marked.put(v, false);
+            distTo.put(v, INFINITY);
         }
-        validateNode(s);
+
         bfs(g, s);
     }
 
@@ -48,33 +49,32 @@ public class DiBFSPaths<V> {
      * @param g       a {@link Digraph}
      * @param sources source nodes
      */
-    public DiBFSPaths(Digraph<V> g, Collection<Integer> sources) {
+    public DiBFSPaths(Digraph<V> g, Collection<V> sources) {
         int V = g.getNodeCount();
-        marked = new boolean[V];
-        edgeTo = new int[V];
-        distTo = new int[V];
-        for (int v = 0; v < V; v++) {
-            distTo[v] = INFINITY;
-        }
-        for (Integer source : sources) {
-            validateNode(source);
+        marked = new HashMap<>(V);
+        edgeTo = new HashMap<>(V);
+        distTo = new HashMap<>(V);
+        for (V v : g.getNodeSet()) {
+            distTo.put(v, INFINITY);
+            marked.put(v, false);
         }
         bfs(g, sources);
     }
 
-    private void bfs(Digraph<V> g, int s) {
-        Deque<Integer> queue = new ArrayDeque<>();
-        marked[s] = true;
-        distTo[s] = 0;
+    private void bfs(Digraph<V> g, V s) {
+        Deque<V> queue = new ArrayDeque<>();
+
+        marked.put(s, true);
+        distTo.put(s, 0);
         queue.addLast(s);
         while (!queue.isEmpty()) {
-            int v = queue.removeFirst();
-            for (Edge edge : g.getOutgoingEdges(v)) {
-                int u = edge.getTarget();
-                if (!marked[u]) {
-                    marked[u] = true;
-                    edgeTo[u] = v;
-                    distTo[u] = distTo[v] + 1;
+            V v = queue.removeFirst();
+            for (Edge<V> edge : g.getOutgoingEdges(v)) {
+                V u = edge.getTarget();
+                if (!marked.get(u)) {
+                    marked.put(u, true);
+                    edgeTo.put(u, v);
+                    distTo.put(u, distTo.get(v) + 1);
                     queue.addLast(u);
                 }
             }
@@ -84,31 +84,25 @@ public class DiBFSPaths<V> {
     /**
      * breadth first search for multiple sources
      */
-    private void bfs(Digraph<V> g, Collection<Integer> sources) {
-        Deque<Integer> queue = new ArrayDeque<>();
-        for (int source : sources) {
-            marked[source] = true;
-            distTo[source] = 0;
+    private void bfs(Digraph<V> g, Collection<V> sources) {
+        Deque<V> queue = new ArrayDeque<>();
+        for (V source : sources) {
+            marked.put(source, true);
+            distTo.put(source, 0);
             queue.addLast(source);
         }
         while (!queue.isEmpty()) {
-            int v = queue.removeFirst();
-            for (Edge edge : g.getOutgoingEdges(v)) {
-                int u = edge.getTarget();
-                if (!marked[u]) {
-                    marked[u] = true;
-                    edgeTo[u] = v;
-                    distTo[u] = distTo[v] + 1;
+            V v = queue.removeFirst();
+            for (Edge<V> edge : g.getOutgoingEdges(v)) {
+                V u = edge.getTarget();
+                if (!marked.get(u)) {
+                    marked.put(u, true);
+                    edgeTo.put(u, v);
+                    distTo.put(u, distTo.get(v) + 1);
                     queue.addLast(u);
                 }
             }
         }
-    }
-
-    private void validateNode(int v) {
-        int V = marked.length;
-        if (v < 0 || v >= V)
-            throw new IllegalArgumentException("node " + v + " is not between 0 and " + (V - 1));
     }
 
     /**
@@ -117,9 +111,8 @@ public class DiBFSPaths<V> {
      * @param v a node
      * @return true if there is a directed path, false otherwise
      */
-    public boolean hasPathTo(int v) {
-        validateNode(v);
-        return marked[v];
+    public boolean hasPathTo(V v) {
+        return marked.get(v);
     }
 
     /**
@@ -128,9 +121,8 @@ public class DiBFSPaths<V> {
      * @param v a node
      * @return number of edges in a shorted path
      */
-    public int getDistance(int v) {
-        validateNode(v);
-        return distTo[v];
+    public int getDistance(V v) {
+        return distTo.get(v);
     }
 
     /**
@@ -139,14 +131,12 @@ public class DiBFSPaths<V> {
      * @param v a node
      * @return the sequence of nodes on a shortest path
      */
-    public List<Integer> getPath(int v) {
-        validateNode(v);
-
+    public List<V> getPath(V v) {
         if (!hasPathTo(v))
             return null;
-        LinkedList<Integer> path = new LinkedList<>();
-        int x;
-        for (x = v; distTo[x] != 0; x = edgeTo[x]) {
+        LinkedList<V> path = new LinkedList<>();
+        V x;
+        for (x = v; distTo.get(x) != 0; x = edgeTo.get(x)) {
             path.add(x);
         }
         path.add(x);

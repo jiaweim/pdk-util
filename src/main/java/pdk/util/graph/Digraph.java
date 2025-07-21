@@ -1,7 +1,5 @@
 package pdk.util.graph;
 
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
 import org.jheaps.AddressableHeap;
 import org.jheaps.tree.PairingHeap;
 import org.jspecify.annotations.Nullable;
@@ -10,19 +8,17 @@ import pdk.util.graph.util.BreadthFirstIterator;
 
 import java.util.*;
 
-import static pdk.util.ArgUtils.*;
-
 /**
  * Directed Graph implementation, the node should implement hashCode and equals.
  *
  * @author Jiawei Mao
- * @version 1.0.0
+ * @version 2.0.0
  * @since 23 Nov 2024, 00:02
  */
 public class Digraph<V> extends AbstractGraph<V> {
 
-    private final ArrayList<Edge>[] incomingEdges;
-    private final ArrayList<Edge>[] outgoingEdges;
+    private final HashMap<V, ArrayList<Edge<V>>> incomingEdgeMap;
+    private final HashMap<V, ArrayList<Edge<V>>> outgoingEdgeMap;
 
     @SafeVarargs
     public Digraph(V... nodes) {
@@ -34,55 +30,73 @@ public class Digraph<V> extends AbstractGraph<V> {
      */
     public Digraph(Collection<V> nodes) {
         super(nodes);
-        incomingEdges = new ArrayList[nodes.size()];
-        outgoingEdges = new ArrayList[nodes.size()];
-        for (int i = 0; i < V; i++) {
-            incomingEdges[i] = new ArrayList<>(2);
-            outgoingEdges[i] = new ArrayList<>(2);
+        incomingEdgeMap = new HashMap<>(getNodeCount());
+        outgoingEdgeMap = new HashMap<>(getNodeCount());
+
+        for (V v : nodeSet_) {
+            incomingEdgeMap.put(v, new ArrayList<>(2));
+            outgoingEdgeMap.put(v, new ArrayList<>(2));
         }
     }
 
+    /**
+     * Create an empty directed graph
+     */
+    public Digraph() {
+        incomingEdgeMap = new HashMap<>();
+        outgoingEdgeMap = new HashMap<>();
+    }
+
     @Override
-    public boolean addEdgeByIndex(int source, int target, Edge edge) {
-        checkNotNull(edge);
-        checkElementIndex(source, V);
-        checkElementIndex(target, V);
-
-        if (edgeSet.contains(edge)) {
-            throw new IllegalArgumentException("The edge already exists");
-        }
-
-        checkArgument(edge.getSource() == source);
-        checkArgument(edge.getTarget() == target);
-
-        outgoingEdges[source].add(edge);
-        incomingEdges[target].add(edge);
-        edgeSet.add(edge);
+    public boolean addNode(V node) {
+        if (containsNode(node))
+            return false;
+        nodeSet_.add(node);
+        incomingEdgeMap.put(node, new ArrayList<>(2));
+        outgoingEdgeMap.put(node, new ArrayList<>(2));
         return true;
     }
 
     @Override
-    public Edge getEdge(int source, int target) {
-        if (source < V && target < V) {
-            for (Edge edge : outgoingEdges[source]) {
-                if (edge.getTarget() == target) {
-                    return edge;
-                }
+    public boolean addEdge(Edge<V> edge) {
+        if (containsEdge(edge))
+            return false;
+
+        V source = edge.getSource();
+        V target = edge.getTarget();
+        if (!containsNode(source)) {
+            addNode(source);
+        }
+        if (!containsNode(target)) {
+            addNode(target);
+        }
+
+        outgoingEdgeMap.get(source).add(edge);
+        incomingEdgeMap.get(target).add(edge);
+        edgeSet_.add(edge);
+
+        return true;
+    }
+
+    @Override
+    public @Nullable Edge<V> getEdge(V source, V target) {
+        for (Edge<V> edge : outgoingEdgeMap.get(source)) {
+            if (edge.getTarget() == target) { // directed graph
+                return edge;
             }
         }
 
         return null;
     }
 
-
     @Override
-    public boolean removeEdge(Edge edge) {
-        if (edgeSet.contains(edge)) {
-            int source = edge.getSource();
-            int target = edge.getTarget();
-            outgoingEdges[source].remove(edge);
-            incomingEdges[target].remove(edge);
-            edgeSet.remove(edge);
+    public boolean removeEdge(Edge<V> edge) {
+        if (edgeSet_.contains(edge)) {
+            V source = edge.getSource();
+            V target = edge.getTarget();
+            outgoingEdgeMap.get(source).remove(edge);
+            incomingEdgeMap.get(target).remove(edge);
+            edgeSet_.remove(edge);
             return true;
         } else {
             return false;
@@ -90,45 +104,46 @@ public class Digraph<V> extends AbstractGraph<V> {
     }
 
     @Override
-    public List<Edge> getIncomingEdges(int node) {
-        return Collections.unmodifiableList(incomingEdges[node]);
+    public int getInDegree(V node) {
+        return incomingEdgeMap.get(node).size();
     }
 
     @Override
-    public List<Edge> getOutgoingEdges(int node) {
-        return Collections.unmodifiableList(outgoingEdges[node]);
+    public int getOutDegree(V node) {
+        return outgoingEdgeMap.get(node).size();
     }
 
     @Override
-    public int getDegree(int node) {
+    public int getDegree(V node) {
         return getInDegree(node) + getOutDegree(node);
     }
 
     @Override
-    public int getInDegree(int node) {
-        return incomingEdges[node].size();
+    public List<Edge<V>> getIncomingEdges(V node) {
+        return Collections.unmodifiableList(incomingEdgeMap.get(node));
     }
 
     @Override
-    public int getOutDegree(int node) {
-        return outgoingEdges[node].size();
+    public List<Edge<V>> getOutgoingEdges(V node) {
+        return Collections.unmodifiableList(outgoingEdgeMap.get(node));
     }
 
     @Override
-    public List<Edge> getEdges(int node) {
-        ArrayList<Edge> edges = new ArrayList<>();
-        edges.addAll(incomingEdges[node]);
-        edges.addAll(outgoingEdges[node]);
-        return Collections.unmodifiableList(edges);
+    public List<Edge<V>> getEdges(V node) {
+        List<Edge<V>> edges = new ArrayList<>(getDegree(node));
+        edges.addAll(incomingEdgeMap.get(node));
+        edges.addAll(outgoingEdgeMap.get(node));
+        return edges;
     }
+
 
     /**
      * @return a copy of the graph with all edges in reverse direction.
      * @since 2024-12-2 ⭐
      */
     public Digraph<V> reverse() {
-        Digraph<V> graph = new Digraph<>(nodeList);
-        for (Edge edge : getEdgeSet()) {
+        Digraph<V> graph = new Digraph<>(nodeSet_);
+        for (Edge<V> edge : getEdgeSet()) {
             graph.addEdge(edge.reverse());
         }
         return graph;
@@ -142,28 +157,34 @@ public class Digraph<V> extends AbstractGraph<V> {
      * @since 2024-12-03 ⭐
      */
     public boolean hasCycle() {
-        boolean[] visited = new boolean[V];
-        boolean[] beingVisited = new boolean[V];
-        for (int v = 0; v < V; v++) {
-            if (!visited[v] && hasCycle(v, visited, beingVisited)) {
+        int V = getNodeCount();
+        Map<V, Boolean> visited = new HashMap<>();
+        Map<V, Boolean> beingVisited = new HashMap<>();
+        for (V v : nodeSet_) {
+            visited.put(v, false);
+            beingVisited.put(v, false);
+        }
+
+        for (V v : nodeSet_) {
+            if (!visited.get(v) && hasCycle(v, visited, beingVisited)) {
                 return true;
             }
         }
         return false;
     }
 
-    private boolean hasCycle(int node, boolean[] visited, boolean[] beingVisited) {
-        beingVisited[node] = true;
-        for (Edge edge : getOutgoingEdges(node)) {
-            int u = edge.getTarget();
-            if (beingVisited[u]) {
+    private boolean hasCycle(V node, Map<V, Boolean> visited, Map<V, Boolean> beingVisited) {
+        beingVisited.put(node, true);
+        for (Edge<V> edge : getOutgoingEdges(node)) {
+            V u = edge.getTarget();
+            if (beingVisited.get(u)) {
                 return true;
-            } else if (!visited[u] && hasCycle(u, visited, beingVisited)) {
+            } else if (!visited.get(u) && hasCycle(u, visited, beingVisited)) {
                 return true;
             }
         }
-        beingVisited[node] = false;
-        visited[node] = true;
+        beingVisited.put(node, false);
+        visited.put(node, true);
         return false;
     }
 
@@ -180,7 +201,7 @@ public class Digraph<V> extends AbstractGraph<V> {
      * @param startNode start node
      * @return {@link BellmanFordShortestPath} instance
      */
-    public BellmanFordShortestPath<V> getShortestPathFinder(int startNode) {
+    public BellmanFordShortestPath<V> getShortestPathFinder(V startNode) {
         return new BellmanFordShortestPath<>(this, startNode);
     }
 
@@ -193,73 +214,71 @@ public class Digraph<V> extends AbstractGraph<V> {
      * @since 2024-11-03⭐
      */
     @Nullable
-    public GraphPath<V> getShortestPath(int startNode, int endNode) {
-        checkElementIndex(startNode, V);
-        checkElementIndex(endNode, V);
-
-        for (Edge edge : getEdgeSet()) {
+    public GraphPath<V> getShortestPath(V startNode, V endNode) {
+        for (Edge<V> edge : getEdgeSet()) {
             if (edge.getWeight() < 0) {
                 throw new IllegalArgumentException("Edge " + edge + " has negative weight");
             }
         }
-        double[] distTo = new double[V];
-        Edge[] edgeTo = new Edge[V];
-        boolean[] visited = new boolean[V];
+        int V = getNodeCount();
+        Map<V, Double> distTo = new HashMap<>(V);
+        Map<V, Edge<V>> edgeTo = new HashMap<>(V);
+        Set<V> visited = new HashSet<>(V);
 
-        for (int v = 0; v < V; v++) {
-            distTo[v] = Double.POSITIVE_INFINITY;
+        for (V v : nodeSet_) {
+            distTo.put(v, Double.MAX_VALUE);
         }
-        distTo[startNode] = 0;
+        distTo.put(startNode, 0.0);
 
-        PairingHeap<Double, Integer> heap = new PairingHeap<>();
-        heap.insert(distTo[startNode], startNode);
+        PairingHeap<Double, V> heap = new PairingHeap<>();
+        heap.insert(distTo.get(startNode), startNode);
         while (!heap.isEmpty()) {
-            AddressableHeap.Handle<Double, Integer> handle = heap.deleteMin();
-            Integer v = handle.getValue();
+            AddressableHeap.Handle<Double, V> handle = heap.deleteMin();
+            V v = handle.getValue();
             if (v == endNode) {
                 break;
             }
-            for (Edge edge : getOutgoingEdges(v)) {
-                int w = edge.getTarget();
-                if (visited[w]) {
+            for (Edge<V> edge : getOutgoingEdges(v)) {
+                V w = edge.getTarget();
+                if (visited.contains(w)) {
                     continue;
                 }
-                if (distTo[w] > distTo[v] + edge.getWeight()) {
-                    distTo[w] = distTo[v] + edge.getWeight();
-                    edgeTo[w] = edge;
+                if (distTo.get(w) > distTo.get(v) + edge.getWeight()) {
+                    distTo.put(w, distTo.get(v) + edge.getWeight());
+                    edgeTo.put(w, edge);
                 }
-                heap.insert(distTo[w], w);
+                heap.insert(distTo.get(w), w);
             }
-            visited[v] = true;
+            visited.add(v);
         }
-        if (distTo[endNode] == Double.POSITIVE_INFINITY) {
+        if (distTo.get(endNode) == Double.MAX_VALUE) {
             return null;
         }
 
-        LinkedList<Edge> edges = new LinkedList<>();
-        LinkedList<Integer> nodeList = new LinkedList<>();
+        LinkedList<Edge<V>> edges = new LinkedList<>();
+        LinkedList<V> nodeList = new LinkedList<>();
         nodeList.add(endNode);
 
-        int tmp = endNode;
-        while (edgeTo[tmp] != null) {
-            edges.add(edgeTo[tmp]);
-            tmp = edgeTo[tmp].getSource();
+        V tmp = endNode;
+        while (edgeTo.get(tmp) != null) {
+            edges.add(edgeTo.get(tmp));
+            tmp = edgeTo.get(tmp).getSource();
             nodeList.add(tmp);
         }
-        return new GraphPath<>(this, getNode(startNode), getNode(endNode),
-                getNodes(nodeList.reversed()), edges.reversed(), distTo[endNode]);
+        return new GraphPath<>(this, startNode, endNode,
+                nodeList.reversed(), edges.reversed(), distTo.get(endNode));
     }
 
     /**
-     * Convert list of node indexes to list of edge
+     * Convert list of node to list of edge
      *
      * @param path node list
      * @return edge list
      */
-    public List<Edge> getPath(IntList path) {
-        List<Edge> edges = new ArrayList<>(path.size());
+    public List<Edge<V>> getPath(List<V> path) {
+        List<Edge<V>> edges = new ArrayList<>(path.size());
         for (int i = 0; i < path.size() - 1; i++) {
-            Edge edge = getEdge(path.getInt(i), path.getInt(i + 1));
+            Edge<V> edge = getEdge(path.get(i), path.get(i + 1));
             edges.add(edge);
         }
         return edges;
@@ -272,12 +291,11 @@ public class Digraph<V> extends AbstractGraph<V> {
      * @param destNodes target nodes
      * @return paths
      */
-    public List<IntList> findAllPaths(Collection<Integer> srcNodes, Collection<Integer> destNodes) {
-        List<IntList> res = new ArrayList<>();
-
-        for (int srcNode : srcNodes) {
-            for (int destNode : destNodes) {
-                IntArrayList path = new IntArrayList();
+    public List<List<V>> findAllPaths(Collection<V> srcNodes, Collection<V> destNodes) {
+        List<List<V>> res = new ArrayList<>();
+        for (V srcNode : srcNodes) {
+            for (V destNode : destNodes) {
+                List<V> path = new ArrayList<>();
                 path.add(srcNode);
                 dfs(srcNode, destNode, path, res);
             }
@@ -293,23 +311,23 @@ public class Digraph<V> extends AbstractGraph<V> {
      * @param dest target node
      * @return all paths between given two nodes ⭐
      */
-    public List<IntList> findAllPaths(int src, int dest) {
-        List<IntList> res = new ArrayList<>();
-        IntList path = new IntArrayList();
+    public List<List<V>> findAllPaths(V src, V dest) {
+        List<List<V>> res = new ArrayList<>();
+        List<V> path = new ArrayList<>();
         path.add(src);
         dfs(src, dest, path, res);
 
         return res;
     }
 
-    private void dfs(int src, int dest, IntList path, List<IntList> res) {
+    private void dfs(V src, V dest, List<V> path, List<List<V>> res) {
         if (src == dest) {
-            res.add(new IntArrayList(path));
+            res.add(new ArrayList<>(path));
             return;
         }
 
-        for (Edge edge : getOutgoingEdges(src)) {
-            int nextNode = edge.getTarget();
+        for (Edge<V> edge : getOutgoingEdges(src)) {
+            V nextNode = edge.getTarget();
             path.add(nextNode);
             dfs(nextNode, dest, path, res);
             path.removeLast();
@@ -326,33 +344,35 @@ public class Digraph<V> extends AbstractGraph<V> {
         return new BreadthFirstIterator<>(this, startNode);
     }
 
-
     /**
      * Topological sort, only works for DAG.
      * <p>
      * O(V+E) in the worst case, O(V) extra space
      *
-     * @param visitor {@link NodeVisitor}
+     * @param visitor {@link NodeVisitor}😀
      */
-    public void topological(NodeVisitor visitor) {
-        Queue<Integer> queue = new ArrayDeque<>();
-        int[] indegree = new int[V];
-        for (int v = 0; v < V; v++) {
-            int d = incomingEdges[v].size();
-            indegree[v] = d;
-            if (d == 0)
-                queue.offer(v);
+    public void topological(NodeVisitor<V> visitor) {
+        int count = getNodeCount();
+        ArrayDeque<V> queue = new ArrayDeque<>();
+        HashMap<V, Integer> indegree = new HashMap<>(count);
+        for (V v : nodeSet_) {
+            int d = incomingEdgeMap.get(v).size();
+            indegree.put(v, d);
+            if (d == 0) {
+                queue.addLast(v);
+            }
         }
-        int count = V;
+
         while (!queue.isEmpty()) {
-            int v = queue.poll();
+            V v = queue.pollFirst();
             visitor.visit(v);
-            for (Edge edge : getOutgoingEdges(v)) {
-                int target = edge.getTarget();
-                if (indegree[target] > 0) {
-                    indegree[target]--;
-                    if (indegree[target] == 0) {
-                        queue.offer(target);
+            for (Edge<V> edge : getOutgoingEdges(v)) {
+                V target = edge.getTarget();
+                Integer tIndegree = indegree.get(target);
+                if (tIndegree > 0) {
+                    indegree.put(target, tIndegree - 1);
+                    if (indegree.get(target) == 0) {
+                        queue.addLast(target);
                     }
                 }
             }

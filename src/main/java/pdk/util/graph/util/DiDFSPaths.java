@@ -4,6 +4,7 @@ import org.jspecify.annotations.Nullable;
 import pdk.util.graph.Digraph;
 import pdk.util.graph.Edge;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -18,9 +19,9 @@ import java.util.List;
  */
 public class DiDFSPaths<V> {
 
-    private final boolean[] marked;
-    private final int[] edgeTo;
-    private final int s;
+    private final HashMap<V, Boolean> marked;
+    private final HashMap<V, V> edgeTo;
+    private final V s;
 
     /**
      * Compute a directed path from <code>s</code> to every other node in digraph
@@ -28,21 +29,24 @@ public class DiDFSPaths<V> {
      * @param g {@link Digraph}
      * @param s source node
      */
-    public DiDFSPaths(Digraph<V> g, int s) {
+    public DiDFSPaths(Digraph<V> g, V s) {
         int V = g.getNodeCount();
-        marked = new boolean[V];
-        edgeTo = new int[V];
+        marked = new HashMap<>(V);
+        edgeTo = new HashMap<>(V);
+        for (V v : g.getNodeSet()) {
+            marked.put(v, false);
+        }
         this.s = s;
-        validateNode(s);
         dfs(g, s);
     }
 
-    private void dfs(Digraph<V> g, int v) {
-        marked[v] = true;
-        for (Edge edge : g.getOutgoingEdges(v)) {
-            int w = edge.getTarget();
-            if (!marked[w]) {
-                edgeTo[w] = v;
+    private void dfs(Digraph<V> g, V v) {
+        marked.put(v, true);
+
+        for (Edge<V> edge : g.getOutgoingEdges(v)) {
+            V w = edge.getTarget();
+            if (!marked.get(w)) {
+                edgeTo.put(w, v);
                 dfs(g, w);
             }
         }
@@ -55,9 +59,8 @@ public class DiDFSPaths<V> {
      * @return true if there is a directed path from the source node <code>s</code> to node <code>v</code>,
      * false otherwise.
      */
-    public boolean hasPathTo(int v) {
-        validateNode(v);
-        return marked[v];
+    public boolean hasPathTo(V v) {
+        return marked.get(v);
     }
 
     /**
@@ -67,22 +70,15 @@ public class DiDFSPaths<V> {
      * @return the sequence of nodes on a directed path from the source node <code>s</code> to node <code>v</code>
      */
     @Nullable
-    public List<Integer> getPath(int v) {
-        validateNode(v);
+    public List<V> getPath(V v) {
         if (!hasPathTo(v)) {
             return null;
         }
-        LinkedList<Integer> list = new LinkedList<>();
-        for (int x = v; x != s; x = edgeTo[x]) {
+        LinkedList<V> list = new LinkedList<>();
+        for (V x = v; x != s; x = edgeTo.get(x)) {
             list.add(x);
         }
         list.add(s);
         return list.reversed();
-    }
-
-    private void validateNode(int v) {
-        if (v < 0 || v >= marked.length) {
-            throw new IllegalArgumentException("node " + s + " is not between 0 and " + (marked.length - 1));
-        }
     }
 }

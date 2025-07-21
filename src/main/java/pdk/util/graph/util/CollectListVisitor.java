@@ -12,20 +12,20 @@ import java.util.List;
  * @version 1.0.0
  * @since 30 Nov 2024, 18:35
  */
-public class CollectListVisitor implements NodeVisitor {
+public class CollectListVisitor<V> implements NodeVisitor<V> {
 
-    private final List<Integer> list;
+    private final List<V> list;
 
     public CollectListVisitor() {
         list = new ArrayList<>();
     }
 
-    public List<Integer> getList() {
+    public List<V> getList() {
         return list;
     }
 
     @Override
-    public void visit(int node) {
+    public void visit(V node) {
         list.add(node);
     }
 }

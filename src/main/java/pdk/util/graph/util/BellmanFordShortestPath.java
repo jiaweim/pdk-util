@@ -32,65 +32,56 @@ public class BellmanFordShortestPath<V> implements PathFinder<V> {
     private static final double EPSILON = 1E-14;
 
     private final Digraph<V> graph;
-    private final int startNode;
-    private final double[] distTo;
-    private final Edge[] edgeTo;
-    private final boolean[] onQueue;
-    private final Deque<Integer> queue;
-    // number of calls to relax)_
+    private final V startNode;
+    private final HashMap<V, Double> distTo;
+    private final HashMap<V, Edge<V>> edgeTo;
+    private final HashMap<V, Boolean> onQueue;
+    private final ArrayDeque<V> queue;
+    // number of calls to relax
     private int cost;
-    private Deque<Integer> cycle;
+    private Deque<V> cycle;
 
     /**
      * Compute the shortest path tree from <code>s</code> to every other node in the graph.
      *
      * @param graph a weighted {@link Digraph}
-     * @param s     source node value
-     */
-    public BellmanFordShortestPath(Digraph<V> graph, V s) {
-        this(graph, graph.indexOf(s));
-    }
-
-    /**
-     * Compute a shortest path tree from <code>s</code> to every other node in the graph.
-     *
-     * @param graph a weighted {@link Digraph}
      * @param s     index of the source node
      */
-    public BellmanFordShortestPath(Digraph<V> graph, int s) {
+    public BellmanFordShortestPath(Digraph<V> graph, V s) {
         this.graph = graph;
         this.startNode = s;
         int V = graph.getNodeCount();
 
-        distTo = new double[V];
-        edgeTo = new Edge[V];
-        onQueue = new boolean[V];
+        distTo = new HashMap<>(V);
+        edgeTo = new HashMap<>(V);
+        onQueue = new HashMap<>(V);
 
-        for (int v = 0; v < V; v++) {
-            distTo[v] = Double.POSITIVE_INFINITY;
+        for (V v : graph.getNodeSet()) {
+            distTo.put(v, Double.POSITIVE_INFINITY);
+            onQueue.put(v, false);
         }
-        distTo[s] = 0;
+        distTo.put(s, 0.0);
 
         // Bellman-Ford
         queue = new ArrayDeque<>();
-        queue.offerLast(s);
-        onQueue[s] = true;
+        queue.addLast(s);
+        onQueue.put(s, true);
         while (!queue.isEmpty() && !hasNegativeCycle()) {
-            int v = queue.pollFirst();
-            onQueue[v] = false;
+            V v = queue.pollFirst();
+            onQueue.put(v, false);
             relax(v);
         }
     }
 
-    private void relax(int v) {
-        for (Edge edge : graph.getOutgoingEdges(v)) {
-            int w = edge.getTarget();
-            if (distTo[w] > distTo[v] + edge.getWeight() + EPSILON) {
-                distTo[w] = distTo[v] + edge.getWeight();
-                edgeTo[w] = edge;
-                if (!onQueue[w]) {
-                    queue.offerLast(w);
-                    onQueue[w] = true;
+    private void relax(V v) {
+        for (Edge<V> edge : graph.getOutgoingEdges(v)) {
+            V w = edge.getTarget();
+            if (distTo.get(w) > distTo.get(v) + edge.getWeight() + EPSILON) {
+                distTo.put(w, distTo.get(v) + edge.getWeight());
+                edgeTo.put(w, edge);
+                if (!onQueue.get(w)) {
+                    queue.addLast(w);
+                    onQueue.put(w, true);
                 }
             }
             if (++cost % graph.getNodeCount() == 0) {
@@ -104,18 +95,18 @@ public class BellmanFordShortestPath<V> implements PathFinder<V> {
 
     // finding a cycle in predecessor graph
     private void findNegativeCycle() {
-        Set<Edge> edges = new HashSet<>();
+        Set<Edge<V>> edges = new HashSet<>();
         Set<V> nodes = new HashSet<>();
-        for (Edge edge : edgeTo) {
+        for (Edge<V> edge : edgeTo.values()) {
             if (edge != null) {
-                nodes.add(graph.getNode(edge.getSource()));
-                nodes.add(graph.getNode(edge.getTarget()));
+                nodes.add(edge.getSource());
+                nodes.add(edge.getTarget());
                 edges.add(edge);
             }
         }
         Digraph<V> g = new Digraph<>(nodes);
-        for (Edge edge : edges) {
-            g.addEdge(graph.getNode(edge.getSource()), graph.getNode(edge.getTarget()), edge.getWeight());
+        for (Edge<V> edge : edges) {
+            g.addEdge(edge.getSource(), edge.getTarget(), edge.getWeight());
         }
 
         DirectedCycle<V> directedCycle = new DirectedCycle<>(g);
@@ -134,52 +125,38 @@ public class BellmanFordShortestPath<V> implements PathFinder<V> {
     /**
      * @return a directed cycle if the digraph has a directed cycle, null otherwise
      */
-    public Queue<Integer> getCycle() {
+    public Queue<V> getCycle() {
         return cycle;
     }
 
     @Override
-    public int indexOf(V node) {
-        return graph.indexOf(node);
-    }
-
-    @Override
-    public double getWeight(int targetNode) {
-        validateVertex(targetNode);
+    public double getWeight(V targetNode) {
         if (hasNegativeCycle()) {
             throw new UnsupportedOperationException("Negative cycle exists");
         }
-        return distTo[targetNode];
+        return distTo.get(targetNode);
     }
 
     @Override
-    public boolean hasPathTo(int node) {
-        validateVertex(node);
-        return distTo[node] < Double.POSITIVE_INFINITY;
+    public boolean hasPathTo(V node) {
+        return distTo.get(node) < Double.POSITIVE_INFINITY;
     }
 
     @Override
-    public @Nullable GraphPath<V> getPath(int targetNode) {
-        validateVertex(targetNode);
+    public @Nullable GraphPath<V> getPath(V targetNode) {
         if (hasNegativeCycle()) {
             throw new UnsupportedOperationException("Negative cycle exists");
         }
         if (!hasPathTo(targetNode))
             return null;
-        Deque<Edge> path = new ArrayDeque<>();
-        Deque<Integer> nodes = new ArrayDeque<>();
+        Deque<Edge<V>> path = new ArrayDeque<>();
+        Deque<V> nodes = new ArrayDeque<>();
         nodes.addFirst(targetNode);
-        for (Edge e = edgeTo[targetNode]; e != null; e = edgeTo[e.getSource()]) {
+        for (Edge<V> e = edgeTo.get(targetNode); e != null; e = edgeTo.get(e.getSource())) {
             path.push(e);
             nodes.addFirst(e.getSource());
         }
-        return new GraphPath<>(graph, graph.getNode(startNode), graph.getNode(targetNode),
-                graph.getNodes(nodes), path, distTo[targetNode]);
-    }
-
-    private void validateVertex(int v) {
-        int V = distTo.length;
-        if (v < 0 || v >= V)
-            throw new IllegalArgumentException("node " + v + " is not between 0 and " + (V - 1));
+        return new GraphPath<>(graph, startNode, targetNode,
+                nodes, path, distTo.get(targetNode));
     }
 }

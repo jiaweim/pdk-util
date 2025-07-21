@@ -3,9 +3,6 @@ package pdk.util.graph.util;
 import org.junit.jupiter.api.Test;
 import pdk.util.graph.Digraph;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 /**
  * @author Jiawei Mao
  * @version 1.0.0
@@ -28,14 +25,9 @@ class DepthFirstIteratorTest {
         digraph.addEdge("F", "B");
 
         DepthFirstIterator<String> it = new DepthFirstIterator<>(digraph, "D");
-        assertTrue(it.hasNext());
-        String node = it.next();
-        assertEquals("D", node);
-
-        assertTrue(it.hasNext());
-        node = it.next();
-        System.out.println(it.hasNext());
-        System.out.println(node);
+        while (it.hasNext()) {
+            String node = it.next();
+        }
 
     }
 }

@@ -2,6 +2,10 @@ package pdk.util.graph.util;
 
 import org.junit.jupiter.api.Test;
 import pdk.util.graph.Digraph;
+import pdk.util.graph.UndirectedGraph;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -11,6 +15,55 @@ import static org.junit.jupiter.api.Assertions.*;
  * @since 17 Apr 2025, 7:02 PM
  */
 class BreadthFirstIteratorTest {
+
+    @Test
+    void testUndirected() {
+        UndirectedGraph<String> graph = new UndirectedGraph<>("r", "s", "t", "u",
+                "v", "w", "x", "y");
+        graph.addEdge("r", "s");
+        graph.addEdge("r", "v");
+        graph.addEdge("s", "w");
+        graph.addEdge("t", "u");
+        graph.addEdge("t", "w");
+        graph.addEdge("t", "x");
+        graph.addEdge("u", "x");
+        graph.addEdge("u", "y");
+        graph.addEdge("w", "x");
+        graph.addEdge("x", "y");
+        List<String> nodes = new ArrayList<>();
+        BreadthFirstIterator<String> it = new BreadthFirstIterator<>(graph, "s");
+        while (it.hasNext()) {
+            String node = it.next();
+            nodes.add(node);
+        }
+        assertIterableEquals(List.of("s", "r", "w", "v", "t", "x", "u", "y"), nodes);
+        assertEquals(0, it.getDepth("s"));
+        assertEquals(1, it.getDepth("r"));
+        assertEquals(1, it.getDepth("w"));
+        assertEquals(2, it.getDepth("v"));
+        assertEquals(2, it.getDepth("t"));
+        assertEquals(2, it.getDepth("x"));
+        assertEquals(3, it.getDepth("u"));
+        assertEquals(3, it.getDepth("y"));
+    }
+
+    @Test
+    void testUndirectedMethod() {
+        UndirectedGraph<String> graph = new UndirectedGraph<>("r", "s", "t", "u",
+                "v", "w", "x", "y");
+        graph.addEdge("r", "s");
+        graph.addEdge("r", "v");
+        graph.addEdge("s", "w");
+        graph.addEdge("t", "u");
+        graph.addEdge("t", "w");
+        graph.addEdge("t", "x");
+        graph.addEdge("u", "x");
+        graph.addEdge("u", "y");
+        graph.addEdge("w", "x");
+        graph.addEdge("x", "y");
+        List<String> nodes = graph.bfs("s");
+        assertIterableEquals(List.of("s", "r", "w", "v", "t", "x", "u", "y"), nodes);
+    }
 
     @Test
     void test() {

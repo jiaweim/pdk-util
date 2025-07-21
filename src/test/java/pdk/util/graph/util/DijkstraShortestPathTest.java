@@ -76,7 +76,7 @@ class DijkstraShortestPathTest {
         g.addEdge("D", "F", 1);
         g.addEdge("F", "E", 5);
 
-        DijkstraShortestPath<String> path = new DijkstraShortestPath<>(g, 0);
+        DijkstraShortestPath<String> path = new DijkstraShortestPath<>(g, "A");
         assertIterableEquals(List.of("A", "B"), path.getPath("B").nodeList());
         assertIterableEquals(List.of("A", "C"), path.getPath("C").nodeList());
         assertIterableEquals(List.of("A", "B", "D"), path.getPath("D").nodeList());

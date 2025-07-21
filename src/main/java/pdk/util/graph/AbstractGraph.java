@@ -10,67 +10,58 @@ import java.util.*;
  * @since 02 Dec 2024, 2:54 PM
  */
 public abstract class AbstractGraph<V> implements Graph<V> {
-
-    protected final ArrayList<V> nodeList;
-    protected final HashMap<V, Integer> indexMap;
-    protected final Set<Edge> edgeSet;
-    protected int V;
-
-    @SafeVarargs
-    public AbstractGraph(V... nodes) {
-        this(Arrays.asList(nodes));
-    }
+    /**
+     * all nodes
+     */
+    protected final Set<V> nodeSet_;
+    /**
+     * all edges
+     */
+    protected final Set<Edge<V>> edgeSet_;
 
     public AbstractGraph(Collection<V> nodes) {
-        this.nodeList = new ArrayList<>(nodes);
-        this.indexMap = new HashMap<>(nodes.size());
-        for (int i = 0; i < nodeList.size(); i++) {
-            if (indexMap.put(nodeList.get(i), i) != null) {
-                throw new IllegalArgumentException("Nodes are not unique");
-            }
-        }
-        edgeSet = new HashSet<>();
-        V = nodeList.size();
+        nodeSet_ = new HashSet<>(nodes);
+        edgeSet_ = new HashSet<>();
+    }
+
+    public AbstractGraph() {
+        nodeSet_ = new HashSet<>();
+        edgeSet_ = new HashSet<>();
     }
 
     @Override
     public boolean containsNode(V node) {
-        return indexMap.containsKey(node);
-    }
-
-    @Override
-    public int getNodeCount() {
-        return V;
-    }
-
-    @Override
-    public int indexOf(V node) {
-        return indexMap.get(node);
-    }
-
-    @Override
-    public V getNode(int index) {
-        return nodeList.get(index);
+        return nodeSet_.contains(node);
     }
 
     @Override
     public Set<V> getNodeSet() {
-        return indexMap.keySet();
+        return Collections.unmodifiableSet(nodeSet_);
+    }
+
+    @Override
+    public List<V> getNodeList() {
+        return new ArrayList<>(nodeSet_);
+    }
+
+    @Override
+    public int getNodeCount() {
+        return nodeSet_.size();
+    }
+
+    @Override
+    public boolean containsEdge(Edge<V> e) {
+        return edgeSet_.contains(e);
+    }
+
+    @Override
+    public Set<Edge<V>> getEdgeSet() {
+        return Collections.unmodifiableSet(edgeSet_);
     }
 
     @Override
     public int getEdgeCount() {
-        return edgeSet.size();
-    }
-
-    @Override
-    public Set<Edge> getEdgeSet() {
-        return Collections.unmodifiableSet(edgeSet);
-    }
-
-    @Override
-    public boolean containsEdge(Edge e) {
-        return edgeSet.contains(e);
+        return edgeSet_.size();
     }
 
     @Override
@@ -78,11 +69,10 @@ public abstract class AbstractGraph<V> implements Graph<V> {
         StringBuilder sb = new StringBuilder();
         sb.append(getNodeCount()).append(" nodes, ")
                 .append(getEdgeCount()).append(" edges\n");
-        for (int v = 0; v < getNodeCount(); v++) {
-            sb.append(getNode(v).toString()).append(": ");
-            for (Edge edge : getOutgoingEdges(v)) {
-                sb.append(getNode(getOppositeNode(edge, v)))
-                        .append(" ");
+        for (V v : nodeSet_) {
+            sb.append(v).append(": ");
+            for (Edge<V> outgoingEdge : getOutgoingEdges(v)) {
+                sb.append(getOppositeNode(outgoingEdge, v)).append(" ");
             }
             sb.append("\n");
         }

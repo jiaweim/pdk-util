@@ -5,8 +5,6 @@ import pdk.util.graph.util.CollectListVisitor;
 
 import java.util.*;
 
-import static pdk.util.ArgUtils.*;
-
 /**
  * Undirected graph.
  * <p>
@@ -18,85 +16,114 @@ import static pdk.util.ArgUtils.*;
  */
 public class UndirectedGraph<V> extends AbstractGraph<V> {
 
-    private final ArrayList<Edge>[] adjacencyList;
+    private final HashMap<V, ArrayList<Edge<V>>> adjacencyMap_;
+
+    /**
+     * Create a {@link UndirectedGraph} containing given nodes
+     *
+     * @param nodes nodes
+     */
+    @SafeVarargs
+    public UndirectedGraph(V... nodes) {
+        this(Arrays.asList(nodes));
+    }
 
     public UndirectedGraph(Collection<V> nodes) {
         super(nodes);
-        adjacencyList = (ArrayList<Edge>[]) new ArrayList[nodes.size()];
-        for (int i = 0; i < V; i++) {
-            adjacencyList[i] = new ArrayList<>(2);
+        adjacencyMap_ = new HashMap<>(getNodeCount());
+        for (V node : nodeSet_) {
+            adjacencyMap_.put(node, new ArrayList<>(2));
         }
     }
 
+    /**
+     * Create an empty {@link UndirectedGraph}
+     */
+    public UndirectedGraph() {
+        adjacencyMap_ = new HashMap<>();
+    }
+
     @Override
-    public boolean addEdgeByIndex(int source, int target, Edge edge) {
-        checkNotNull(edge);
-        checkElementIndex(source, V);
-        checkElementIndex(target, V);
-        if (edgeSet.contains(edge)) {
-            throw new IllegalArgumentException("The edge already exists");
-        }
-        checkArgument(edge.getSource() == source);
-        checkArgument(edge.getTarget() == target);
-        adjacencyList[source].add(edge);
-        adjacencyList[target].add(edge);
+    public boolean addNode(V node) {
+        if (containsNode(node))
+            return false;
+        nodeSet_.add(node);
+        adjacencyMap_.put(node, new ArrayList<>(2));
         return true;
     }
 
     @Override
-    public @Nullable Edge getEdge(int source, int target) {
-        if (source < V && target < V) {
-            for (Edge edge : adjacencyList[source]) {
-                if (getOppositeNode(edge, source) == target) {
-                    return edge;
-                }
+    public boolean addEdge(Edge<V> edge) {
+        if (containsEdge(edge))
+            return false;
+        V source = edge.getSource();
+        V target = edge.getTarget();
+        if (!containsNode(source)) {
+            addNode(source);
+        }
+        if (!containsNode(target)) {
+            addNode(target);
+        }
+        adjacencyMap_.get(source).add(edge);
+        adjacencyMap_.get(target).add(edge);
+        edgeSet_.add(edge);
+        return true;
+    }
+
+
+    @Override
+    public @Nullable Edge<V> getEdge(V source, V target) {
+        for (Edge<V> edge : adjacencyMap_.get(source)) {
+            if (getOppositeNode(edge, source) == target) {
+                return edge;
             }
         }
         return null;
     }
 
     @Override
-    public boolean removeEdge(Edge edge) {
-        if (edgeSet.contains(edge)) {
-            int source = edge.getSource();
-            int target = edge.getTarget();
-            adjacencyList[source].remove(target);
-            adjacencyList[target].remove(source);
-            edgeSet.remove(edge);
+    public int getInDegree(V node) {
+        return adjacencyMap_.get(node).size();
+    }
+
+    @Override
+    public int getOutDegree(V node) {
+        return adjacencyMap_.get(node).size();
+    }
+
+    @Override
+    public int getDegree(V node) {
+        return adjacencyMap_.get(node).size();
+    }
+
+    @Override
+    public List<Edge<V>> getEdges(V node) {
+        return Collections.unmodifiableList(adjacencyMap_.get(node));
+    }
+
+    @Override
+    public List<Edge<V>> getIncomingEdges(V node) {
+        return Collections.unmodifiableList(adjacencyMap_.get(node));
+    }
+
+    @Override
+    public List<Edge<V>> getOutgoingEdges(V node) {
+        return Collections.unmodifiableList(adjacencyMap_.get(node));
+    }
+
+
+    @Override
+    public boolean removeEdge(Edge<V> edge) {
+        if (edgeSet_.contains(edge)) {
+            V source = edge.getSource();
+            V target = edge.getTarget();
+
+            adjacencyMap_.get(source).remove(edge);
+            adjacencyMap_.get(target).remove(edge);
+            edgeSet_.remove(edge);
             return true;
         }
         return false;
-    }
-
-
-    @Override
-    public int getInDegree(int node) {
-        return adjacencyList[node].size();
-    }
-
-    @Override
-    public int getOutDegree(int node) {
-        return adjacencyList[node].size();
-    }
-
-    @Override
-    public int getDegree(int node) {
-        return adjacencyList[node].size();
-    }
-
-    @Override
-    public List<Edge> getEdges(int node) {
-        return Collections.unmodifiableList(adjacencyList[node]);
-    }
-
-    @Override
-    public List<Edge> getIncomingEdges(int node) {
-        return Collections.unmodifiableList(adjacencyList[node]);
-    }
-
-    @Override
-    public List<Edge> getOutgoingEdges(int node) {
-        return Collections.unmodifiableList(adjacencyList[node]);
     }
 
     /**
@@ -106,29 +133,32 @@ public class UndirectedGraph<V> extends AbstractGraph<V> {
      * @param visitor   {@link NodeVisitor}
      * @since 2024-11-28 ⭐
      */
-    public void dfs(int startNode, NodeVisitor visitor) {
+    public void dfs(V startNode, NodeVisitor<V> visitor) {
         visitor.visit(startNode);
 
-        boolean[] visited = new boolean[V];
-        visited[startNode] = true;
+        HashMap<V, Boolean> visited = new HashMap<>();
+        for (V v : nodeSet_) {
+            visited.put(v, false);
+        }
+        visited.put(startNode, true);
 
-        Deque<Integer> stack = new ArrayDeque<>();
+        ArrayDeque<V> stack = new ArrayDeque<>();
         stack.push(startNode);
 
         while (!stack.isEmpty()) {
-            Integer node = stack.peek();
-            int nextUnvisited = -1;
-            for (Edge edge : getEdges(node)) {
-                int v = getOppositeNode(edge, node);
-                if (!visited[v]) {
+            V node = stack.peekFirst();
+            V nextUnvisited = null;
+            for (Edge<V> edge : getEdges(node)) {
+                V v = getOppositeNode(edge, node);
+                if (!visited.get(v)) {
                     nextUnvisited = v;
                     break;
                 }
             }
-            if (nextUnvisited == -1) {
+            if (nextUnvisited == null) {
                 stack.pop();
             } else {
-                visited[nextUnvisited] = true;
+                visited.put(nextUnvisited, true);
                 visitor.visit(nextUnvisited);
                 stack.push(nextUnvisited);
             }
@@ -136,66 +166,48 @@ public class UndirectedGraph<V> extends AbstractGraph<V> {
     }
 
     /**
-     * depth first search for undirected, unweighted graph
-     *
-     * @param startNode start node
-     * @param visitor   {@link NodeVisitor}
-     * @since 2024-11-28 ⭐
-     */
-    public void dfs(V startNode, NodeVisitor visitor) {
-        dfs(indexOf(startNode), visitor);
-    }
-
-    /**
-     * Generate minimum spanning tree for undirected unweighted graph using dfs.
+     * Generate minimum spanning tree for undirected unweighted graph using depth-first search.
      *
      * @param startNode a node
-     * @return {@link MinimumSpanningTree}
+     * @return {@link SpanningTree}
      * @since 2024-11-29⭐
      */
-    public MinimumSpanningTree mst(int startNode) {
-        boolean[] visited = new boolean[V];
-        visited[startNode] = true;
+    public SpanningTree<V> mst(V startNode) {
+        int V = getNodeCount();
+        HashMap<V, Boolean> visited = new HashMap<>(V);
+        for (V v : nodeSet_) {
+            visited.put(v, false);
+        }
+        visited.put(startNode, true);
 
-        ArrayDeque<Integer> stack = new ArrayDeque<>();
+        ArrayDeque<V> stack = new ArrayDeque<>();
         stack.push(startNode);
 
-        Set<Edge> edges = new HashSet<>();
+        Set<Edge<V>> edges = new HashSet<>();
         while (!stack.isEmpty()) {
-            Integer node = stack.peekFirst();
+            V node = stack.peekFirst();
 
             // get a unvisited neighbor
-            int v = -1;
-            Edge vEdge = null;
-            for (Edge edge : getEdges(node)) {
-                int v1 = getOppositeNode(edge, node);
-                if (!visited[v1]) {
+            V v = null;
+            Edge<V> vEdge = null;
+            for (Edge<V> edge : getEdges(node)) {
+                V v1 = getOppositeNode(edge, node);
+                if (!visited.get(v1)) {
                     v = v1;
                     vEdge = edge;
                     break;
                 }
             }
 
-            if (v == -1) { // no unvisited neighbor
+            if (v == null) { // no unvisited neighbor
                 stack.pop();
             } else {
-                visited[v] = true;
+                visited.put(v, true);
                 stack.push(v);
                 edges.add(vEdge);
             }
         }
-        return new MinimumSpanningTree(edges, edges.size());
-    }
-
-    /**
-     * Generate minimum spanning tree for undirected unweighted graph using dfs.
-     *
-     * @param startNode a node
-     * @return {@link MinimumSpanningTree}
-     * @since 2024-11-29⭐
-     */
-    public MinimumSpanningTree mst(V startNode) {
-        return mst(indexOf(startNode));
+        return new SpanningTree<>(edges, edges.size());
     }
 
     /**
@@ -203,23 +215,23 @@ public class UndirectedGraph<V> extends AbstractGraph<V> {
      *
      * @param startNode start node index
      * @param visitor   {@link NodeVisitor} to visit node
-     * @since 2024-11-29 ⭐
+     * @since 2024-11-29 ⭐😀
      */
-    public void bfs(int startNode, NodeVisitor visitor) {
+    public void bfs(V startNode, NodeVisitor<V> visitor) {
         visitor.visit(startNode);
-        boolean[] visited = new boolean[V];
-        visited[startNode] = true;
+        Set<V> visited = new HashSet<>();
+        visited.add(startNode);
 
-        ArrayDeque<Integer> queue = new ArrayDeque<>();
+        ArrayDeque<V> queue = new ArrayDeque<>();
         queue.addLast(startNode);
 
         while (!queue.isEmpty()) {
-            int v1 = queue.removeFirst();
-            for (Edge edge : getOutgoingEdges(v1)) {
-                int v2 = getOppositeNode(edge, v1);
-                if (visited[v2])
+            V v1 = queue.removeFirst();
+            for (Edge<V> edge : getOutgoingEdges(v1)) {
+                V v2 = getOppositeNode(edge, v1);
+                if (visited.contains(v2))
                     continue;
-                visited[v2] = true;
+                visited.add(v2);
                 visitor.visit(v2);
                 queue.addLast(v2);
             }
@@ -231,12 +243,11 @@ public class UndirectedGraph<V> extends AbstractGraph<V> {
      *
      * @param startNode start node
      * @return list of nodes connected to startNode in breadth first order
-     * @since 2024-11-29 ⭐
+     * @since 2024-11-29 ⭐😀
      */
-    public List<Integer> bfs(V startNode) {
-        CollectListVisitor visitor = new CollectListVisitor();
-        int start = indexOf(startNode);
-        bfs(start, visitor);
+    public List<V> bfs(V startNode) {
+        CollectListVisitor<V> visitor = new CollectListVisitor<>();
+        bfs(startNode, visitor);
         return visitor.getList();
     }
 }

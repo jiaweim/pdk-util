@@ -2,9 +2,7 @@ package pdk.util.graph.util;
 
 import pdk.util.graph.*;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.Queue;
+import java.util.*;
 
 /**
  * Find single-source longest paths in DAG.The edge weights can be positive, negative, or zero.
@@ -22,56 +20,53 @@ import java.util.Queue;
 public class DAGLongestPath<V> implements PathFinder<V> {
 
     private final Digraph<V> graph;
-    private final int startNode;
-    private final Edge[] edgeTo;
-    private final double[] distTo;
-
-    public DAGLongestPath(final Digraph<V> graph, V startNode) {
-        this(graph, graph.indexOf(startNode));
-    }
+    private final V startNode;
+    private final HashMap<V, Edge<V>> edgeTo;
+    private final HashMap<V, Double> distTo;
 
     /**
-     * Compute longest path in DAG.
+     * Compute the longest path in DAG.
      *
      * @param graph     a {@link Digraph}
      * @param startNode start node index
      */
-    public DAGLongestPath(Digraph<V> graph, int startNode) {
+    public DAGLongestPath(Digraph<V> graph, V startNode) {
         this.graph = graph;
         this.startNode = startNode;
 
         int V = graph.getNodeCount();
-        edgeTo = new Edge[V];
-        distTo = new double[V];
-        for (int v = 0; v < V; v++) {
-            distTo[v] = Double.NEGATIVE_INFINITY;
+        edgeTo = new HashMap<>(V);
+        distTo = new HashMap<>(V);
+        for (V v : graph.getNodeSet()) {
+            distTo.put(v, Double.NEGATIVE_INFINITY);
         }
-        distTo[startNode] = 0;
+        distTo.put(startNode, 0.0);
 
         // for topological sort
-        Queue<Integer> queue = new ArrayDeque<>();
-        int[] indegree = new int[V];
-        for (int v = 0; v < V; v++) {
+        Queue<V> queue = new ArrayDeque<>();
+        Map<V, Integer> indegree = new HashMap<>();
+        for (V v : graph.getNodeSet()) {
             int d = graph.getIncomingEdges(v).size();
-            indegree[v] = d;
+            indegree.put(v, d);
             if (d == 0)
                 queue.offer(v);
         }
+
         int count = V;
         while (!queue.isEmpty()) {
-            int v = queue.poll();
-            for (Edge edge : graph.getOutgoingEdges(v)) {
-                int target = edge.getTarget();
+            V v = queue.poll();
+            for (Edge<V> edge : graph.getOutgoingEdges(v)) {
+                V target = edge.getTarget();
 
                 // relax edge during topological sort
-                if (distTo[target] < distTo[v] + edge.getWeight()) {
-                    distTo[target] = distTo[v] + edge.getWeight();
-                    edgeTo[target] = edge;
+                if (distTo.get(target) < distTo.get(v) + edge.getWeight()) {
+                    distTo.put(target, distTo.get(v) + edge.getWeight());
+                    edgeTo.put(target, edge);
                 }
 
-                if (indegree[target] > 0) {
-                    indegree[target]--;
-                    if (indegree[target] == 0) {
+                if (indegree.get(target) > 0) {
+                    indegree.put(target, indegree.get(target) - 1);
+                    if (indegree.get(target) == 0) {
                         queue.offer(target);
                     }
                 }
@@ -83,11 +78,6 @@ public class DAGLongestPath<V> implements PathFinder<V> {
         }
     }
 
-    @Override
-    public int indexOf(V node) {
-        return graph.indexOf(node);
-    }
-
     /**
      * return the path weight of a longest path from the start node to given target node
      *
@@ -96,37 +86,29 @@ public class DAGLongestPath<V> implements PathFinder<V> {
      * if no such path
      */
     @Override
-    public double getWeight(int targetNode) {
-        validate(targetNode);
-        return distTo[targetNode];
+    public double getWeight(V targetNode) {
+        return distTo.get(targetNode);
     }
 
     @Override
-    public boolean hasPathTo(int node) {
-        validate(node);
-        return distTo[node] > Double.NEGATIVE_INFINITY;
+    public boolean hasPathTo(V node) {
+        return distTo.get(node) > Double.NEGATIVE_INFINITY;
     }
 
     @Override
-    public GraphPath<V> getPath(int targetNode) {
+    public GraphPath<V> getPath(V targetNode) {
         if (!hasPathTo(targetNode)) {
             return null;
         }
-        Deque<Edge> path = new ArrayDeque<>();
-        Deque<Integer> nodes = new ArrayDeque<>();
+        Deque<Edge<V>> path = new ArrayDeque<>();
+        Deque<V> nodes = new ArrayDeque<>();
         nodes.addFirst(targetNode);
-        for (Edge e = edgeTo[targetNode]; e != null; e = edgeTo[e.getSource()]) {
+        for (Edge<V> e = edgeTo.get(targetNode); e != null; e = edgeTo.get(e.getSource())) {
             path.push(e);
             nodes.addFirst(e.getSource());
         }
 
-        return new GraphPath<>(graph, graph.getNode(startNode), graph.getNode(targetNode),
-                graph.getNodes(nodes), path, distTo[targetNode]);
+        return new GraphPath<>(graph, startNode, targetNode, nodes, path, distTo.get(targetNode));
     }
 
-    private void validate(int v) {
-        int V = graph.getNodeCount();
-        if (v < 0 || v >= V)
-            throw new IllegalArgumentException("node " + v + " is not between 0 and " + (V - 1));
-    }
 }

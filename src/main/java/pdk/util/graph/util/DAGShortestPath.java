@@ -5,13 +5,14 @@ import pdk.util.graph.*;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.Queue;
 
 /**
  * Find single-source shortest paths in a DAG. It is faster than {@link DijkstraShortestPath},
  * and allow positive, negative and zero weight.
  * <p>
- * This implementation uses a topological-sort based algotithm.
+ * This implementation uses a topological-sort based algorithm.
  * <p>
  * running time O(V+E) in the worst case, O(V) extra space
  *
@@ -22,9 +23,9 @@ import java.util.Queue;
 public class DAGShortestPath<V> implements PathFinder<V> {
 
     private final Digraph<V> digraph;
-    private final Edge[] edgeTo;
-    private final double[] distTo;
-    private final int startNode;
+    private final HashMap<V, Edge<V>> edgeTo;
+    private final HashMap<V, Double> distTo;
+    private final V startNode;
 
     /**
      * Compute all shortest paths tree from <code>startNode</code> to every other nodes in the DAG.
@@ -32,39 +33,40 @@ public class DAGShortestPath<V> implements PathFinder<V> {
      * @param digraph   a DAG
      * @param startNode source node
      */
-    public DAGShortestPath(Digraph<V> digraph, int startNode) {
+    public DAGShortestPath(Digraph<V> digraph, V startNode) {
         this.digraph = digraph;
         this.startNode = startNode;
 
         int V = digraph.getNodeCount();
-        edgeTo = new Edge[V];
-        distTo = new double[V];
-        for (int v = 0; v < V; v++) {
-            distTo[v] = Double.POSITIVE_INFINITY;
+        edgeTo = new HashMap<>(V);
+        distTo = new HashMap<>(V);
+        for (V v : digraph.getNodeSet()) {
+            distTo.put(v, Double.POSITIVE_INFINITY);
         }
-        distTo[startNode] = 0;
+        distTo.put(startNode, 0.0);
 
-        Queue<Integer> queue = new ArrayDeque<>();
-        int[] indegree = new int[V];
-        for (int v = 0; v < V; v++) {
+        Queue<V> queue = new ArrayDeque<>();
+        HashMap<V, Integer> indegree = new HashMap<>(V);
+        for (V v : digraph.getNodeSet()) {
             int d = digraph.getIncomingEdges(v).size();
-            indegree[v] = d;
+            indegree.put(v, d);
             if (d == 0)
                 queue.offer(v);
         }
+
         int count = V;
         while (!queue.isEmpty()) {
-            int v = queue.poll();
-            for (Edge edge : digraph.getOutgoingEdges(v)) {
-                int target = edge.getTarget();
-                if (distTo[target] > distTo[v] + edge.getWeight()) {
-                    distTo[target] = distTo[v] + edge.getWeight();
-                    edgeTo[target] = edge;
+            V v = queue.poll();
+            for (Edge<V> edge : digraph.getOutgoingEdges(v)) {
+                V target = edge.getTarget();
+                if (distTo.get(target) > distTo.get(v) + edge.getWeight()) {
+                    distTo.put(target, distTo.get(v) + edge.getWeight());
+                    edgeTo.put(target, edge);
                 }
 
-                if (indegree[target] > 0) {
-                    indegree[target]--;
-                    if (indegree[target] == 0) {
+                if (indegree.get(target) > 0) {
+                    indegree.put(target, indegree.get(target) - 1);
+                    if (indegree.get(target) == 0) {
                         queue.offer(target);
                     }
                 }
@@ -77,44 +79,28 @@ public class DAGShortestPath<V> implements PathFinder<V> {
     }
 
     @Override
-    public int indexOf(V node) {
-        return digraph.indexOf(node);
-    }
-
-    @Override
-    public double getWeight(int targetNode) {
-        validate(targetNode);
-
-        return distTo[targetNode];
+    public double getWeight(V targetNode) {
+        return distTo.get(targetNode);
     }
 
     @Override
     @Nullable
-    public GraphPath<V> getPath(int targetNode) {
-        validate(targetNode);
+    public GraphPath<V> getPath(V targetNode) {
         if (!hasPathTo(targetNode))
             return null;
-        Deque<Edge> path = new ArrayDeque<>();
-        Deque<Integer> nodes = new ArrayDeque<>();
+        Deque<Edge<V>> path = new ArrayDeque<>();
+        Deque<V> nodes = new ArrayDeque<>();
         nodes.addFirst(targetNode);
-        for (Edge e = edgeTo[targetNode]; e != null; e = edgeTo[e.getSource()]) {
+        for (Edge<V> e = edgeTo.get(targetNode); e != null; e = edgeTo.get(e.getSource())) {
             path.push(e);
             nodes.addFirst(e.getSource());
         }
-        return new GraphPath<>(digraph, digraph.getNode(startNode), digraph.getNode(targetNode),
-                digraph.getNodes(nodes), path, distTo[targetNode]);
+        return new GraphPath<>(digraph, startNode, targetNode, nodes, path, distTo.get(targetNode));
     }
 
     @Override
-    public boolean hasPathTo(int v) {
-        validate(v);
-
-        return distTo[v] < Double.POSITIVE_INFINITY;
+    public boolean hasPathTo(V v) {
+        return distTo.get(v) < Double.POSITIVE_INFINITY;
     }
 
-    private void validate(int v) {
-        int V = digraph.getNodeCount();
-        if (v < 0 || v >= V)
-            throw new IllegalArgumentException("node " + v + " is not between 0 and " + (V - 1));
-    }
 }

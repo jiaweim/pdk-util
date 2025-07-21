@@ -2,17 +2,19 @@ package pdk.util.graph.util;
 
 import org.junit.jupiter.api.Test;
 import pdk.util.graph.Digraph;
+import pdk.util.graph.GraphPath;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 /**
  * @author Jiawei Mao
  * @version 1.0.0
  * @since 17 Apr 2025, 5:17 PM
  */
-class BFSShortestPathTest {
+class BreadFirstShortestPathTest {
 
     @Test
     void test() {
@@ -24,7 +26,7 @@ class BFSShortestPathTest {
         String v6 = "v6";
         String v7 = "v7";
 
-        Digraph<String> graph = new Digraph<>(List.of(v1, v2, v3, v4, v5, v6, v7));
+        Digraph<String> graph = new Digraph<>(v1, v2, v3, v4, v5, v6, v7);
 
         graph.addEdge(v1, v2);
         graph.addEdge(v1, v4);
@@ -39,7 +41,7 @@ class BFSShortestPathTest {
         graph.addEdge(v5, v7);
         graph.addEdge(v7, v6);
 
-        BFSShortestPath<String> path = new BFSShortestPath<>(graph, v3);
+        BreadFirstShortestPath<String> path = new BreadFirstShortestPath<>(graph, v3);
         assertEquals(1, path.getWeight(v1));
         assertEquals(2, path.getWeight(v2));
         assertEquals(0, path.getWeight(v3));
@@ -55,5 +57,8 @@ class BFSShortestPathTest {
         assertEquals(v2, path.getParentNode(v5));
         assertEquals(v3, path.getParentNode(v6));
         assertEquals(v4, path.getParentNode(v7));
+
+        GraphPath<String> p7 = path.getPath(v7);
+        assertIterableEquals(List.of(v3, v1, v4, v7), p7.nodeList());
     }
 }

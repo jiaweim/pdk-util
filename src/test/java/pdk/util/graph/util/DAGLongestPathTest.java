@@ -20,19 +20,19 @@ class DAGLongestPathTest {
     @Test
     void test() {
         Digraph<Integer> digraph = new Digraph<>(ArrayUtils.rangeClosed(0, 7));
-        digraph.addEdgeByIndex(5, 4, 0.35);
-        digraph.addEdgeByIndex(4, 7, 0.37);
-        digraph.addEdgeByIndex(5, 7, 0.28);
-        digraph.addEdgeByIndex(5, 1, 0.32);
-        digraph.addEdgeByIndex(4, 0, 0.38);
-        digraph.addEdgeByIndex(0, 2, 0.26);
-        digraph.addEdgeByIndex(3, 7, 0.39);
-        digraph.addEdgeByIndex(1, 3, 0.29);
-        digraph.addEdgeByIndex(7, 2, 0.34);
-        digraph.addEdgeByIndex(6, 2, 0.40);
-        digraph.addEdgeByIndex(3, 6, 0.52);
-        digraph.addEdgeByIndex(6, 0, 0.58);
-        digraph.addEdgeByIndex(6, 4, 0.93);
+        digraph.addEdge(5, 4, 0.35);
+        digraph.addEdge(4, 7, 0.37);
+        digraph.addEdge(5, 7, 0.28);
+        digraph.addEdge(5, 1, 0.32);
+        digraph.addEdge(4, 0, 0.38);
+        digraph.addEdge(0, 2, 0.26);
+        digraph.addEdge(3, 7, 0.39);
+        digraph.addEdge(1, 3, 0.29);
+        digraph.addEdge(7, 2, 0.34);
+        digraph.addEdge(6, 2, 0.40);
+        digraph.addEdge(3, 6, 0.52);
+        digraph.addEdge(6, 0, 0.58);
+        digraph.addEdge(6, 4, 0.93);
 
         DAGLongestPath<Integer> longestPath = new DAGLongestPath<>(digraph, 5);
         GraphPath<Integer> p0 = longestPath.getPath(0);
@@ -97,7 +97,7 @@ class DAGLongestPathTest {
         g.addEdge("92", "41", 0);
         g.addEdge("92", "61", 0);
 
-        DAGLongestPath<String> longestPath = new DAGLongestPath<>(g, g.indexOf("s"));
+        DAGLongestPath<String> longestPath = new DAGLongestPath<>(g, "s");
 
         GraphPath<String> patht = longestPath.getPath("t");
         assertIterableEquals(List.of("s", "01", "02", "91", "92", "61", "62", "81", "82", "21", "22", "t"), patht.nodeList());

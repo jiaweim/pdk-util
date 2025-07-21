@@ -7,7 +7,7 @@ package pdk.util.graph;
  * @version 1.0.0
  * @since 29 Nov 2024, 7:07 PM
  */
-public interface NodeVisitor {
+public interface NodeVisitor<V> {
 
-    void visit(int node);
+    void visit(V node);
 }

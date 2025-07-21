@@ -14,11 +14,11 @@ import static pdk.util.ArgUtils.checkNotNull;
  */
 public final class GraphPath<V> {
 
-    private final Digraph<V> graph;
+    private final Graph<V> graph;
     private final V startNode;
     private final V endNode;
     private final Collection<V> nodeList;
-    private final Collection<Edge> edgeList;
+    private final Collection<Edge<V>> edgeList;
     private final double weight;
 
     /**
@@ -32,7 +32,7 @@ public final class GraphPath<V> {
      * @param edgeList  list of edges of the path
      * @param weight    total weight of the path
      */
-    public GraphPath(Digraph<V> graph, V startNode, V endNode, Collection<V> nodeList, Collection<Edge> edgeList, double weight) {
+    public GraphPath(Graph<V> graph, V startNode, V endNode, Collection<V> nodeList, Collection<Edge<V>> edgeList, double weight) {
         checkNotNull(nodeList);
         checkNotNull(edgeList);
         checkNotNull(graph);
@@ -49,7 +49,7 @@ public final class GraphPath<V> {
      *
      * @return the containing graph
      */
-    public Digraph<V> graph() {
+    public Graph<V> graph() {
         return graph;
     }
 
@@ -89,9 +89,13 @@ public final class GraphPath<V> {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public Collection<V> nodeList() {return nodeList;}
 
-    public Collection<Edge> edgeList() {return edgeList;}
+    public Collection<Edge<V>> edgeList() {return edgeList;}
 
     public double weight() {return weight;}
 

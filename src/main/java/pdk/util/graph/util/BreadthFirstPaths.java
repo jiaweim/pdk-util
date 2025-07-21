@@ -5,6 +5,8 @@ import pdk.util.graph.UndirectedGraph;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Find the shortest path using Breadth first search O(V+E).
@@ -15,38 +17,43 @@ import java.util.Deque;
  */
 public class BreadthFirstPaths<V> {
 
-    private boolean[] marked;
-    private int[] edgeTo;
-    private final int s;
+    private final Map<V, Boolean> marked;
+    private final Map<V, V> edgeTo;
+    private final V s;
 
-    public BreadthFirstPaths(UndirectedGraph<V> G, int s) {
+    public BreadthFirstPaths(UndirectedGraph<V> G, V s) {
         this.s = s;
-        edgeTo = new int[G.getNodeCount()];
-        marked = new boolean[G.getNodeCount()];
-        Deque<Integer> queue = new ArrayDeque<>();
-        marked[s] = true;
+        edgeTo = new HashMap<>(G.getNodeCount());
+        marked = new HashMap<>(G.getNodeCount());
+        for (V v : G.getNodeSet()) {
+            marked.put(v, false);
+        }
+        marked.put(s, true);
+
+        Deque<V> queue = new ArrayDeque<>();
+
         queue.addLast(s);
         while (!queue.isEmpty()) {
-            int v = queue.removeFirst();
-            for (Edge edge : G.getEdges(v)) {
-                int u = G.getOppositeNode(edge, v);
-                if (!marked[u]) {
-                    edgeTo[u] = v;
-                    marked[u] = true;
+            V v = queue.removeFirst();
+            for (Edge<V> edge : G.getEdges(v)) {
+                V u = G.getOppositeNode(edge, v);
+                if (!marked.get(u)) {
+                    edgeTo.put(u, v);
+                    marked.put(u, true);
                     queue.addLast(u);
                 }
             }
         }
     }
 
-    public boolean hasPathTo(int v) {
-        return marked[v];
+    public boolean hasPathTo(V v) {
+        return marked.get(v);
     }
 
-    public Iterable<Integer> pathTo(int v) {
+    public Iterable<V> pathTo(V v) {
         if (!hasPathTo(v)) return null;
-        Deque<Integer> stack = new ArrayDeque<>();
-        for (int x = v; x != s; x = edgeTo[x]) {
+        Deque<V> stack = new ArrayDeque<>();
+        for (V x = v; x != s; x = edgeTo.get(x)) {
             stack.push(x);
         }
         stack.push(s);

@@ -60,7 +60,7 @@ class DirectedCycleTest {
 
         DirectedCycle<String> diCycle = new DirectedCycle<>(g);
         assertTrue(diCycle.hasCycle());
-        assertIterableEquals(List.of("B", "C", "D", "E", "B"), g.getNodes(diCycle.getCycle()));
+        assertIterableEquals(List.of("B", "C", "D", "E", "B"), diCycle.getCycle());
     }
 
     @Test
@@ -78,7 +78,7 @@ class DirectedCycleTest {
 
         DirectedCycle<String> cycle = new DirectedCycle<>(g);
         assertTrue(cycle.hasCycle());
-        assertIterableEquals(List.of("C", "D", "E", "C"), g.getNodes(cycle.getCycle()));
+        assertIterableEquals(List.of("C", "D", "E", "C"), cycle.getCycle());
     }
 
     @Test
@@ -94,6 +94,6 @@ class DirectedCycleTest {
         g.addEdge("F", "E"); // back-edge
         DirectedCycle<String> cycle = new DirectedCycle<>(g);
         assertTrue(cycle.hasCycle());
-        assertIterableEquals(List.of("E", "D", "F", "E"), g.getNodes(cycle.getCycle()));
+        assertIterableEquals(List.of("E", "D", "F", "E"), cycle.getCycle());
     }
 }

@@ -9,17 +9,17 @@ import java.util.Set;
  * @version 1.0.0
  * @since 29 Nov 2024, 5:24 PM
  */
-public class MinimumSpanningTree {
+public class SpanningTree<V> {
 
-    private final Set<Edge> edges;
+    private final Set<Edge<V>> edges;
     private final double weight;
 
-    public MinimumSpanningTree(Set<Edge> edges, double weight) {
+    public SpanningTree(Set<Edge<V>> edges, double weight) {
         this.edges = edges;
         this.weight = weight;
     }
 
-    public Set<Edge> getEdges() {
+    public Set<Edge<V>> getEdges() {
         return edges;
     }
 

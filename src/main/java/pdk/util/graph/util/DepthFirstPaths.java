@@ -5,6 +5,7 @@ import pdk.util.graph.UndirectedGraph;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.HashMap;
 
 /**
  * 该算法用处不大。
@@ -15,48 +16,49 @@ import java.util.Deque;
  */
 public class DepthFirstPaths<V> {
 
-    private final boolean[] marked;
-    private final int[] edgeTo;
-    private final UndirectedGraph<V> graph;
-    private final int s;
+    private final HashMap<V, Boolean> marked;
+    private final HashMap<V, V> edgeTo;
+    private final V s;
 
-    public DepthFirstPaths(UndirectedGraph<V> graph, int s) {
-        this.graph = graph;
+    public DepthFirstPaths(UndirectedGraph<V> graph, V s) {
         this.s = s;
-        marked = new boolean[graph.getNodeCount()];
-        edgeTo = new int[graph.getNodeCount()];
-        marked[s] = true;
+        marked = new HashMap<>(graph.getNodeCount());
+        for (V v : graph.getNodeSet()) {
+            marked.put(v, false);
+        }
+        marked.put(s, true);
+        edgeTo = new HashMap<>(graph.getNodeCount());
 
-        Deque<Integer> stack = new ArrayDeque<>();
+        Deque<V> stack = new ArrayDeque<>();
         stack.push(s);
         while (!stack.isEmpty()) {
-            int v1 = stack.peek();
-            int v2 = -1;
-            for (Edge edge : graph.getEdges(v1)) {
-                int v = graph.getOppositeNode(edge, v1);
-                if (!marked[v]) {
+            V v1 = stack.peek();
+            V v2 = null;
+            for (Edge<V> edge : graph.getEdges(v1)) {
+                V v = graph.getOppositeNode(edge, v1);
+                if (!marked.get(v)) {
                     v2 = v;
                     break;
                 }
             }
-            if (v2 == -1) {
+            if (v2 == null) {
                 stack.pop();
             } else {
-                edgeTo[v2] = v1;
-                marked[v2] = true;
+                edgeTo.put(v2, v1);
+                marked.put(v2, true);
                 stack.push(v2);
             }
         }
     }
 
-    public boolean hasPathTo(int v) {
-        return marked[v];
+    public boolean hasPathTo(V v) {
+        return marked.get(v);
     }
 
-    public Iterable<Integer> pathTo(int v) {
+    public Iterable<V> pathTo(V v) {
         if (!hasPathTo(v)) return null;
-        Deque<Integer> stack = new ArrayDeque<>();
-        for (int x = v; x != s; x = edgeTo[x]) {
+        Deque<V> stack = new ArrayDeque<>();
+        for (V x = v; x != s; x = edgeTo.get(x)) {
             stack.push(x);
         }
         stack.push(s);

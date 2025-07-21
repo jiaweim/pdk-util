@@ -3,6 +3,8 @@ package pdk.util.graph.util;
 import pdk.util.graph.Digraph;
 import pdk.util.graph.GraphPath;
 
+import java.util.HashMap;
+
 /**
  * @author Jiawei Mao
  * @version 1.0.0
@@ -10,13 +12,13 @@ import pdk.util.graph.GraphPath;
  */
 public class DijkstraAllShortestPath<V> {
 
-    private final DijkstraShortestPath<V>[] all;
+    private final HashMap<V, DijkstraShortestPath<V>> all;
 
     public DijkstraAllShortestPath(Digraph<V> digraph) {
         int V = digraph.getNodeCount();
-        all = new DijkstraShortestPath[V];
-        for (int v = 0; v < V; v++) {
-            all[v] = new DijkstraShortestPath<>(digraph, v);
+        all = new HashMap<>(V);
+        for (V v : digraph.getNodeSet()) {
+            all.put(v, new DijkstraShortestPath<>(digraph, v));
         }
     }
 
@@ -27,7 +29,7 @@ public class DijkstraAllShortestPath<V> {
      * @param t end note
      * @return shortest path
      */
-    public GraphPath<V> getPath(int s, int t) {
-        return all[s].getPath(t);
+    public GraphPath<V> getPath(V s, V t) {
+        return all.get(s).getPath(t);
     }
 }

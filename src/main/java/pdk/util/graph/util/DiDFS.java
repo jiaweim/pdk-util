@@ -3,9 +3,7 @@ package pdk.util.graph.util;
 import pdk.util.graph.Digraph;
 import pdk.util.graph.Edge;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 import static pdk.util.ArgUtils.checkNotNull;
 
@@ -23,7 +21,7 @@ public class DiDFS<V> {
 
     private final Digraph<V> digraph;
     // visited[v]=true if v is reachable from source s
-    private final boolean[] visited;
+    private final HashMap<V, Boolean> visited;
     // number of nodes reachable from source s
     private int count = 0;
 
@@ -33,42 +31,42 @@ public class DiDFS<V> {
      * @param g digraph
      * @param s source node
      */
-    public DiDFS(Digraph<V> g, int s) {
+    public DiDFS(Digraph<V> g, V s) {
         this.digraph = g;
-        visited = new boolean[g.getNodeCount()];
-        validateNode(s);
+        visited = new HashMap<>(g.getNodeCount());
+        for (V v : g.getNodeSet()) {
+            visited.put(v, false);
+        }
+
         dfs(g, s);
     }
 
-    public DiDFS(Digraph<V> g, Collection<Integer> sources) {
+    public DiDFS(Digraph<V> g, Collection<V> sources) {
         checkNotNull(sources);
         this.digraph = g;
         if (sources.isEmpty()) {
             throw new IllegalArgumentException("zero source node");
         }
+        visited = new HashMap<>(g.getNodeCount());
+        for (V v : g.getNodeSet()) {
+            visited.put(v, false);
+        }
 
-        visited = new boolean[g.getNodeCount()];
-        for (int s : sources) {
-            if (!visited[s])
+        for (V s : sources) {
+            if (!visited.get(s))
                 dfs(g, s);
         }
     }
 
-    private void dfs(Digraph<V> g, int v) {
+    private void dfs(Digraph<V> g, V v) {
         count++;
-        visited[v] = true;
-        for (Edge edge : g.getOutgoingEdges(v)) {
-            int target = edge.getTarget();
-            if (!visited[target])
+        visited.put(v, true);
+        for (Edge<V> edge : g.getOutgoingEdges(v)) {
+            V target = edge.getTarget();
+            if (!visited.get(target))
                 dfs(g, target);
         }
 
-    }
-
-    private void validateNode(int v) {
-        if (v < 0 || v >= visited.length) {
-            throw new IllegalArgumentException("node " + v + " is not between 0 and " + (visited.length - 1));
-        }
     }
 
     /**
@@ -77,9 +75,8 @@ public class DiDFS<V> {
      * @param v the node
      * @return true if there is a directed path, false otherwise
      */
-    public boolean isReachable(int v) {
-        validateNode(v);
-        return visited[v];
+    public boolean isReachable(V v) {
+        return visited.get(v);
     }
 
     /**
@@ -93,10 +90,10 @@ public class DiDFS<V> {
      * @return all reachable nodes
      */
     public List<V> getReachableNodes() {
-        List<V> list = new ArrayList<>(visited.length);
-        for (int v = 0; v < visited.length; v++) {
-            if (visited[v]) {
-                list.add(digraph.getNode(v));
+        List<V> list = new ArrayList<>(visited.size());
+        for (Map.Entry<V, Boolean> entry : visited.entrySet()) {
+            if (entry.getValue()) {
+                list.add(entry.getKey());
             }
         }
         return list;
