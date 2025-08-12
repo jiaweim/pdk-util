@@ -18,6 +18,7 @@ import java.util.List;
  * The running time is $O(|V|+|E|)$。
  * ⭐
  *
+ * @param <V> type of the node
  * @author Jiawei Mao
  * @version 1.0.0😀
  * @since 25 Nov 2024, 2:37 PM

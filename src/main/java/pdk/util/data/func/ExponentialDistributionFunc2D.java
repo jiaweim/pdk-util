@@ -37,13 +37,17 @@ public class ExponentialDistributionFunc2D implements Func2D, Serializable {
     }
 
     /**
-     * @return the variance of this exponential distribution
+     * Return the variance of this exponential distribution
+     *
+     * @return the variance
      */
     public double getVariance() {
         return 1 / lambda * lambda;
     }
 
     /**
+     * Return the lambda value of this exponential distribution
+     *
      * @return the rate parameter
      */
     public double getLambda() {

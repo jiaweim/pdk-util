@@ -8,6 +8,7 @@ import java.util.List;
 /**
  * A {@link NodeVisitor} implementation that just collect all nodes
  *
+ * @param <V> type of the node
  * @author Jiawei Mao
  * @version 1.0.0
  * @since 30 Nov 2024, 18:35

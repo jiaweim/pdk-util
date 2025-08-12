@@ -15,6 +15,7 @@ import java.util.HashMap;
  * It can be used to find the shortest path in unweighted-graph,
  * with time complexity O(E+V).
  *
+ * @param <V> type of the node
  * @author Jiawei Mao
  * @version 1.2.0 ⭐😀
  * @since 25 Nov 2024, 11:25 AM

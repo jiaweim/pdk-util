@@ -5,6 +5,7 @@ import java.util.Set;
 /**
  * Minimum Spanning tree
  *
+ * @param <V> type of the node
  * @author Jiawei Mao
  * @version 1.0.0
  * @since 29 Nov 2024, 5:24 PM

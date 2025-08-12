@@ -1,14 +1,15 @@
 package pdk.util;
 
+import org.apache.commons.io.FileUtils;
 import org.jspecify.annotations.Nullable;
-import pdk.util.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
-import static pdk.util.ArgUtils.*;
+import static pdk.util.ArgUtils.checkNotNull;
+import static pdk.util.ArgUtils.firstNonNull;
 
 /**
  * Helper class for resource.
@@ -75,7 +76,7 @@ public final class ResourceUtils {
      */
     public static @Nullable File getResourceFile(Class<?> contextClass, String resourceName) {
         URL url = getResourceURL(contextClass, resourceName);
-        return FileUtils.toFile(url);
+        return org.apache.commons.io.FileUtils.toFile(url);
     }
 
     /**

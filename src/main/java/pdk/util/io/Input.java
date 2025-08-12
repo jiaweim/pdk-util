@@ -60,9 +60,13 @@ public class Input extends InputStream {
 
     /**
      * Creates an Input for reading from a byte[] buffer.
+     * <p>
+     * An exception is thrown if more bytes than this are read and {@link #fill(byte[], int, int)} does not supply
+     * more bytes.
      *
-     * @param buffer An exception is thrown if more bytes than this are read and {@link #fill(byte[], int, int)} does not supply
-     *               more bytes.
+     * @param buffer data buffer
+     * @param offset offset
+     * @param count  number of byte to read
      */
     public Input(byte[] buffer, int offset, int count) {
         setBuffer(buffer, offset, count);
@@ -70,6 +74,8 @@ public class Input extends InputStream {
 
     /**
      * Creates an Input for reading from an {@link InputStream} with a buffer size of 4096.
+     *
+     * @param inputStream {@link InputStream} instance
      */
     public Input(InputStream inputStream) {
         this(4096);
@@ -79,6 +85,9 @@ public class Input extends InputStream {
 
     /**
      * Creates a new Input for reading from an InputStream with the specified buffer size.
+     *
+     * @param inputStream {@link InputStream}
+     * @param bufferSize  buffer size
      */
     public Input(InputStream inputStream, int bufferSize) {
         this(bufferSize);
@@ -89,6 +98,7 @@ public class Input extends InputStream {
     /**
      * Sets a new buffer. The offset is 0 and the count is the buffer's length.
      *
+     * @param bytes buffer
      * @see #setBuffer(byte[], int, int)
      */
     public void setBuffer(byte[] bytes) {
@@ -98,6 +108,10 @@ public class Input extends InputStream {
     /**
      * Sets a new buffer to read from. The bytes are not copied, the old buffer is discarded and the new buffer used in its place.
      * The position and total are reset. The {@link #setInputStream(InputStream) InputStream} is set to null.
+     *
+     * @param bytes  new  buffer
+     * @param offset offset
+     * @param count  number of byte to read
      */
     public void setBuffer(byte[] bytes, int offset, int count) {
         requireNonNull(bytes);
@@ -112,6 +126,8 @@ public class Input extends InputStream {
 
     /**
      * Returns the buffer. The bytes between 0 and {@link #position()} are the data that can be read.
+     *
+     * @return buffer
      */
     public byte[] getBuffer() {
         return buffer;
@@ -133,6 +149,11 @@ public class Input extends InputStream {
         reset();
     }
 
+    /**
+     * Return true if enable variable length encoding
+     *
+     * @return variable length encoding
+     */
     public boolean getVariableLengthEncoding() {
         return varEncoding;
     }
@@ -140,6 +161,8 @@ public class Input extends InputStream {
     /**
      * If false, {@link #readInt(boolean)}, {@link #readLong(boolean)}, {@link #readInts(int, boolean)}, and
      * {@link #readLongs(int, boolean)} will use fixed length encoding, which may be faster for some data. Default is true.
+     *
+     * @param varEncoding whether enable variable encoding
      */
     public void setVariableLengthEncoding(boolean varEncoding) {
         this.varEncoding = varEncoding;
@@ -147,6 +170,8 @@ public class Input extends InputStream {
 
     /**
      * Returns the total number of bytes read.
+     *
+     * @return bytes read
      */
     public long total() {
         return total + position;
@@ -154,6 +179,8 @@ public class Input extends InputStream {
 
     /**
      * Sets the total number of bytes read.
+     *
+     * @param total number of bytes read
      */
     public void setTotal(long total) {
         this.total = total;
@@ -161,6 +188,8 @@ public class Input extends InputStream {
 
     /**
      * Returns the current position in the buffer.
+     *
+     * @return position in buffer
      */
     public int position() {
         return position;
@@ -168,6 +197,8 @@ public class Input extends InputStream {
 
     /**
      * Sets the current position in the buffer where the next byte will be read.
+     *
+     * @param position current position
      */
     public void setPosition(int position) {
         this.position = position;
@@ -175,6 +206,8 @@ public class Input extends InputStream {
 
     /**
      * Returns the limit for the buffer.
+     *
+     * @return limit for the buffer
      */
     public int limit() {
         return limit;
@@ -182,6 +215,8 @@ public class Input extends InputStream {
 
     /**
      * Sets the limit in the buffer which marks the end of the data that can be read.
+     *
+     * @param limit new limit
      */
     public void setLimit(int limit) {
         this.limit = limit;
@@ -198,6 +233,9 @@ public class Input extends InputStream {
 
     /**
      * Discards the specified number of bytes.
+     *
+     * @param count number of bytes to skip
+     * @throws PDKRuntimeException io exception
      */
     public void skip(int count) throws PDKRuntimeException {
         int skipCount = Math.min(limit - position, count);
@@ -212,9 +250,13 @@ public class Input extends InputStream {
 
     /**
      * Fills the buffer with more bytes. The default implementation reads from the {@link #getInputStream() InputStream}, if set.
-     * Can be overridden to fill the bytes from another source.
+     * *Can be overridden to fill the bytes from another source.
      *
+     * @param buffer buffer to fill
+     * @param offset offset in buffer
+     * @param count  number of byte to read
      * @return -1 if there are no more bytes.
+     * @throws PDKRuntimeException io exception
      */
     protected int fill(byte[] buffer, int offset, int count) throws PDKRuntimeException {
         if (inputStream == null) return -1;
@@ -312,6 +354,8 @@ public class Input extends InputStream {
     /**
      * Returns true if the {@link #limit()} has been reached and {@link #fill(byte[], int, int)} is unable to provide more
      * bytes.
+     *
+     * @return true if reach the end
      */
     public boolean end() {
         return optional(1) <= 0;
@@ -394,10 +438,11 @@ public class Input extends InputStream {
         }
     }
 
-    // byte:
-
     /**
      * Reads a single byte.
+     *
+     * @return the read byte
+     * @throws PDKRuntimeException io exception
      */
     public byte readByte() throws PDKRuntimeException {
         if (position == limit) require(1);
@@ -406,6 +451,9 @@ public class Input extends InputStream {
 
     /**
      * Reads a byte as an int from 0 to 255.
+     *
+     * @return byte
+     * @throws PDKRuntimeException io exception
      */
     public int readByteUnsigned() throws PDKRuntimeException {
         if (position == limit) require(1);
@@ -414,6 +462,10 @@ public class Input extends InputStream {
 
     /**
      * Reads the specified number of bytes into a new byte[].
+     *
+     * @param length number of byte to read
+     * @return read bytes
+     * @throws PDKRuntimeException io exception
      */
     public byte[] readBytes(int length) throws PDKRuntimeException {
         byte[] bytes = new byte[length];
@@ -423,6 +475,9 @@ public class Input extends InputStream {
 
     /**
      * Reads bytes.length bytes and writes them to the specified byte[], starting at index 0.
+     *
+     * @param bytes array to store read bytes
+     * @throws PDKRuntimeException for io exception
      */
     public void readBytes(byte[] bytes) throws PDKRuntimeException {
         readBytes(bytes, 0, bytes.length);
@@ -430,6 +485,11 @@ public class Input extends InputStream {
 
     /**
      * Reads count bytes and writes them to the specified byte[], starting at offset.
+     *
+     * @param bytes  array to store read bytes
+     * @param offset offset in the target array
+     * @param count  number of bytes to read
+     * @throws PDKRuntimeException io exception
      */
     public void readBytes(byte[] bytes, int offset, int count) throws PDKRuntimeException {
         requireNonNull(bytes);

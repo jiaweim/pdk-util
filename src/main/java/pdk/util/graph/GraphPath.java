@@ -8,6 +8,7 @@ import static pdk.util.ArgUtils.checkNotNull;
 /**
  * A path in the graph
  *
+ * @param <V> type of the node
  * @author Jiawei Mao
  * @version 1.0.0
  * @since 25 Nov 2024, 2:30 PM
@@ -54,6 +55,8 @@ public final class GraphPath<V> {
     }
 
     /**
+     * start node of this path
+     *
      * @return start node in the path
      */
     public V startNode() {
@@ -61,6 +64,8 @@ public final class GraphPath<V> {
     }
 
     /**
+     * end node of this path
+     *
      * @return end node in the path
      */
     public V endNode() {
@@ -68,6 +73,8 @@ public final class GraphPath<V> {
     }
 
     /**
+     * path length
+     *
      * @return length of the path, namely the number of edges.
      */
     public int getLength() {
@@ -90,13 +97,24 @@ public final class GraphPath<V> {
     }
 
     /**
+     * list of node in this path
      *
-     * @return
+     * @return node list
      */
     public Collection<V> nodeList() {return nodeList;}
 
+    /**
+     * list of edge in this path
+     *
+     * @return edge list
+     */
     public Collection<Edge<V>> edgeList() {return edgeList;}
 
+    /**
+     * weight of this path
+     *
+     * @return weight
+     */
     public double weight() {return weight;}
 
     @Override

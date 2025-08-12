@@ -225,4 +225,97 @@ class MathUtilsTest {
         assertEquals(3.0, standardDeviation, 1E-1);
     }
 
+    @Test
+    void getCombinations() {
+        int[] array = new int[]{3, 2, 1};
+        List<int[]> list = MathUtils.getCombinations(array);
+        assertArrayEquals(new int[]{0, 0, 0}, list.get(0));
+        assertArrayEquals(new int[]{1, 0, 0}, list.get(1));
+        assertArrayEquals(new int[]{2, 0, 0}, list.get(2));
+        assertArrayEquals(new int[]{0, 1, 0}, list.get(3));
+        assertArrayEquals(new int[]{1, 1, 0}, list.get(4));
+        assertArrayEquals(new int[]{2, 1, 0}, list.get(5));
+
+        int[] array1 = new int[]{1, 2, 3};
+        list = MathUtils.getCombinations(array1);
+        assertArrayEquals(new int[]{0, 0, 0}, list.get(0));
+        assertArrayEquals(new int[]{0, 1, 0}, list.get(1));
+        assertArrayEquals(new int[]{0, 0, 1}, list.get(2));
+        assertArrayEquals(new int[]{0, 1, 1}, list.get(3));
+        assertArrayEquals(new int[]{0, 0, 2}, list.get(4));
+        assertArrayEquals(new int[]{0, 1, 2}, list.get(5));
+
+        array1 = new int[]{2};
+        list = MathUtils.getCombinations(array1);
+        assertArrayEquals(new int[]{0}, list.get(0));
+        assertArrayEquals(new int[]{1}, list.get(1));
+    }
+
+    @Test
+    void permutation() {
+        int[] arr = {1, 2, 3, 4, 5};
+        List<int[]> list = MathUtils.permutation(arr, 3);
+        assertEquals(10, list.size());
+        assertArrayEquals(new int[]{1, 2, 3}, list.get(0));
+        assertArrayEquals(new int[]{1, 2, 4}, list.get(1));
+        assertArrayEquals(new int[]{1, 2, 5}, list.get(2));
+        assertArrayEquals(new int[]{1, 3, 4}, list.get(3));
+        assertArrayEquals(new int[]{1, 3, 5}, list.get(4));
+        assertArrayEquals(new int[]{1, 4, 5}, list.get(5));
+        assertArrayEquals(new int[]{2, 3, 4}, list.get(6));
+        assertArrayEquals(new int[]{2, 3, 5}, list.get(7));
+        assertArrayEquals(new int[]{2, 4, 5}, list.get(8));
+        assertArrayEquals(new int[]{3, 4, 5}, list.get(9));
+
+        arr = new int[]{5, 3, 4, 2};
+        list = MathUtils.permutation(arr, 3);
+        assertEquals(4, list.size());
+        assertArrayEquals(new int[]{5, 3, 4}, list.get(0));
+        assertArrayEquals(new int[]{3, 4, 2}, list.get(3));
+
+        arr = new int[]{1, 4, 6, 11, 12, 21, 22, 25, 27, 29, 31, 32, 33, 34};
+        list = MathUtils.permutation(arr, 2);
+        assertEquals(91, list.size());
+
+        assertArrayEquals(new int[]{1, 4}, list.get(0));
+        assertArrayEquals(new int[]{33, 34}, list.get(90));
+    }
+
+    @Test
+    void permutationDup() {
+        int[] arr = {1, 2, 2, 4, 5};
+        int k = 3;
+        List<int[]> list = MathUtils.permutationDup(arr, k);
+        assertEquals(7, list.size());
+        assertArrayEquals(new int[]{1, 2, 2}, list.get(0));
+        assertArrayEquals(new int[]{1, 2, 4}, list.get(1));
+        assertArrayEquals(new int[]{1, 2, 5}, list.get(2));
+        assertArrayEquals(new int[]{1, 4, 5}, list.get(3));
+        assertArrayEquals(new int[]{2, 2, 4}, list.get(4));
+        assertArrayEquals(new int[]{2, 2, 5}, list.get(5));
+        assertArrayEquals(new int[]{2, 4, 5}, list.get(6));
+    }
+
+    @Test
+    void permutationDupException() {
+        int[] arr = {1, 2, 2, 4, 5};
+        assertThrows(IllegalArgumentException.class, () -> MathUtils.permutationDup(arr, 6));
+    }
+
+    @Test
+    void permutationDupOrder() {
+        int[] arr = {4, 5, 1, 1, 4, 3};
+        List<int[]> list = MathUtils.permutationDup(arr, 3);
+        assertEquals(10, list.size());
+        assertArrayEquals(new int[]{1, 1, 3}, list.get(0));
+        assertArrayEquals(new int[]{1, 1, 4}, list.get(1));
+        assertArrayEquals(new int[]{1, 1, 5}, list.get(2));
+        assertArrayEquals(new int[]{1, 3, 4}, list.get(3));
+        assertArrayEquals(new int[]{1, 3, 5}, list.get(4));
+        assertArrayEquals(new int[]{1, 4, 4}, list.get(5));
+        assertArrayEquals(new int[]{1, 4, 5}, list.get(6));
+        assertArrayEquals(new int[]{3, 4, 4}, list.get(7));
+        assertArrayEquals(new int[]{3, 4, 5}, list.get(8));
+        assertArrayEquals(new int[]{4, 4, 5}, list.get(9));
+    }
 }

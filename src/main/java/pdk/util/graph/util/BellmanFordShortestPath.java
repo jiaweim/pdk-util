@@ -23,6 +23,7 @@ import java.util.*;
  * <p>
  * time complexity: O(EV) in the worst case. In practice, it performs much better.
  *
+ * @param <V> type of the node
  * @author Jiawei Mao
  * @version 1.0.0
  * @since 03 Dec 2024, 7:26 PM ⭐

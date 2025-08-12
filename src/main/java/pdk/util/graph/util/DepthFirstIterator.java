@@ -13,6 +13,7 @@ import java.util.Stack;
  * <p>
  * If the graph is not connected, it will only iterate nodes connected to the start node.
  *
+ * @param <V> type of the node
  * @author Jiawei Mao
  * @version 1.0.0😀
  * @since 27 Nov 2024, 5:46 PM

@@ -6,6 +6,9 @@ import pdk.util.graph.GraphPath;
 import java.util.HashMap;
 
 /**
+ * Find all shortest path with Dijkstra algorithm
+ *
+ * @param <V> type of the node
  * @author Jiawei Mao
  * @version 1.0.0
  * @since 03 Dec 2024, 3:14 PM

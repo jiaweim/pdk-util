@@ -5,6 +5,7 @@ import org.jspecify.annotations.Nullable;
 /**
  * Interface for algorithms finding shortest or longest path in a graph.
  *
+ * @param <V> type of the node
  * @author Jiawei Mao
  * @version 1.0.0
  * @since 25 Nov 2024, 5:32 PM

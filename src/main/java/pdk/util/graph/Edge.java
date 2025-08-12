@@ -7,6 +7,7 @@ import java.util.Objects;
 /**
  * graph edge
  *
+ * @param <V> type of the node
  * @author Jiawei Mao
  * @version 1.0.0
  * @since 22 Nov 2024, 23:57

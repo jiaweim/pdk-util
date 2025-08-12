@@ -1,12 +1,12 @@
 package pdk.util.math;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import org.apache.commons.math3.stat.StatUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 import static pdk.util.ArgUtils.*;
 
@@ -757,5 +757,176 @@ public final class MathUtils {
         modes.sort(Comparator.naturalOrder());
 
         return modes.stream().mapToDouble(Double::doubleValue).toArray();
+    }
+
+    /**
+     * The input is an array of box, and the array value is the number of balls.
+     * we need to get a ball from each of the box, with all combinations. such as array:
+     * [1, 2, 3]
+     * <p>
+     * It is mean the 1st box has 1 ball, the 2ed box has 2 balls, the 3rd box has 3 balls, possible combinations are:
+     * 1 * 2 * 3 = 6
+     * <p>
+     * [0, 0, 0], [0, 0, 1], [0, 0, 2], [0, 1, 0], [0, 1, 1], [0, 1, 2]
+     * <p>
+     * the values of the combinations can be treated as the index of the ball in the box.
+     *
+     * @param input input array.
+     * @return all combinations.⭐
+     */
+    public static List<int[]> getCombinations(int[] input) {
+        List<int[]> resultList = new ArrayList<>();
+        int size = input.length;
+
+        // check argument, values less than 0 is not allowed.
+        if (size < 1)
+            return resultList;
+
+        for (int value : input) {
+            if (value <= 0)
+                return resultList;
+        }
+
+        List<IntList> results = new ArrayList<>();
+        int first = input[0];
+        for (int i = 0; i < first; i++) {
+            IntList list = new IntArrayList();
+            list.add(i);
+            results.add(list);
+        }
+
+        if (size > 1) {
+            for (int boxId = 1; boxId < size; boxId++) {
+                List<IntList> tmpList = new ArrayList<>();
+                for (int ballId = 0; ballId < input[boxId]; ballId++) {
+                    for (IntList list : results) {
+                        IntList newList = new IntArrayList(list);
+                        newList.add(ballId);
+                        tmpList.add(newList);
+                    }
+                }
+
+                results = tmpList;
+            }
+        }
+
+        for (IntList list : results) {
+            resultList.add(list.toIntArray());
+        }
+        return resultList;
+    }
+
+
+    /**
+     * Calculation all combinations of choose K element from input. Duplicate value is not allowed.
+     * This algorithm adapt from
+     * http://www.geeksforgeeks.org/print-all-possible-combinations-of-r-elements-in-a-given-array-of-size-n/
+     * <p>
+     * for array [1, 2, 3]:
+     * permutation(array, 2) could generate [1, 2], [1, 3], [2, 3]
+     *
+     * @param input input data, duplicate value is not allowed.
+     * @param k     K value
+     * @return all combinations.⭐
+     */
+    public static List<int[]> permutation(int[] input, int k) {
+        checkArgument(k > 0, "K should > 0");
+
+        List<int[]> resultList = new ArrayList<>();
+        int[] data = new int[k];
+        permutation(input, data, 0, input.length - 1, 0, k, resultList);
+        return resultList;
+    }
+
+    /**
+     * Generate all combinations of given input data.
+     *
+     * @param input      input data.
+     * @param data       temporary array to store current combination.
+     * @param start      start index in input
+     * @param end        end index in input
+     * @param index      current index in data
+     * @param k          size of a combination
+     * @param resultList List to store the result permutations.⭐
+     */
+    private static void permutation(int[] input, int[] data, int start, int end, int index, int k,
+            List<int[]> resultList) {
+        if (index == k) {
+            resultList.add(Arrays.copyOf(data, k));
+            return;
+        }
+
+        // replace index with all possible elements. The condition "end-i+1 >= r-index" makes sure that including
+        // one element at index will make a combination with remaining elements at remaining positions
+        for (int i = start; i <= end && end - i + 1 >= k - index; i++) {
+            data[index] = input[i];
+            permutation(input, data, i + 1, end, index + 1, k, resultList);
+        }
+    }
+
+    /**
+     * Calculation all combinations of choose K element from input. Duplicate values are allowed.
+     * This algorithm adopt from
+     * http://www.geeksforgeeks.org/print-all-possible-combinations-of-r-elements-in-a-given-array-of-size-n/
+     * <p>
+     * <pre>
+     * {@code
+     *  int arr[] = {1, 2, 2, 4, 5};
+     *  int k = 3;
+     *  List<int[]> list = MathUtils.permutationDup(arr, k);
+     *  assertEquals(7, list.size());
+     *  assertArrayEquals(new int[]{1, 2, 2}, list.get(0));
+     *  assertArrayEquals(new int[]{1, 2, 4}, list.get(1));
+     *  assertArrayEquals(new int[]{1, 2, 5}, list.get(2));
+     *  assertArrayEquals(new int[]{1, 4, 5}, list.get(3));
+     *  assertArrayEquals(new int[]{2, 2, 4}, list.get(4));
+     *  assertArrayEquals(new int[]{2, 2, 5}, list.get(5));
+     *  assertArrayEquals(new int[]{2, 4, 5}, list.get(6));
+     * }
+     * </pre>
+     *
+     * @param input input data, duplicate values are allowed.
+     * @param k     K value, should > 0.
+     * @return all combinations.⭐
+     */
+    public static List<int[]> permutationDup(int[] input, int k) {
+        checkArgument(k > 0, "K should > 0");
+        checkArgument(k <= input.length, "The K should <= the input length.");
+
+        List<int[]> resultList = new ArrayList<>();
+        int[] data = new int[k];
+        Arrays.sort(input);
+
+        permutationDup(input, data, 0, input.length - 1, 0, k, resultList);
+        return resultList;
+    }
+
+    /**
+     * Generate all combinations of given input data, duplicate values are allowed.
+     *
+     * @param input      input data, should in ascending order.
+     * @param data       temporary array to store current combination.
+     * @param start      start index in input
+     * @param end        end index in input
+     * @param index      current index in data
+     * @param k          size of a combination
+     * @param resultList List to store the result permutations.
+     */
+    private static void permutationDup(int[] input, int[] data, int start, int end, int index, int k, List<int[]>
+            resultList) {
+        if (index == k) {
+            resultList.add(Arrays.copyOf(data, k));
+            return;
+        }
+
+        // replace index with all possible elements. The condition "end-i+1 >= r-index" makes sure that including
+        // one element at index will make a combination with remaining elements at remaining positions
+        for (int i = start; i <= end && end - i + 1 >= k - index; i++) {
+            data[index] = input[i];
+            permutationDup(input, data, i + 1, end, index + 1, k, resultList);
+
+            while (i < end && input[i] == input[i + 1])
+                i++;
+        }
     }
 }

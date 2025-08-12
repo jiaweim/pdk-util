@@ -11,6 +11,7 @@ import java.util.*;
 /**
  * Directed Graph implementation, the node should implement hashCode and equals.
  *
+ * @param <V> type of the node
  * @author Jiawei Mao
  * @version 2.0.0
  * @since 23 Nov 2024, 00:02

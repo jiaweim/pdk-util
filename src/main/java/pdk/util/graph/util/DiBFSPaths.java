@@ -11,6 +11,7 @@ import java.util.*;
  * O(E+V) time.
  * ⭐
  *
+ * @param <V> type of the node
  * @author Jiawei Mao
  * @version 1.0.0
  * @since 02 Dec 2024, 7:01 PM

@@ -16,6 +16,7 @@ import static pdk.util.ArgUtils.checkArgument;
  * <p>
  * Adjacency list is used to shore connection information.
  *
+ * @param <V> type of the node
  * @author Jiawei Mao
  * @version 1.0.0
  * @since 27 Nov 2024, 3:42 PM

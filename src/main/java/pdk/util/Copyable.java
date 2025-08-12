@@ -3,6 +3,7 @@ package pdk.util;
 /**
  * Interface for object supporting copy.
  *
+ * @param <T> type to be copy
  * @author Jiawei Mao
  * @version 1.0.0
  * @since 03 Jul 2025, 10:02 AM

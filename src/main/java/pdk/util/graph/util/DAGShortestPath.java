@@ -16,6 +16,7 @@ import java.util.Queue;
  * <p>
  * running time O(V+E) in the worst case, O(V) extra space
  *
+ * @param <V> type of the node
  * @author Jiawei Mao
  * @version 1.0.0
  * @since 03 Dec 2024, 3:26 PM ⭐

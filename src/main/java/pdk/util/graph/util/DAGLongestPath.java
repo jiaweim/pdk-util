@@ -13,6 +13,7 @@ import java.util.*;
  * <p>
  * This algorithm can be used from critical path analysis.
  *
+ * @param <V> type of the node
  * @author Jiawei Mao
  * @version 1.0.0
  * @since 03 Dec 2024, 4:49 PM ⭐⭐⭐

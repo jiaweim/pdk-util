@@ -7,6 +7,8 @@ import java.util.Comparator;
 import java.util.Objects;
 
 /**
+ * A two-dimensional point
+ *
  * @author Jiawei Mao
  * @version 1.0.0
  * @since 03 Jul 2025, 10:00 AM

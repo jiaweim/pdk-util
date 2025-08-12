@@ -8,6 +8,7 @@ module pdk.util {
     requires commons.math3;
     requires org.jheaps;
     requires it.unimi.dsi.fastutil;
+    requires org.apache.commons.io;
 
     // exports
     exports pdk.util;
@@ -17,6 +18,6 @@ module pdk.util {
     exports pdk.util.graph;
     exports pdk.util.graph.util;
     exports pdk.util.io;
-    exports pdk.util.tuple;
     exports pdk.util.math;
+    exports pdk.util.tuple;
 }

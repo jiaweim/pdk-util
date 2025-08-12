@@ -3,6 +3,7 @@ package pdk.util.graph;
 /**
  * Graph edge with weight
  *
+ * @param <V> type of the node
  * @author Jiawei Mao
  * @version 1.0.0
  * @since 23 Nov 2024, 17:05

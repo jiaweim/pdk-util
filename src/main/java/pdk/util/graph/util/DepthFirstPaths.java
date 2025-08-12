@@ -10,6 +10,7 @@ import java.util.HashMap;
 /**
  * 该算法用处不大。
  *
+ * @param <V> type of the node
  * @author Jiawei Mao
  * @version 1.0.0
  * @since 02 Dec 2024, 1:14 PM

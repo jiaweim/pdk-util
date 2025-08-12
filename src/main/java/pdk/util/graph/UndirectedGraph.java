@@ -10,6 +10,7 @@ import java.util.*;
  * <p>
  * If an undirected graph with N nodes has more than N-1 edges, it must have cycles.
  *
+ * @param <V> type of the node
  * @author Jiawei Mao
  * @version 1.0.0
  * @since 27 Nov 2024, 3:36 PM
