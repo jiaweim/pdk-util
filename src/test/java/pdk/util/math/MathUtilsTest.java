@@ -1,6 +1,5 @@
 package pdk.util.math;
 
-import org.apache.commons.math3.exception.NullArgumentException;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -13,50 +12,6 @@ import static org.junit.jupiter.api.Assertions.*;
  * @since 20 Jul 2025, 7:12 PM
  */
 class MathUtilsTest {
-
-    @Test
-    void percentile() {
-        double median = MathUtils.percentile(new double[]{223, 235, 235, 268, 274, 285, 290}, 50);
-        assertEquals(268, median, 0.1);
-
-        median = MathUtils.percentile(List.of(223.0, 235.0, 235.0, 268.0, 274.0, 285.0, 290.0), 50);
-        assertEquals(268, median, 0.1);
-
-        double median2 = MathUtils.percentile(new double[]{223, 235, 235, 268, 274, 290}, 50);
-        assertEquals(median2, 251.5, 0.01);
-
-        double[] x = null;
-
-        // test null
-        try {
-            MathUtils.percentile(x, .25);
-            fail("null is not a valid data array.");
-        } catch (NullArgumentException ex) {
-            // success
-        }
-
-        try {
-            MathUtils.percentile(x, 0, 4, 0.25);
-            fail("null is not a valid data array.");
-        } catch (NullArgumentException ex) {
-            // success
-        }
-
-        // test empty
-        x = new double[]{};
-        assertEquals(Double.NaN, MathUtils.percentile(x, 25), EPS);
-        assertEquals(Double.NaN, MathUtils.percentile(x, 0, 0, 25), EPS);
-
-        // test one
-        x = new double[]{2.0};
-        assertEquals(2.0, MathUtils.percentile(x, 25), EPS);
-        assertEquals(2.0, MathUtils.percentile(x, 0, 1, 25), EPS);
-
-        // test many
-        x = new double[]{1.0, 2.0, 2.0, 3.0};
-        assertEquals(2.5, MathUtils.percentile(x, 70), EPS);
-        assertEquals(2.5, MathUtils.percentile(x, 1, 3, 62.5), EPS);
-    }
 
     @Test
     void isOdd() {
@@ -160,14 +115,6 @@ class MathUtilsTest {
         double a = 46.656;
         double scale = MathUtils.round(a, 2);
         assertEquals(46.66, scale, 0.0001);
-    }
-
-    @Test
-    void quantile() {
-        double[] d = new double[]{1, 3, 2, 4};//  p * (length + 1)
-        double v = MathUtils.q1(d);
-        System.out.println(v);
-
     }
 
 

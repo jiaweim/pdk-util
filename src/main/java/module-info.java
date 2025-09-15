@@ -5,10 +5,11 @@ module pdk.util {
 
     // 3rd party
     requires org.jspecify;
-    requires commons.math3;
     requires org.jheaps;
     requires it.unimi.dsi.fastutil;
     requires org.apache.commons.io;
+    requires org.apache.commons.numbers.gamma;
+    requires org.apache.commons.statistics.descriptive;
 
     // exports
     exports pdk.util;

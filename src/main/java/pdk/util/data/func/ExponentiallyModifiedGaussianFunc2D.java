@@ -1,6 +1,6 @@
 package pdk.util.data.func;
 
-import org.apache.commons.math3.special.Erf;
+import org.apache.commons.numbers.gamma.Erfc;
 import pdk.util.ArgUtils;
 
 import java.io.Serializable;
@@ -93,7 +93,7 @@ public class ExponentiallyModifiedGaussianFunc2D implements Func2D, Serializable
 
     @Override
     public double f(double x) {
-        return lambda * 0.5 * Math.exp(exp1 - lambda * x) * Erf.erfc(erfc2 - x / sqrt2sigma);
+        return lambda * 0.5 * Math.exp(exp1 - lambda * x) * Erfc.value(erfc2 - x / sqrt2sigma);
     }
 
 

@@ -2,7 +2,6 @@ package pdk.util.math;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import org.apache.commons.math3.stat.StatUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -513,106 +512,6 @@ public final class MathUtils {
         BigDecimal bd = BigDecimal.valueOf(value).setScale(decimalPlaces, RoundingMode.HALF_UP);
         return bd.doubleValue();
     }
-
-    /**
-     * Find the first quantile (1/4) of an array
-     *
-     * @param values double array
-     * @return the first quantile
-     */
-    public static double q1(double[] values) {
-        return StatUtils.percentile(values, 25);
-    }
-
-    /**
-     * Find the median of an array
-     *
-     * @param values double array
-     * @return median
-     */
-    public static double median(double[] values) {
-        return StatUtils.percentile(values, 50);
-    }
-
-    /**
-     * return the median of the values
-     *
-     * @param values array of input values
-     * @param begin  the first element to include
-     * @param length number of array element to include
-     * @return median
-     */
-    public static double median(double[] values, int begin, int length) {
-        return StatUtils.percentile(values, begin, length, 50);
-    }
-
-    /**
-     * Find the third quantile (3/4) of an array
-     *
-     * @param values double array
-     * @return the third quantile
-     */
-    public static double q3(double[] values) {
-        return StatUtils.percentile(values, 75);
-    }
-
-    /**
-     * Returns an estimate of the <code>p</code>th percentile of the values
-     * in the <code>values</code> array.
-     * <p>
-     * Calls to this method do not modify the internal <code>quantile</code>
-     * state of this statistic.</p>
-     * <ul>
-     * <li>Returns <code>Double.NaN</code> if <code>values</code> has length
-     * <code>0</code></li>
-     * <li>Returns (for any value of <code>p</code>) <code>values[0]</code>
-     *  if <code>values</code> has length <code>1</code></li>
-     * <li>Throws <code>MathIllegalArgumentException</code> if <code>values</code>
-     * is null or p is not a valid quantile value (p must be greater than 0
-     * and less than or equal to 100) </li>
-     * </ul>
-     * <p>
-     *
-     * @param values input array of values
-     * @param p      the percentile value to compute
-     * @return the percentile value or Double.NaN if the array is empty
-     * @since 2025-02-18⭐
-     */
-    public static double percentile(double[] values, final double p) {
-        return StatUtils.percentile(values, p);
-    }
-
-    /**
-     * same as {@link #percentile(double[], double)}
-     *
-     * @param values values
-     * @param p      the percentile value
-     * @return percentile
-     */
-    public static double percentile(Collection<Double> values, final double p) {
-        double[] vs = new double[values.size()];
-        int i = 0;
-        for (Double value : values) {
-            vs[i] = value;
-            i++;
-        }
-        return percentile(vs, p);
-    }
-
-    /**
-     * Return an estimate of the pth percentile of the values.
-     *
-     * @param values array of input values
-     * @param begin  the first element to include (0-based)
-     * @param length number of array element to include
-     * @param p      the percentile to compute
-     * @return the percentile value
-     * @since 2025-02-18 ⭐
-     */
-    public static double percentile(final double[] values, final int begin, final int length, final double p) {
-        return StatUtils.percentile(values, begin, length, p);
-    }
-
 
     /**
      * Returns the greatest value present in {@code array}.
