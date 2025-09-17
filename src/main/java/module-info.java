@@ -10,6 +10,8 @@ module pdk.util {
     requires org.apache.commons.io;
     requires org.apache.commons.numbers.gamma;
     requires org.apache.commons.statistics.descriptive;
+    requires org.apache.commons.numbers.combinatorics;
+    requires org.apache.commons.numbers.core;
 
     // exports
     exports pdk.util;

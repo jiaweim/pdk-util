@@ -2,54 +2,43 @@ package pdk.util.math;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import org.apache.commons.numbers.combinatorics.BinomialCoefficient;
+import org.apache.commons.numbers.combinatorics.Combinations;
+import org.apache.commons.numbers.combinatorics.Factorial;
+import org.apache.commons.numbers.core.Precision;
+import org.apache.commons.numbers.core.Sum;
+import org.apache.commons.statistics.descriptive.*;
+import pdk.util.ArrayUtils;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.*;
 
+import static java.util.Objects.requireNonNull;
 import static pdk.util.ArgUtils.*;
 
 /**
- * Math utilities
+ * Math utilities.
+ * <p>
+ * Most statistics are calculated using commons-statistics, which uses more precise floating point calculations.
  *
  * @author Jiawei Mao
- * @version 1.0.0
+ * @version 1.1.0
  * @since 20 Jul 2025, 7:01 PM
  */
 public final class MathUtils {
 
     private MathUtils() {}
 
-    static final double[] factorial = new double[128];
-    static final double[] logFactorial = new double[128];
-
-    static {
-        double fac = 1.0;
-        for (int i = 1; i < 128; i++) {
-            fac *= i;
-            factorial[i] = fac;
-            logFactorial[i] = Math.log(fac);
-        }
-    }
-
     /**
-     * return the factorial of given positive integer
+     * Return the factorial of <code>n</code>.
+     * <p>
+     * The result should be small enough to fit into a {@code double}: The largest {@code n} for which {@code n!}
+     * does not exceed {@code Double.MAX_VALUE} is 170. {@code Double.POSITIVE_INFINITY} is returned for {@code n > 170}.
      *
-     * @param n positive number, at most 127
-     * @return factorial
+     * @param n positive number, at most 170
+     * @return {@code n!}
      */
     public static double factorial(int n) {
-        return factorial[n];
-    }
-
-    /**
-     * return the ln(factorial) of given positive integer
-     *
-     * @param n positive number, at most 127
-     * @return ln(factorial)
-     */
-    public static double lnFactorial(int n) {
-        return logFactorial[n];
+        return Factorial.doubleValue(n);
     }
 
     /**
@@ -95,14 +84,10 @@ public final class MathUtils {
      * @param value1 a double value
      * @param value2 a double value
      * @param delta  accuracy
-     * @return true if the two double value equals within the accuracy
+     * @return true if the two double value equals within the accuracy⭐
      */
     public static boolean isEqual(double value1, double value2, double delta) {
-        if (Double.isNaN(delta) || delta < 0) {
-            throw new IllegalArgumentException("delta with value " + delta + " is not allowed");
-        }
-        return (Double.doubleToLongBits(value1) == Double.doubleToLongBits(value2))
-                || (Math.abs(value1 - value2) <= delta);
+        return Precision.equals(value1, value2, delta);
     }
 
     /**
@@ -112,30 +97,26 @@ public final class MathUtils {
      * {@link Double#NaN} is returned.
      *
      * @param values a Double array
-     * @return sum
+     * @return sum⭐
      */
     public static double sum(Double[] values) {
-        double total = 0;
+        requireNonNull(values);
+        Sum sum = Sum.create();
         for (Double value : values) {
-            total += value;
+            sum.add(value);
         }
-        return total;
+        return sum.getAsDouble();
     }
 
     /**
      * Return the sum of the array.
      *
      * @param values double array
-     * @return sum of all values.
+     * @return sum of all values.⭐
      */
     public static double sum(double[] values) {
-        checkNotNull(values);
-
-        double sum = 0;
-        for (double value : values) {
-            sum += value;
-        }
-        return sum;
+        requireNonNull(values);
+        return Sum.of(values).getAsDouble();
     }
 
     /**
@@ -144,32 +125,32 @@ public final class MathUtils {
      * @param values the input array
      * @param begin  the index of the first array element to include
      * @param length the number of elements to include
-     * @return sum of the values or 0 if length=0
+     * @return sum of the values or 0 if length=0⭐
      */
     public static double sum(final double[] values, final int begin, final int length) {
-        double sum = 0.0;
+        requireNonNull(values);
+        Sum sum = Sum.create();
         for (int i = begin; i < begin + length; i++) {
-            sum += values[i];
+            sum.add(values[i]);
         }
-        return sum;
+        return sum.getAsDouble();
     }
 
     /**
      * Return the sum of double values
      *
      * @param values dataset
-     * @return sum of data in the dataset
+     * @return sum of data in the dataset⭐
      */
     public static double sum(Iterable<Double> values) {
-        checkNotNull(values);
+        requireNonNull(values);
 
-        double sum = 0;
+        Sum sum = Sum.create();
         for (Double value : values) {
-            sum += value;
+            sum.add(value);
         }
-        return sum;
+        return sum.getAsDouble();
     }
-
 
     /**
      * The weighted sum of the entries in the specified input array.
@@ -180,33 +161,28 @@ public final class MathUtils {
      *
      * @param values  the input array
      * @param weights the weight array
-     * @return weighted sum
+     * @return weighted sum⭐
      */
-    public static double sum(final double[] values, final double[] weights) {
-        checkNotNull(values);
-        checkNotNull(weights);
+    public static double weightedSum(final double[] values, final double[] weights) {
+        requireNonNull(values);
+        requireNonNull(weights);
 
-        if (values.length != weights.length) {
-            throw new IllegalArgumentException("The length of values and weights should be the same.");
-        }
-
-        double sum = 0.;
-        for (int i = 0; i < values.length; i++) {
-            double weight = weights[i];
-            if (Double.isNaN(weight))
-                throw new IllegalArgumentException("NaN weight at " + i);
-            if (Double.isInfinite(weight))
-                throw new IllegalArgumentException("Infinite value at " + i);
-            sum += values[i] * weights[i];
-        }
-        return sum;
+        return Sum.ofProducts(values, weights).getAsDouble();
     }
 
+    /**
+     * Return the mean of double collections
+     *
+     * @param values dataset
+     * @return mean⭐
+     */
     public static double mean(Collection<Double> values) {
         checkArgument(values != null && !values.isEmpty());
-
-        double sum = sum(values);
-        return sum / values.size();
+        Mean mean = Mean.create();
+        for (Double value : values) {
+            mean.accept(value);
+        }
+        return mean.getAsDouble();
     }
 
     /**
@@ -216,7 +192,12 @@ public final class MathUtils {
      * @return mean of the array values.
      */
     public static double mean(Double[] values) {
-        return sum(values) / values.length;
+        requireNonNull(values);
+        Mean mean = Mean.create();
+        for (Double value : values) {
+            mean.accept(value);
+        }
+        return mean.getAsDouble();
     }
 
     /**
@@ -226,28 +207,31 @@ public final class MathUtils {
      * @param begin  index of the first element to include (0-based)
      * @param length number of elements to include
      * @return the mean of the values
-     * @since 2025-02-18 ⭐
+     * @since 2025-02-18 ⭐⭐
      */
     public static double mean(final double[] values, final int begin, final int length) {
-        checkNotNull(values);
+        requireNonNull(values);
         checkNonNegative("index", begin);
         checkNonNegative("length", length);
 
         if (begin + length > values.length) {
             throw new IllegalArgumentException("End index " + (begin + length) + " exceed the array length " + values.length);
         }
-        double sum = sum(values, begin, length);
-        return sum / length;
+        Mean mean = Mean.create();
+        for (int i = begin; i < (begin + length); i++) {
+            mean.accept(values[i]);
+        }
+        return mean.getAsDouble();
     }
 
     /**
      * Return the mean value of an array
      *
      * @param values array of values
-     * @return mean
+     * @return mean⭐
      */
     public static double mean(double... values) {
-        return mean(values, 0, values.length);
+        return Mean.of(values).getAsDouble();
     }
 
     /**
@@ -259,16 +243,9 @@ public final class MathUtils {
      * @since 2025-02-14 ⭐
      */
     public static double mean(double[] values, double[] weights) {
-        if (values.length != weights.length)
-            throw new IllegalArgumentException("The number of values and weights should be same");
-
-        double numerator = 0;
-        double denominator = 0;
-        for (int i = 0; i < values.length; i++) {
-            numerator += values[i] * weights[i];
-            denominator += weights[i];
-        }
-        return numerator / denominator;
+        double weightedSum = weightedSum(values, weights);
+        double sum = sum(weights);
+        return weightedSum / sum;
     }
 
     /**
@@ -279,129 +256,70 @@ public final class MathUtils {
      * @param indexes sample indexes
      * @return weighted average, {@link Double#NaN} if the sum of weights is zero
      */
-    public static double mean(double[] values, double[] weights, int[] indexes) {
+    public static double weightedMean(double[] values, double[] weights, int[] indexes) {
         if (values.length != weights.length)
             throw new IllegalArgumentException("The number of values and weights should be same");
 
-        double sum = 0;
-        double weightSum = 0;
+        Sum weightSum = Sum.create();
+        Sum sum = Sum.create();
         for (int index : indexes) {
-            sum += values[index] * weights[index];
-            weightSum += weights[index];
+            sum.addProduct(values[index], weights[index]);
+            weightSum.add(weights[index]);
         }
-        return sum / weightSum;
-    }
-
-    /**
-     * Return variance of the dataset.
-     *
-     * @param values data set
-     * @param mean   data set mean
-     * @param isBias true calculate sample variance
-     * @return variance of the data.
-     */
-    public static double variance(final Collection<Double> values, final double mean, boolean isBias) {
-        if (values.isEmpty())
-            return Double.NaN;
-        int len = values.size();
-        if (len == 1) {
-            return 0.;
-        } else {
-            double sum = 0.;
-            double dev;
-            for (Double value : values) {
-                dev = value - mean;
-                sum += dev * dev;
-            }
-            if (isBias) {
-                return sum / (len - 1.);
-            } else
-                return sum / len;
-        }
-    }
-
-    /**
-     * Return variance of a sample dataset
-     *
-     * @param values data set
-     * @return variance of the data.
-     */
-    public static double variance(final Collection<Double> values) {
-        return variance(values, true);
+        return sum.getAsDouble() / weightSum.getAsDouble();
     }
 
     /**
      * Return variance of the data
      *
      * @param values data set
+     * @param isBias false means use (n-1)
      * @return variance of the data.
      */
     public static double variance(final Collection<Double> values, boolean isBias) {
-        double mean = mean(values);
-        return variance(values, mean, isBias);
-    }
-
-    /**
-     * Calculate the variance.
-     *
-     * @param values double array
-     * @param mean   mean value
-     * @param begin  start index
-     * @param length data number
-     * @param isBias Whether bias correction is applied when computing the value of the statistics.
-     * @return variance of the data, return {@link Double#NaN} if the data is empty.
-     */
-    public static double variance(final double[] values, final double mean, final int begin, final int length, final boolean isBias) {
-        double var = Double.NaN;
-        if (length == 1) {
-            var = 0.;
-        } else if (length > 1) {
-            double sum = 0.;
-            double dev;
-            for (int i = begin; i < begin + length; i++) {
-                dev = values[i] - mean;
-                sum += dev * dev;
-            }
-            if (isBias) {
-                var = sum / (length - 1.0);
-            } else
-                var = sum / (length);
+        Variance variance = Variance.create().setBiased(isBias);
+        for (Double value : values) {
+            variance.accept(value);
         }
-        return var;
-    }
-
-    /**
-     * Calculate the variance of the double array.
-     *
-     * @param values double array
-     * @param bias   Whether bias correction is applied when computing the value of the statistics.
-     * @return variance of the data.
-     */
-    public static double variance(final double[] values, boolean bias) {
-        double mean = mean(values);
-        return variance(values, mean, 0, values.length, bias);
-    }
-
-    /**
-     * Calculate the variance of the double array.
-     *
-     * @param values double array
-     * @param mean   mean
-     * @return variance of the data.
-     */
-    public static double variance(final double[] values, double mean) {
-        return variance(values, mean, 0, values.length, true);
+        return variance.getAsDouble();
     }
 
     /**
      * Calculate the sample variance of the double array.
+     * <p>
+     * The unbiased (n-1) is used for calculation.
      *
      * @param values double array
      * @return variance of the data.
      */
     public static double variance(final double[] values) {
-        double mean = mean(values);
-        return variance(values, mean, 0, values.length, true);
+        return Variance.of(values).getAsDouble();
+    }
+
+    /**
+     * Calculate the variance of the double array.
+     *
+     * @param values double array
+     * @param bias   Whether bias correction is applied when computing the value of the statistics, false means using the
+     *               unbiased (n-1)
+     * @return variance of the data.
+     */
+    public static double variance(final double[] values, boolean bias) {
+        return Variance.of(values).setBiased(bias).getAsDouble();
+    }
+
+    /**
+     * Return variance of a sample
+     *
+     * @param values data set
+     * @return variance of the data.
+     */
+    public static double variance(final Collection<Double> values) {
+        Variance variance = Variance.create();
+        for (Double value : values) {
+            variance.accept(value);
+        }
+        return variance.getAsDouble();
     }
 
     /**
@@ -411,52 +329,33 @@ public final class MathUtils {
      * @return standard deviation
      */
     public static double standardDeviation(Collection<Double> values) {
-        return Math.sqrt(variance(values));
+        StandardDeviation standardDeviation = StandardDeviation.create();
+        for (Double value : values) {
+            standardDeviation.accept(value);
+        }
+        return standardDeviation.getAsDouble();
     }
 
     /**
-     * Return the standard deviation of given sample data.
+     * Return the standard deviation of given sample.
      *
-     * @param values values
+     * @param values sample data
      * @return standard deviation.
      */
     public static double standardDeviation(final double[] values) {
-        return Math.sqrt(variance(values));
-    }
-
-    /**
-     * Returns the standard deviation of the entries in the input array, or
-     * <code>Double.NaN</code> if the array is empty.
-     * <p>
-     * This method returns the bias-corrected sample standard deviation (using {@code n - 1} in
-     * the denominator). Use {@link #populationVariance(double[])} for the non-bias-corrected
-     * population variance.
-     * <p>
-     * Returns 0 for a single-value (i.e. length = 1) sample.
-     * <p>
-     * Throws <code>MathIllegalArgumentException</code> if the array is null.
-     *
-     * @param values the input array
-     * @return the variance of the values or Double.NaN if the array is empty
-     * @since 2025-02-18
-     */
-    public static double standardDeviation(double[] values, double mean) {
-        double variance = variance(values, mean);
-        return Math.sqrt(variance);
+        return StandardDeviation.of(values).getAsDouble();
     }
 
     /**
      * Returns the <a href="http://en.wikibooks.org/wiki/Statistics/Summary/Variance">
      * population variance</a> of the entries in the input array, or
      * <code>Double.NaN</code> if the array is empty.
-     * <p>
-     * Returns 0 for a single-value (i.e. length = 1) sample.
      *
      * @param values the input array
      * @return the population variance of the values or Double.NaN if the array is empty
      */
     public static double populationVariance(double[] values) {
-        return variance(values, false);
+        return Variance.of(values).setBiased(true).getAsDouble();
     }
 
     /**
@@ -471,8 +370,7 @@ public final class MathUtils {
      * @return the variance of the values or Double.NaN if the array is empty
      */
     public static double populationStandardDeviation(double[] values) {
-        double variance = populationVariance(values);
-        return Math.sqrt(variance);
+        return StandardDeviation.of(values).setBiased(true).getAsDouble();
     }
 
     /**
@@ -482,21 +380,8 @@ public final class MathUtils {
      * @return relative standard deviation of the double array.
      */
     public static double rsd(double[] values) {
-        double mean = mean(values);
-        double variance = variance(values, mean, 0, values.length, true);
-        return Math.sqrt(variance) / mean;
-    }
-
-    /**
-     * Return the relative standard deviation (RSD) of given double values
-     *
-     * @param values double values
-     * @return relative standard deviation
-     */
-    public static double rsd(Collection<Double> values) {
-        double mean = mean(values);
-        double variance = variance(values, mean, true);
-        return Math.sqrt(variance) / mean;
+        DoubleStatistics statistics = statistics(values, Statistic.MEAN, Statistic.STANDARD_DEVIATION);
+        return statistics.getAsDouble(Statistic.STANDARD_DEVIATION) / statistics.getAsDouble(Statistic.MEAN);
     }
 
     /**
@@ -507,10 +392,33 @@ public final class MathUtils {
      * @return a scaled double to the indicated decimal places
      */
     public static double round(double value, int decimalPlaces) {
-        checkArgument(decimalPlaces >= 0);
+        return Precision.round(value, decimalPlaces);
+    }
 
-        BigDecimal bd = BigDecimal.valueOf(value).setScale(decimalPlaces, RoundingMode.HALF_UP);
-        return bd.doubleValue();
+    /**
+     * Calculate a set of {@link Statistic}, support:
+     * <p>
+     * <ul>
+     *     <li>{@link Statistic#GEOMETRIC_MEAN}</li>
+     *     <li>{@link Statistic#KURTOSIS}</li>
+     *     <li>{@link Statistic#MAX}</li>
+     *     <li>{@link Statistic#MEAN}</li>
+     *     <li>{@link Statistic#MIN}</li>
+     *     <li>{@link Statistic#PRODUCT}</li>
+     *     <li>{@link Statistic#SKEWNESS}</li>
+     *     <li>{@link Statistic#STANDARD_DEVIATION}</li>
+     *     <li>{@link Statistic#SUM}</li>
+     *     <li>{@link Statistic#SUM_OF_LOGS}</li>
+     *     <li>{@link Statistic#SUM_OF_SQUARES}</li>
+     *     <li>{@link Statistic#VARIANCE}</li>
+     * </ul>
+     *
+     * @param values     dataset used for calculation
+     * @param statistics {@link Statistic} to calculate
+     * @return {@link DoubleStatistics}
+     */
+    public static DoubleStatistics statistics(double[] values, Statistic... statistics) {
+        return DoubleStatistics.builder(statistics).build(values);
     }
 
     /**
@@ -526,9 +434,7 @@ public final class MathUtils {
 
         int max = array[0];
         for (int i = 1; i < array.length; i++) {
-            if (array[i] > max) {
-                max = array[i];
-            }
+            max = Math.max(max, array[i]);
         }
         return max;
     }
@@ -546,9 +452,7 @@ public final class MathUtils {
 
         long max = array[0];
         for (int i = 1; i < array.length; i++) {
-            if (array[i] > max) {
-                max = array[i];
-            }
+            max = Math.max(max, array[i]);
         }
         return max;
     }
@@ -565,9 +469,7 @@ public final class MathUtils {
         checkArgument(array.length > 0);
         int min = array[0];
         for (int i = 1; i < array.length; i++) {
-            if (array[i] < min) {
-                min = array[i];
-            }
+            min = Math.min(min, array[i]);
         }
         return min;
     }
@@ -582,12 +484,9 @@ public final class MathUtils {
      */
     public static long min(long... array) {
         checkArgument(array.length > 0);
-
         long min = array[0];
         for (int i = 1; i < array.length; i++) {
-            if (array[i] < min) {
-                min = array[i];
-            }
+            min = Math.min(min, array[i]);
         }
         return min;
     }
@@ -613,7 +512,6 @@ public final class MathUtils {
         return getMode(sample, 0, sample.length);
     }
 
-
     /**
      * Return the sample mode(s).
      * <p>
@@ -631,7 +529,7 @@ public final class MathUtils {
      * @since 2025-02-18⭐
      */
     public static double[] mode(double[] sample, final int begin, final int length) {
-        checkNotNull(sample);
+        requireNonNull(sample);
         checkNonNegative("index", begin);
         checkNonNegative("length", length);
 
@@ -717,9 +615,7 @@ public final class MathUtils {
 
 
     /**
-     * Calculation all combinations of choose K element from input. Duplicate value is not allowed.
-     * This algorithm adapt from
-     * http://www.geeksforgeeks.org/print-all-possible-combinations-of-r-elements-in-a-given-array-of-size-n/
+     * Calculation all combinations of choose K element from input. Duplicate values result in duplicate combinations
      * <p>
      * for array [1, 2, 3]:
      * permutation(array, 2) could generate [1, 2], [1, 3], [2, 3]
@@ -731,36 +627,12 @@ public final class MathUtils {
     public static List<int[]> permutation(int[] input, int k) {
         checkArgument(k > 0, "K should > 0");
 
-        List<int[]> resultList = new ArrayList<>();
-        int[] data = new int[k];
-        permutation(input, data, 0, input.length - 1, 0, k, resultList);
+        List<int[]> resultList = new ArrayList<>((int) BinomialCoefficient.value(input.length, k));
+        for (int[] combine : Combinations.of(input.length, k)) {
+            int[] sample = ArrayUtils.sample(input, combine);
+            resultList.add(sample);
+        }
         return resultList;
-    }
-
-    /**
-     * Generate all combinations of given input data.
-     *
-     * @param input      input data.
-     * @param data       temporary array to store current combination.
-     * @param start      start index in input
-     * @param end        end index in input
-     * @param index      current index in data
-     * @param k          size of a combination
-     * @param resultList List to store the result permutations.⭐
-     */
-    private static void permutation(int[] input, int[] data, int start, int end, int index, int k,
-            List<int[]> resultList) {
-        if (index == k) {
-            resultList.add(Arrays.copyOf(data, k));
-            return;
-        }
-
-        // replace index with all possible elements. The condition "end-i+1 >= r-index" makes sure that including
-        // one element at index will make a combination with remaining elements at remaining positions
-        for (int i = start; i <= end && end - i + 1 >= k - index; i++) {
-            data[index] = input[i];
-            permutation(input, data, i + 1, end, index + 1, k, resultList);
-        }
     }
 
     /**
@@ -786,7 +658,7 @@ public final class MathUtils {
      *
      * @param input input data, duplicate values are allowed.
      * @param k     K value, should > 0.
-     * @return all combinations.⭐
+     * @return all combinations.⭐⭐
      */
     public static List<int[]> permutationDup(int[] input, int k) {
         checkArgument(k > 0, "K should > 0");

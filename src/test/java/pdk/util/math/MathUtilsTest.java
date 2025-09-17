@@ -13,22 +13,36 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class MathUtilsTest {
 
+    private static final double EPS = 1E-15;
+
+
+    @Test
+    void factorial() {
+        assertEquals(1.0, MathUtils.factorial(1), EPS);
+        assertEquals(120.0, MathUtils.factorial(5), EPS);
+    }
+
     @Test
     void isOdd() {
         assertTrue(MathUtils.isOdd(1));
         assertFalse(MathUtils.isOdd(2));
     }
 
-    private static final double EPS = 10E-15;
+
+    @Test
+    void meanCollection() {
+        List<Double> data = List.of(1.0, 2.0, 3.0, 4.0);
+        assertEquals(2.5, MathUtils.mean(data), EPS);
+    }
 
     @Test
     void mean() {
         double[] value = new double[]{1, 2, 3., 4};
         double mean = MathUtils.mean(value);
-        assertEquals(2.5, mean, 1E-4);
+        assertEquals(2.5, mean, EPS);
 
         mean = MathUtils.mean(274, 235, 223, 268, 290, 285, 235);
-        assertEquals(258.6, mean, 1e-1);
+        assertEquals(258.5714286, mean, 1E-7);
 
         double[] x = null;
 
@@ -69,7 +83,7 @@ class MathUtilsTest {
     @Test
     void variance() {
         double[] values = new double[]{1, 2, 3, 3, 9, 10};
-        assertEquals(12.22222, MathUtils.variance(values, false), 1E-5);
+        assertEquals(12.22222, MathUtils.variance(values, true), 1E-5);
         assertEquals(14.667, MathUtils.variance(values), 1E-3);
         assertEquals(3.83, MathUtils.standardDeviation(values), 0.01);
         assertEquals(4.667, MathUtils.mean(values), 0.001);
@@ -109,6 +123,36 @@ class MathUtilsTest {
         assertEquals(64, MathUtils.nextPowerOfTwo(64));
     }
 
+    @Test
+    void isEqual() {
+        assertTrue(MathUtils.isEqual(100, 99, 1));
+        assertTrue(MathUtils.isEqual(100.001, 100.0009, 0.00011));
+    }
+
+    @Test
+    void sum() {
+        double[] values = new double[]{1, 2, 3, 9};
+        assertEquals(15.0, MathUtils.sum(values), EPS);
+
+        Double[] vs = new Double[]{1., 2., 3., 9.};
+        assertEquals(15.0, MathUtils.sum(vs), EPS);
+    }
+
+    @Test
+    void sum2() {
+        double[] values = new double[]{1, 2, 3, 5, 9};
+        assertEquals(10, MathUtils.sum(values, 1, 3), EPS);
+
+        List<Double> data = List.of(1.0, 2.0, 3.0, 5.0);
+        assertEquals(11.0, MathUtils.sum(data), EPS);
+    }
+
+    @Test
+    void weightedSum() {
+        double[] values = new double[]{1, 2, 3};
+        double[] weights = new double[]{0.3, 0.8, 0.7};
+        assertEquals(4.0, MathUtils.weightedSum(values, weights), EPS);
+    }
 
     @Test
     void round() {
@@ -202,22 +246,26 @@ class MathUtilsTest {
     void permutation() {
         int[] arr = {1, 2, 3, 4, 5};
         List<int[]> list = MathUtils.permutation(arr, 3);
+
         assertEquals(10, list.size());
         assertArrayEquals(new int[]{1, 2, 3}, list.get(0));
         assertArrayEquals(new int[]{1, 2, 4}, list.get(1));
-        assertArrayEquals(new int[]{1, 2, 5}, list.get(2));
-        assertArrayEquals(new int[]{1, 3, 4}, list.get(3));
-        assertArrayEquals(new int[]{1, 3, 5}, list.get(4));
-        assertArrayEquals(new int[]{1, 4, 5}, list.get(5));
-        assertArrayEquals(new int[]{2, 3, 4}, list.get(6));
-        assertArrayEquals(new int[]{2, 3, 5}, list.get(7));
+        assertArrayEquals(new int[]{1, 3, 4}, list.get(2));
+        assertArrayEquals(new int[]{2, 3, 4}, list.get(3));
+        assertArrayEquals(new int[]{1, 2, 5}, list.get(4));
+        assertArrayEquals(new int[]{1, 3, 5}, list.get(5));
+        assertArrayEquals(new int[]{2, 3, 5}, list.get(6));
+        assertArrayEquals(new int[]{1, 4, 5}, list.get(7));
         assertArrayEquals(new int[]{2, 4, 5}, list.get(8));
         assertArrayEquals(new int[]{3, 4, 5}, list.get(9));
 
         arr = new int[]{5, 3, 4, 2};
         list = MathUtils.permutation(arr, 3);
         assertEquals(4, list.size());
+
         assertArrayEquals(new int[]{5, 3, 4}, list.get(0));
+        assertArrayEquals(new int[]{5, 3, 2}, list.get(1));
+        assertArrayEquals(new int[]{5, 4, 2}, list.get(2));
         assertArrayEquals(new int[]{3, 4, 2}, list.get(3));
 
         arr = new int[]{1, 4, 6, 11, 12, 21, 22, 25, 27, 29, 31, 32, 33, 34};
@@ -264,5 +312,20 @@ class MathUtilsTest {
         assertArrayEquals(new int[]{3, 4, 4}, list.get(7));
         assertArrayEquals(new int[]{3, 4, 5}, list.get(8));
         assertArrayEquals(new int[]{4, 4, 5}, list.get(9));
+    }
+
+    @Test
+    void permutationDup3() {
+        int[] arr = {1, 2, 2, 2, 4, 5};
+        int k = 2;
+        List<int[]> list = MathUtils.permutationDup(arr, k);
+        assertEquals(7, list.size());
+        assertArrayEquals(new int[]{1, 2}, list.get(0));
+        assertArrayEquals(new int[]{1, 4}, list.get(1));
+        assertArrayEquals(new int[]{1, 5}, list.get(2));
+        assertArrayEquals(new int[]{2, 2}, list.get(3));
+        assertArrayEquals(new int[]{2, 4}, list.get(4));
+        assertArrayEquals(new int[]{2, 5}, list.get(5));
+        assertArrayEquals(new int[]{4, 5}, list.get(6));
     }
 }

@@ -26,4 +26,20 @@ public final class ArrayUtils {
         }
         return list;
     }
+
+    /**
+     * Take a sample from given dataset
+     *
+     * @param dataset       dataset
+     * @param sampleIndexes indexes in the {@code dataset} of the sample
+     * @return sample data
+     */
+    public static int[] sample(int[] dataset, int[] sampleIndexes) {
+        int[] sample = new int[sampleIndexes.length];
+        for (int i = 0; i < sampleIndexes.length; i++) {
+            sample[i] = dataset[sampleIndexes[i]];
+        }
+        return sample;
+    }
+
 }
