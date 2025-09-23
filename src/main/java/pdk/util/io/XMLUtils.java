@@ -25,23 +25,6 @@ public class XMLUtils {
             "[\"'](.*)", Pattern.DOTALL);
 
     /**
-     * Create a {@link XMLStreamWriter}.
-     *
-     * @param targetFile target xml file path.
-     * @return a {@link XMLStreamWriter} instance.
-     */
-    public static XMLStreamWriter createXMLStreamWriter(String targetFile) {
-        XMLOutputFactory xof = XMLOutputFactory.newFactory();
-        XMLStreamWriter writer = null;
-        try {
-            writer = xof.createXMLStreamWriter(new BufferedWriter(new FileWriter(targetFile)));
-        } catch (XMLStreamException | IOException e) {
-            e.printStackTrace();
-        }
-        return writer;
-    }
-
-    /**
      * Create an {@link PrettyXMLStreamWriter} to output formatted xml writer.
      *
      * @param targetFile target file path.
@@ -67,6 +50,22 @@ public class XMLUtils {
         PrettyXMLStreamWriter writer = null;
         try {
             writer = new PrettyXMLStreamWriter(outputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return writer;
+    }
+
+    /**
+     * Create an {@link PrettyXMLStreamWriter} to output formatted xml writer.
+     *
+     * @param outWriter target {@link Writer}.
+     * @return a {@link XMLStreamWriter} instance.
+     */
+    public static XMLStreamWriter createPrettyWriter(Writer outWriter) {
+        PrettyXMLStreamWriter writer = null;
+        try {
+            writer = new PrettyXMLStreamWriter(outWriter);
         } catch (IOException e) {
             e.printStackTrace();
         }
