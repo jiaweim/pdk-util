@@ -176,10 +176,10 @@ public final class ArgUtils {
     /**
      * Ensures the truth of an expression involving one or more parameters to the calling method.
      *
-     * @param b
-     * @param errorMessageTemplate
-     * @param p1
-     * @param p2
+     * @param b                    expression return boolean
+     * @param errorMessageTemplate error message template
+     * @param p1                   a parameter
+     * @param p2                   a paramter
      */
     public static void checkArgument(boolean b, String errorMessageTemplate, long p1, int p2) {
         if (!b) {

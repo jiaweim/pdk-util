@@ -12,6 +12,7 @@ import java.util.*;
  * <p>
  * This algorithm works for undirected weighted graph.
  *
+ * @param <V> type of graph node
  * @author Jiawei Mao
  * @version 1.0.0
  * @since 21 Jul 2025, 5:57 PM

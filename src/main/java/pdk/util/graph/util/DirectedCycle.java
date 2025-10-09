@@ -10,6 +10,7 @@ import java.util.*;
  * <p>
  * run time O(V+E), space O(|V|)
  *
+ * @param <V> type of graph node
  * @author Jiawei Mao ⭐⭐
  * @version 1.0.0
  * @since 02 Dec 2024, 7:32 PM

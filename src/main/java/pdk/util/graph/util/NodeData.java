@@ -5,6 +5,7 @@ import pdk.util.graph.Edge;
 /**
  * Hold data during searching
  *
+ * @param <V> type of graph node
  * @author Jiawei Mao
  * @version 1.0.0
  * @since 25 Nov 2024, 5:36 PM

@@ -8,6 +8,7 @@ import java.util.*;
 /**
  * A Class for counting.
  *
+ * @param <T> type of the element to be counted
  * @author JiaweiMao
  * @version 1.1.0
  * @since 09 Nov 2019, 8:59 AM

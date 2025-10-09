@@ -40,16 +40,22 @@ public interface Graph<V> {
     boolean containsNode(V node);
 
     /**
+     * Return nodes in this graph as set
+     *
      * @return all nodes in the graph
      */
     Set<V> getNodeSet();
 
     /**
+     * Return nodes in this graph as list
+     *
      * @return all nodes in the graph
      */
     List<V> getNodeList();
 
     /**
+     * number of nodes in this graph
+     *
      * @return number of nodes in the graph
      */
     int getNodeCount();
@@ -112,7 +118,9 @@ public interface Graph<V> {
     int getOutDegree(V node);
 
     /**
-     * @return the degree of the node, including in-degree and out-degree for directed-graph.
+     * Return the degree of the node, including in-degree and out-degree for directed-graph.
+     *
+     * @return the degree of the node
      */
     int getDegree(V node);
 
@@ -155,7 +163,9 @@ public interface Graph<V> {
     }
 
     /**
-     * @return index of nodes with zero in degree
+     * Return nodes with zero in degree
+     *
+     * @return zero in degree nodes
      */
     default List<V> getZeroInDegreeNodes() {
         List<V> nodes = new ArrayList<>();
@@ -167,7 +177,9 @@ public interface Graph<V> {
     }
 
     /**
-     * @return index of nodes with zero out degree
+     * Return nodes with zero out degree
+     *
+     * @return nodes with zero out degree
      */
     default List<V> getZeroOutDegreeNodes() {
         List<V> nodes = new ArrayList<>();

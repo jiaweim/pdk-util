@@ -16,6 +16,7 @@ import java.util.LinkedList;
  * <p>
  * running time O(ElogV) in the worst case, space O(V).
  *
+ * @param <V> type of graph node
  * @author Jiawei Mao⭐⭐
  * @version 1.0.0
  * @since 25 Nov 2024, 3:16 PM

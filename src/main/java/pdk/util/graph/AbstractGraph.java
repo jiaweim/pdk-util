@@ -20,11 +20,19 @@ public abstract class AbstractGraph<V> implements Graph<V> {
      */
     protected final Set<Edge<V>> edgeSet_;
 
+    /**
+     * Create a graph with given nodes
+     *
+     * @param nodes set of nodes
+     */
     public AbstractGraph(Collection<V> nodes) {
         nodeSet_ = new HashSet<>(nodes);
         edgeSet_ = new HashSet<>();
     }
 
+    /**
+     * Create a graph with initial empty node and edges
+     */
     public AbstractGraph() {
         nodeSet_ = new HashSet<>();
         edgeSet_ = new HashSet<>();
