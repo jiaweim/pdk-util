@@ -77,12 +77,17 @@ public interface Graph<V> {
     boolean removeEdge(Edge<V> edge);
 
     /**
+     * Test whether the graph contains the specified edge.
+     *
+     * @param edge {@link Edge} to test
      * @return true if this graph contains given edge
      */
     boolean containsEdge(Edge<V> edge);
 
     /**
-     * @return an unmodified collection of all edges in the graph
+     * Return an unmodified set of all edges in this graph
+     *
+     * @return edge set
      */
     Set<Edge<V>> getEdgeSet();
 

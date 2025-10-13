@@ -507,33 +507,35 @@ public class Input extends InputStream {
 
     /**
      * Reads count bytes and returns them as int, the last byte read will be the lowest byte in the int.
+     *
+     * @param count number of bytes
+     * @return the int value read
      */
     public int readInt(int count) {
         if (count < 0 || count > 4) throw new IllegalArgumentException("count must be >= 0 and <= 4: " + count);
         require(count);
         int p = position;
         position = p + count;
-        switch (count) {
-            case 1:
-                return buffer[p];
-            case 2:
-                return buffer[p] << 8
-                        | buffer[p + 1] & 0xFF;
-            case 3:
-                return buffer[p] << 16
-                        | (buffer[p + 1] & 0xFF) << 8
-                        | buffer[p + 2] & 0xFF;
-            case 4:
-                return buffer[p] << 24
-                        | (buffer[p + 1] & 0xFF) << 16
-                        | (buffer[p + 2] & 0xFF) << 8
-                        | buffer[p + 3] & 0xFF;
-        }
-        throw new IllegalStateException(); // impossible
+        return switch (count) {
+            case 1 -> buffer[p];
+            case 2 -> buffer[p] << 8
+                    | buffer[p + 1] & 0xFF;
+            case 3 -> buffer[p] << 16
+                    | (buffer[p + 1] & 0xFF) << 8
+                    | buffer[p + 2] & 0xFF;
+            case 4 -> buffer[p] << 24
+                    | (buffer[p + 1] & 0xFF) << 16
+                    | (buffer[p + 2] & 0xFF) << 8
+                    | buffer[p + 3] & 0xFF;
+            default -> throw new IllegalStateException(); // impossible
+        };
     }
 
     /**
      * Reads count bytes and returns them as long, the last byte read will be the lowest byte in the long.
+     *
+     * @param count number of bytes
+     * @return the long value read
      */
     public long readLong(int count) {
         if (count < 0 || count > 8) throw new IllegalArgumentException("count must be >= 0 and <= 8: " + count);
@@ -551,6 +553,8 @@ public class Input extends InputStream {
 
     /**
      * Reads a 4 byte int.
+     *
+     * @return the read int value
      */
     public int readInt() throws PDKRuntimeException {
         require(4);
@@ -568,6 +572,8 @@ public class Input extends InputStream {
      * {@link #readVarInt(boolean)} explicitly when reading values that should always use variable length encoding (eg values that
      * appear many times).
      *
+     * @param optimizePositive true if optimize for positive int
+     * @return int value
      * @see #canReadInt()
      */
     public int readInt(boolean optimizePositive) throws PDKRuntimeException {
@@ -577,6 +583,8 @@ public class Input extends InputStream {
 
     /**
      * Returns true if enough bytes are available to read an int with {@link #readInt(boolean)}.
+     *
+     * @return true if enough bytes are available to read an int with {@link #readInt(boolean)}.
      */
     public boolean canReadInt() throws PDKRuntimeException {
         if (varEncoding) return canReadVarInt();
@@ -587,6 +595,8 @@ public class Input extends InputStream {
     /**
      * Reads a 1-5 byte int.
      *
+     * @param optimizePositive true if optimize for positive int
+     * @return an int value
      * @see #canReadVarInt()
      */
     public int readVarInt(boolean optimizePositive) throws PDKRuntimeException {
@@ -645,6 +655,8 @@ public class Input extends InputStream {
 
     /**
      * Returns true if enough bytes are available to read an int with {@link #readVarInt(boolean)}.
+     *
+     * @return true if the remaining bytes are enough to read an int for {@link #readVarInt(boolean)}.
      */
     public boolean canReadVarInt() throws PDKRuntimeException {
         if (limit - position >= 5) return true;
@@ -665,6 +677,8 @@ public class Input extends InputStream {
     /**
      * Reads the boolean part of a varint flag. The position is not advanced, {@link #readVarIntFlag(boolean)} should be used to
      * advance the position.
+     *
+     * @return boolean part of the varint flag
      */
     public boolean readVarIntFlag() {
         if (position == limit) require(1);
@@ -674,6 +688,9 @@ public class Input extends InputStream {
     /**
      * Reads the 1-5 byte int part of a varint flag. The position is advanced so if the boolean part is needed it should be read
      * first with {@link #readVarIntFlag()}.
+     *
+     * @param optimizePositive Whether to optimize for positive numbers
+     * @return a int value
      */
     public int readVarIntFlag(boolean optimizePositive) {
         if (require(1) < 5) return readVarIntFlag_slow(optimizePositive);
@@ -733,6 +750,8 @@ public class Input extends InputStream {
 
     /**
      * Reads an 8 byte long.
+     *
+     * @return the long value read
      */
     public long readLong() throws PDKRuntimeException {
         require(8);
@@ -754,6 +773,8 @@ public class Input extends InputStream {
      * {@link #readVarLong(boolean)} explicitly when reading values that should always use variable length encoding (eg values that
      * appear many times).
      *
+     * @param optimizePositive Whether to optimize for positive numbers
+     * @return the long value read
      * @see #canReadLong()
      */
     public long readLong(boolean optimizePositive) throws PDKRuntimeException {
@@ -764,6 +785,8 @@ public class Input extends InputStream {
     /**
      * Reads a 1-9 byte long.
      *
+     * @param optimizePositive Whether to optimize for positive numbers
+     * @return the long value read
      * @see #canReadLong()
      */
     public long readVarLong(boolean optimizePositive) throws PDKRuntimeException {
