@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.jiaweim</groupId>
     <artifactId>pdk-util</artifactId>
-    <version>1.8.0</version>
+    <version>1.9.0</version>
     <name>Proteomics Utilities</name>
     <url>https://github.com/jiaweim/pdk-util</url>
     <description>
@@ -19,6 +19,7 @@
         <skipTests>true</skipTests>
     </properties>
 
+    <!--2025-10-16-->
     <dependencies>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -52,7 +53,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.13.4</version>
+            <version>6.0.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
