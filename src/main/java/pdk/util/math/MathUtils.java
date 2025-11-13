@@ -1,5 +1,10 @@
 package pdk.util.math;
 
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
+import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
+import it.unimi.dsi.fastutil.doubles.DoubleComparators;
+import it.unimi.dsi.fastutil.doubles.DoubleList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import org.apache.commons.numbers.combinatorics.BinomialCoefficient;
@@ -10,7 +15,10 @@ import org.apache.commons.numbers.core.Sum;
 import org.apache.commons.statistics.descriptive.*;
 import pdk.util.ArrayUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 import static pdk.util.ArgUtils.*;
@@ -211,8 +219,8 @@ public final class MathUtils {
      */
     public static double mean(final double[] values, final int begin, final int length) {
         requireNonNull(values);
-        checkNonNegative("index", begin);
-        checkNonNegative("length", length);
+        checkNonNegative(begin, "index");
+        checkNonNegative(length, "length");
 
         if (begin + length > values.length) {
             throw new IllegalArgumentException("End index " + (begin + length) + " exceed the array length " + values.length);
@@ -530,8 +538,8 @@ public final class MathUtils {
      */
     public static double[] mode(double[] sample, final int begin, final int length) {
         requireNonNull(sample);
-        checkNonNegative("index", begin);
-        checkNonNegative("length", length);
+        checkNonNegative(begin, "index");
+        checkNonNegative(length, "length");
 
         return getMode(sample, begin, length);
     }
@@ -540,21 +548,54 @@ public final class MathUtils {
      * @param values input date
      * @param begin  begin index (0-based)
      * @param length number of elements to include
-     * @return array of most frequently occuring element(s) sorted in ascending order.
+     * @return array of most frequently occurring element(s) sorted in ascending order.
      */
     private static double[] getMode(double[] values, final int begin, final int length) {
-        Counter<Double> counter = new Counter<>();
+        Multiset<Double> set = HashMultiset.create();
         for (int i = begin; i < begin + length; i++) {
             double value = values[i];
             if (!Double.isNaN(value)) {
-                counter.increase(value);
+                set.add(value);
             }
         }
-        List<Double> modes = counter.getMode();
-        modes.sort(Comparator.naturalOrder());
+        int maxCount = 0;
+        for (Multiset.Entry<Double> entry : set.entrySet()) {
+            int count = entry.getCount();
+            maxCount = Math.max(maxCount, count);
+        }
+        DoubleList modeList = new DoubleArrayList();
+        for (Multiset.Entry<Double> entry : set.entrySet()) {
+            if (entry.getCount() == maxCount) {
+                modeList.add(entry.getElement());
+            }
+        }
 
-        return modes.stream().mapToDouble(Double::doubleValue).toArray();
+        modeList.sort(DoubleComparators.NATURAL_COMPARATOR);
+        return modeList.toDoubleArray();
     }
+
+    /**
+     * Return modes in a {@link Multiset}, {@link Multiset} holds element types and counts.
+     *
+     * @param set {@link Multiset}
+     * @param <E> element type
+     * @return list of all modes (with same maximum count)
+     */
+    public static <E> List<E> getMode(Multiset<E> set) {
+        int maxCount = 0;
+        for (Multiset.Entry<E> entry : set.entrySet()) {
+            int count = entry.getCount();
+            maxCount = Math.max(maxCount, count);
+        }
+        List<E> modeList = new ArrayList<>();
+        for (Multiset.Entry<E> entry : set.entrySet()) {
+            if (entry.getCount() == maxCount) {
+                modeList.add(entry.getElement());
+            }
+        }
+        return modeList;
+    }
+
 
     /**
      * The input is an array of box, and the array value is the number of balls.

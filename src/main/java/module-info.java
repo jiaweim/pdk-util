@@ -12,6 +12,7 @@ module pdk.util {
     requires org.apache.commons.statistics.descriptive;
     requires org.apache.commons.numbers.combinatorics;
     requires org.apache.commons.numbers.core;
+    requires com.google.common;
 
     // exports
     exports pdk.util;

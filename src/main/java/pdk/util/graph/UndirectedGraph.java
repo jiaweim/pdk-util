@@ -29,6 +29,11 @@ public class UndirectedGraph<V> extends AbstractGraph<V> {
         this(Arrays.asList(nodes));
     }
 
+    /**
+     * Initialize a {@link UndirectedGraph} from a given set of nodes
+     *
+     * @param nodes node collection
+     */
     public UndirectedGraph(Collection<V> nodes) {
         super(nodes);
         adjacencyMap_ = new HashMap<>(getNodeCount());

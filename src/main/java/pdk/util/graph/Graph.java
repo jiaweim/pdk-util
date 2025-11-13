@@ -92,7 +92,9 @@ public interface Graph<V> {
     Set<Edge<V>> getEdgeSet();
 
     /**
-     * @return number of edges in the graph
+     * Return the number of edges in the graph
+     *
+     * @return edge count
      */
     int getEdgeCount();
 
@@ -125,6 +127,7 @@ public interface Graph<V> {
     /**
      * Return the degree of the node, including in-degree and out-degree for directed-graph.
      *
+     * @param node a node
      * @return the degree of the node
      */
     int getDegree(V node);

@@ -120,6 +120,9 @@ public class XMLUtils {
     public static XMLStreamReader createReader(InputStream inputStream, int size) throws XMLStreamException {
         XMLInputFactory factory = XMLInputFactory.newFactory();
         factory.setProperty(XMLInputFactory.IS_COALESCING, Boolean.TRUE);
+        // make it large enough for mzML and mzid files
+        factory.setProperty("http://www.oracle.com/xml/jaxp/properties/maxGeneralEntitySizeLimit", 0);
+        factory.setProperty("http://www.oracle.com/xml/jaxp/properties/totalEntitySizeLimit", 0);
 
         XMLStreamReader reader;
         if (inputStream instanceof BufferedInputStream)

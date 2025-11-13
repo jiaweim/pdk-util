@@ -4,8 +4,8 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
-import static java.util.Objects.requireNonNull;
 import static pdk.util.ArgUtils.checkNonNegative;
+import static pdk.util.ArgUtils.checkNotNull;
 
 /**
  * Class to format number values.
@@ -34,7 +34,7 @@ public class DecimalFormatUtils {
      * @return instance of DecimalFormat.
      */
     public static DecimalFormat scientific(int maxFractionDigits) {
-        checkNonNegative("fraction digit", maxFractionDigits);
+        checkNonNegative(maxFractionDigits, "fraction digit");
 
         return valueOf(1, true, maxFractionDigits, true, true);
     }
@@ -58,8 +58,8 @@ public class DecimalFormatUtils {
      * @return instance of DecimalFormat.
      */
     public static DecimalFormat valueOf(int maxIntegerDigits, int maxFractionDigits) {
-        checkNonNegative("max fraction digit", maxFractionDigits);
-        checkNonNegative("max integer digit", maxIntegerDigits);
+        checkNonNegative(maxFractionDigits, "max fraction digit");
+        checkNonNegative(maxIntegerDigits, "max integer digit");
 
         return valueOf(maxIntegerDigits, false, maxFractionDigits, false, false);
     }
@@ -78,8 +78,8 @@ public class DecimalFormatUtils {
     public static DecimalFormat valueOf(int maxInteger, boolean optionalInteger,
             int maxFractionDigits, boolean optionalFraction, boolean scientific) {
 
-        checkNonNegative("max integer digit", maxInteger);
-        checkNonNegative("max fraction digit", maxFractionDigits);
+        checkNonNegative(maxInteger, "max integer digit");
+        checkNonNegative(maxFractionDigits, "max fraction digit");
 
         return valueOf(createDecimalPattern(maxInteger, maxFractionDigits, optionalInteger, optionalFraction, scientific));
     }
@@ -91,7 +91,7 @@ public class DecimalFormatUtils {
      * @return {@link DecimalFormat} instance
      */
     public static DecimalFormat valueOf(String pattern) {
-        requireNonNull(pattern);
+        checkNotNull(pattern);
         return new DecimalFormat(pattern, US);
     }
 

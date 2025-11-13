@@ -17,7 +17,7 @@ public final class FileUtils {
     private FileUtils() {}
 
     /**
-     * append a suffix to current filename to generate a new file name.
+     * Append a suffix to a filename to generate a new file name.
      *
      * @param filename the filename to append a suffix.
      * @param suffix   suffix to added

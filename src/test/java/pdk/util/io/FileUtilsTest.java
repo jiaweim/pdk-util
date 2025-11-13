@@ -19,4 +19,11 @@ class FileUtilsTest {
         String s = FileUtils.appendSuffix(path, ".decoy");
         assertEquals("G:\\dataset\\a.decoy.fasta", s);
     }
+
+    @Test
+    void appendSuffix2(){
+        String path = "E:\\dataset\\test.psm.tsv";
+        String s = FileUtils.appendSuffix(path, ".decoy");
+        System.out.println(s);
+    }
 }

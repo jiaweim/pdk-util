@@ -4,7 +4,7 @@ package pdk.util;
  * Class for argument check.
  *
  * @author Jiawei Mao
- * @version 1.0.0
+ * @version 1.1.0
  * @since 01 Jul 2024, 5:20 PM
  */
 public final class ArgUtils {
@@ -78,7 +78,6 @@ public final class ArgUtils {
             return String.format("%s (%s) must not be greater than size (%s)", desc, index, size);
         }
     }
-
 
     /**
      * Ensures that {@code index} specifies a valid <i>element</i> in an array, list or string of size
@@ -189,6 +188,11 @@ public final class ArgUtils {
 
     /**
      * Ensures the truth of an expression involving one or more parameters to the calling method.
+     *
+     * @param b                    boolean expression
+     * @param errorMessageTemplate error message template used in {@link String#format(String, Object...)}
+     * @param p1                   a long for {@link String#format(String, Object...)}
+     * @param p2                   the second long for {@link String#format(String, Object...)}
      */
     public static void checkArgument(boolean b, String errorMessageTemplate, long p1, long p2) {
         if (!b) {
@@ -198,33 +202,16 @@ public final class ArgUtils {
 
     /**
      * Ensures the truth of an expression involving one or more parameters to the calling method.
+     *
+     * @param b                    boolean expression
+     * @param errorMessageTemplate error message template used in {@link String#format(String, Object...)}
+     * @param p1                   a long for {@link String#format(String, Object...)}
+     * @param p2                   the second argument for {@link String#format(String, Object...)}
      */
-    public static void checkArgument(
-            boolean b, String errorMessageTemplate, long p1, Object p2) {
+    public static void checkArgument(boolean b, String errorMessageTemplate, long p1, Object p2) {
         if (!b) {
             throw new IllegalArgumentException(String.format(errorMessageTemplate, p1, p2));
         }
-    }
-
-    public static int checkNonNegative(String role, int x) {
-        if (x < 0) {
-            throw new IllegalArgumentException(role + " (" + x + ") must be >= 0");
-        }
-        return x;
-    }
-
-    public static long checkNonNegative(String role, long x) {
-        if (x < 0) {
-            throw new IllegalArgumentException(role + " (" + x + ") must be >= 0");
-        }
-        return x;
-    }
-
-    public static double checkNonNegative(String role, double x) {
-        if (!(x >= 0)) { // not x < 0, to work with NaN.
-            throw new IllegalArgumentException(role + " (" + x + ") must be >= 0");
-        }
-        return x;
     }
 
     /**
@@ -274,18 +261,46 @@ public final class ArgUtils {
         return reference;
     }
 
-    public static long checkNonNegative(long value, String name) {
+    /**
+     * Make use the {@code value} is nonnegative
+     *
+     * @param value a long value
+     * @param role  role of the value
+     * @return the value
+     */
+    public static long checkNonNegative(long value, String role) {
         if (value < 0) {
-            throw new IllegalArgumentException(name + " cannot be negative but was: " + value);
+            throw new IllegalArgumentException(role + " (" + value + ") must be >= 0");
         }
         return value;
     }
 
-    public static int checkNonNegative(int value, String name) {
+    /**
+     * Make use the {@code value} is nonnegative
+     *
+     * @param value value to check
+     * @param role  name of the value
+     * @return the value
+     */
+    public static int checkNonNegative(int value, String role) {
         if (value < 0) {
-            throw new IllegalArgumentException(name + " cannot be negative but was: " + value);
+            throw new IllegalArgumentException(role + " (" + value + ") must be >= 0");
         }
         return value;
+    }
+
+    /**
+     * Make use the {@code value} is nonnegative
+     *
+     * @param x    value to check
+     * @param role name of the value
+     * @return the value
+     */
+    public static double checkNonNegative(double x, String role) {
+        if (!(x >= 0)) { // not x < 0, to work with NaN.
+            throw new IllegalArgumentException(role + " (" + x + ") must be >= 0");
+        }
+        return x;
     }
 
     /**
