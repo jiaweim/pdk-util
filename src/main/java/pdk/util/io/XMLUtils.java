@@ -391,6 +391,38 @@ public class XMLUtils {
     }
 
     /**
+     * Return the value of a given attribute, if the attribute does not exist, return null
+     *
+     * @param reader   {@link XMLStreamReader}
+     * @param attrName attribute name
+     * @return attribute value, null for absent
+     */
+    public static @Nullable Byte byteAttr(XMLStreamReader reader, String attrName) {
+        Byte value = null;
+        String attrValue = reader.getAttributeValue(null, attrName);
+        if (attrValue != null) {
+            value = Byte.parseByte(attrValue);
+        }
+        return value;
+    }
+
+    /**
+     * Return the value of a given attribute, if the attribute does not exist, throw {@link XMLStreamException}
+     *
+     * @param reader   {@link XMLStreamReader}
+     * @param attrName attribute name
+     * @return attribute value
+     * @throws XMLStreamException if the attribute does not exist
+     */
+    public static byte requiredByteAttr(XMLStreamReader reader, String attrName) throws XMLStreamException {
+        String attrValue = reader.getAttributeValue(null, attrName);
+        if (attrValue == null) {
+            throw new XMLStreamException(String.format("%s miss attr %s", reader.getLocalName(), attrName));
+        }
+        return Byte.parseByte(attrValue);
+    }
+
+    /**
      * Return the value of given attributes.
      *
      * @return Float attribute value, null for absent

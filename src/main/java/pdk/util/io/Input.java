@@ -20,7 +20,13 @@ public class Input extends InputStream {
     // Maximum reasonable array length. See: https://stackoverflow.com/questions/3038392/do-java-arrays-have-a-maximum-size
     public static final int maxArraySize = Integer.MAX_VALUE - 8;
 
+    /**
+     * buffer to hold data
+     */
     protected byte[] buffer;
+    /**
+     * position in the buffer
+     */
     protected int position;
     protected int capacity;
     /**
@@ -1250,6 +1256,10 @@ public class Input extends InputStream {
 
     /**
      * Reads a double array in bulk. This may be more efficient than reading them individually.
+     *
+     * @param length number of double to read
+     * @return read double values
+     * @throws PDKRuntimeException for reading error
      */
     public double[] readDoubles(int length) throws PDKRuntimeException {
         double[] array = new double[length];
@@ -1276,6 +1286,10 @@ public class Input extends InputStream {
 
     /**
      * Reads a short array in bulk. This may be more efficient than reading them individually.
+     *
+     * @param length number of short to read
+     * @return read short values
+     * @throws PDKRuntimeException for reading error
      */
     public short[] readShorts(int length) throws PDKRuntimeException {
         short[] array = new short[length];
@@ -1294,6 +1308,10 @@ public class Input extends InputStream {
 
     /**
      * Reads a char array in bulk. This may be more efficient than reading them individually.
+     *
+     * @param length number of char to read
+     * @return read char values
+     * @throws PDKRuntimeException for reading error
      */
     public char[] readChars(int length) throws PDKRuntimeException {
         char[] array = new char[length];
@@ -1312,6 +1330,10 @@ public class Input extends InputStream {
 
     /**
      * Reads a boolean array in bulk. This may be more efficient than reading them individually.
+     *
+     * @param length number of boolean to read
+     * @return read boolean values
+     * @throws PDKRuntimeException for reading error
      */
     public boolean[] readBooleans(int length) throws PDKRuntimeException {
         boolean[] array = new boolean[length];
