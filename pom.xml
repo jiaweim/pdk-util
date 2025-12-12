@@ -3,9 +3,11 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <groupId>io.github.jiaweim</groupId>
     <artifactId>pdk-util</artifactId>
-    <version>1.14.0</version>
+    <version>1.15.0</version>
+
     <name>Proteomics Utilities</name>
     <url>https://github.com/jiaweim/pdk-util</url>
     <description>
@@ -19,11 +21,36 @@
         <skipTests>true</skipTests>
     </properties>
 
-    <!--2025-11-13-->
+    <!--2025-12-11-->
     <dependencies>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-statistics-inference</artifactId>
+        </dependency>
+        <!-- Random number generator-->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-rng-simple</artifactId>
+        </dependency>
+        <!-- Sampling -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-rng-sampling</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.haifengl</groupId>
+            <artifactId>smile-core</artifactId>
+            <version>5.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jfree</groupId>
+            <artifactId>jfreechart</artifactId>
+            <version>1.5.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jfree</groupId>
+            <artifactId>org.jfree.svg</artifactId>
+            <version>5.0.7</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
@@ -61,6 +88,12 @@
             <version>6.0.1</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>3.27.6</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
@@ -69,6 +102,13 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-statistics-bom</artifactId>
                 <version>1.2</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-rng-bom</artifactId>
+                <version>1.6</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -90,7 +130,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.3.1</version>
+                <version>3.4.0</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>

@@ -6,6 +6,8 @@ import pdk.util.data.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
+import static pdk.util.ArgUtils.checkArgument;
+
 /**
  * A function for the form {@code y=f(x)}
  *
@@ -32,7 +34,7 @@ public interface Func2D {
      * @return list of {@link Point2D}
      */
     default List<Point2D> sample(double start, double end, int samples) {
-        ArgUtils.checkArgument(start < end, "Require start < end");
+        checkArgument(start < end, "Require start < end");
         double step = (end - start) / (samples - 1);
         List<Point2D> list = new ArrayList<>(samples);
         for (int i = 0; i < samples; i++) {

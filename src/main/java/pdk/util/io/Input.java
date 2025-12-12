@@ -28,11 +28,17 @@ public class Input extends InputStream {
      * position in the buffer
      */
     protected int position;
+    /**
+     * capacity of the buffer
+     */
     protected int capacity;
     /**
      * current data length in buffer
      */
     protected int limit;
+    /**
+     * the total number of byte read
+     */
     protected long total;
     protected char[] chars = new char[32];
     protected InputStream inputStream;

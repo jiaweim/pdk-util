@@ -8,11 +8,23 @@ module pdk.util {
     requires org.jheaps;
     requires it.unimi.dsi.fastutil;
     requires org.apache.commons.io;
+    requires com.google.common;
+
+    // statistics
     requires org.apache.commons.numbers.gamma;
     requires org.apache.commons.statistics.descriptive;
     requires org.apache.commons.numbers.combinatorics;
     requires org.apache.commons.numbers.core;
-    requires com.google.common;
+    requires org.apache.commons.statistics.distribution;
+    requires org.apache.commons.rng.sampling;
+
+    // GUI
+    requires java.desktop;
+    requires org.jfree.jfreechart;
+    requires org.jfree.svg;
+    requires org.apache.commons.rng.simple;
+    requires org.apache.commons.rng.api;
+
 
     // exports
     exports pdk.util;

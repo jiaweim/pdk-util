@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.offset;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -94,7 +96,7 @@ class MathUtilsTest {
         double[] values = new double[]{4, 7, 6, 7, 9, 5, 8, 10, 9, 8, 7, 10};
         double variance = MathUtils.variance(values);
         assertEquals(3.5, variance, 0.1);
-        assertEquals(1.9, MathUtils.standardDeviation(values), 0.1);
+        assertThat(MathUtils.standardDeviation(values)).isCloseTo(1.9, offset(0.1));
 
         values = new double[]{
                 51, 30, 15,
