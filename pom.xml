@@ -38,11 +38,6 @@
             <artifactId>commons-rng-sampling</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.haifengl</groupId>
-            <artifactId>smile-core</artifactId>
-            <version>5.0.1</version>
-        </dependency>
-        <dependency>
             <groupId>org.jfree</groupId>
             <artifactId>jfreechart</artifactId>
             <version>1.5.6</version>
