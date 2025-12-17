@@ -101,6 +101,22 @@ public final class MathUtils {
     /**
      * Return sum of values in array.
      * <p>
+     * If there are no values in the dataset, 0 is returned.
+     *
+     * @param array an int array
+     * @return sum⭐
+     */
+    public static int sum(int[] array) {
+        int sum = 0;
+        for (int j : array) {
+            sum += j;
+        }
+        return sum;
+    }
+
+    /**
+     * Return sum of values in array.
+     * <p>
      * If there are no values in the dataset, 0 is returned. If any of the values are {@link Double#NaN},
      * {@link Double#NaN} is returned.
      *

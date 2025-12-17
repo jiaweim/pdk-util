@@ -11,20 +11,20 @@ module pdk.util {
     requires com.google.common;
 
     // statistics
-    requires org.apache.commons.numbers.gamma;
     requires org.apache.commons.statistics.descriptive;
+    requires org.apache.commons.statistics.distribution;
+    requires org.apache.commons.numbers.gamma;
     requires org.apache.commons.numbers.combinatorics;
     requires org.apache.commons.numbers.core;
-    requires org.apache.commons.statistics.distribution;
+    requires org.apache.commons.numbers.arrays;
     requires org.apache.commons.rng.sampling;
+    requires org.apache.commons.rng.simple;
+    requires org.apache.commons.rng.api;
 
     // GUI
     requires java.desktop;
     requires org.jfree.jfreechart;
     requires org.jfree.svg;
-    requires org.apache.commons.rng.simple;
-    requires org.apache.commons.rng.api;
-
 
     // exports
     exports pdk.util;

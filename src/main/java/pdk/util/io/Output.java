@@ -66,6 +66,7 @@ public class Output extends OutputStream implements AutoCloseable {
     /**
      * Creates a new Output for writing to a byte[].
      *
+     * @param buffer target buffer
      * @see #setBuffer(byte[])
      */
     public Output(byte[] buffer) {
@@ -75,15 +76,20 @@ public class Output extends OutputStream implements AutoCloseable {
     /**
      * Creates a new Output for writing to a byte[].
      *
+     * @param buffer        buffer
+     * @param maxBufferSize maximum buffer size
      * @see #setBuffer(byte[], int)
      */
     public Output(byte[] buffer, int maxBufferSize) {
-        if (buffer == null) throw new IllegalArgumentException("buffer cannot be null.");
+        if (buffer == null)
+            throw new IllegalArgumentException("buffer cannot be null.");
         setBuffer(buffer, maxBufferSize);
     }
 
     /**
      * Creates a new Output for writing to an OutputStream. A buffer size of 4096 is used.
+     *
+     * @param outputStream target {@link OutputStream}
      */
     public Output(OutputStream outputStream) {
         this(4096, 4096);
@@ -93,6 +99,9 @@ public class Output extends OutputStream implements AutoCloseable {
 
     /**
      * Creates an Output for writing to an {@link OutputStream} with the specified buffer size.
+     *
+     * @param outputStream {@link OutputStream} to write
+     * @param bufferSize   buffer size
      */
     public Output(OutputStream outputStream, int bufferSize) {
         this(bufferSize, bufferSize);
@@ -118,6 +127,7 @@ public class Output extends OutputStream implements AutoCloseable {
     /**
      * Sets a new buffer to write to. The max size is the buffer's length.
      *
+     * @param buffer buffer
      * @see #setBuffer(byte[], int)
      */
     public void setBuffer(byte[] buffer) {
@@ -128,14 +138,17 @@ public class Output extends OutputStream implements AutoCloseable {
      * Sets a new buffer to write to. The bytes are not copied, the old buffer is discarded and the new buffer used in its place.
      * The position and total are reset. The {@link #setOutputStream(OutputStream) OutputStream} is set to null.
      *
+     * @param buffer        buffer to set
      * @param maxBufferSize If {@link #flush()} does not empty the buffer, the buffer is doubled as needed until it exceeds
      *                      maxBufferSize and an exception is thrown. Can be -1 for no maximum.
      */
     public void setBuffer(byte[] buffer, int maxBufferSize) {
-        if (buffer == null) throw new IllegalArgumentException("buffer cannot be null.");
-        if (buffer.length > maxBufferSize && maxBufferSize != -1) throw new IllegalArgumentException(
-                "buffer has length: " + buffer.length + " cannot be greater than maxBufferSize: " + maxBufferSize);
-        if (maxBufferSize < -1) throw new IllegalArgumentException("maxBufferSize cannot be < -1: " + maxBufferSize);
+        if (buffer == null)
+            throw new IllegalArgumentException("buffer cannot be null.");
+        if (buffer.length > maxBufferSize && maxBufferSize != -1)
+            throw new IllegalArgumentException("buffer has length: " + buffer.length + " cannot be greater than maxBufferSize: " + maxBufferSize);
+        if (maxBufferSize < -1)
+            throw new IllegalArgumentException("maxBufferSize cannot be < -1: " + maxBufferSize);
         this.buffer = buffer;
         this.maxCapacity = maxBufferSize == -1 ? Input.maxArraySize : maxBufferSize;
         capacity = buffer.length;
@@ -146,6 +159,8 @@ public class Output extends OutputStream implements AutoCloseable {
 
     /**
      * Returns the buffer. The bytes between 0 and {@link #position()} are the data that has been written.
+     *
+     * @return buffer
      */
     public byte[] getBuffer() {
         return buffer;
@@ -153,6 +168,8 @@ public class Output extends OutputStream implements AutoCloseable {
 
     /**
      * Allocates and returns a new byte[] containing the bytes currently in the buffer between 0 and {@link #position()}.
+     *
+     * @return bytes between 0 and {{@link #position}} in the buffer
      */
     public byte[] toBytes() {
         byte[] newBuffer = new byte[position];
@@ -168,6 +185,8 @@ public class Output extends OutputStream implements AutoCloseable {
      * If false, {@link #writeInt(int, boolean)}, {@link #writeLong(long, boolean)}, {@link #writeInts(int[], int, int, boolean)},
      * and {@link #writeLongs(long[], int, int, boolean)} will use fixed length encoding, which may be faster for some data.
      * Default is true.
+     *
+     * @param varEncoding true if enable var encoding
      */
     public void setVariableLengthEncoding(boolean varEncoding) {
         this.varEncoding = varEncoding;

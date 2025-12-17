@@ -17,7 +17,9 @@ import static java.util.Objects.requireNonNull;
  */
 public class Input extends InputStream {
 
-    // Maximum reasonable array length. See: https://stackoverflow.com/questions/3038392/do-java-arrays-have-a-maximum-size
+    /**
+     * Maximum reasonable array length. See: https://stackoverflow.com/questions/3038392/do-java-arrays-have-a-maximum-size
+     */
     public static final int maxArraySize = Integer.MAX_VALUE - 8;
 
     /**
@@ -42,6 +44,9 @@ public class Input extends InputStream {
     protected long total;
     protected char[] chars = new char[32];
     protected InputStream inputStream;
+    /**
+     * true if enable variable encoding
+     */
     protected boolean varEncoding = true;
 
     /**
@@ -145,6 +150,11 @@ public class Input extends InputStream {
         return buffer;
     }
 
+    /**
+     * {@link InputStream} source
+     *
+     * @return the {@link InputStream}
+     */
     public InputStream getInputStream() {
         return inputStream;
     }
