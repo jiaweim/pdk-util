@@ -331,6 +331,11 @@ public class Output extends OutputStream implements AutoCloseable {
 
     /**
      * Writes the bytes. Note the number of bytes is not written.
+     *
+     * @param bytes  bytes
+     * @param offset offset
+     * @param count  number of bytes
+     * @throws PDKRuntimeException for writing exception
      */
     public void writeBytes(byte[] bytes, int offset, int count) throws PDKRuntimeException {
         requireNonNull(bytes);
@@ -348,7 +353,11 @@ public class Output extends OutputStream implements AutoCloseable {
 
     /**
      * Writes count bytes from long, the last byte written is the lowest byte from the long.
+     * <p>
      * Note the number of bytes is not written.
+     *
+     * @param bytes int to write
+     * @param count byte count
      */
     public void writeInt(int bytes, int count) {
         if (count < 0 || count > 4) throw new IllegalArgumentException("count must be >= 0 and <= 4: " + count);
@@ -379,7 +388,11 @@ public class Output extends OutputStream implements AutoCloseable {
 
     /**
      * Writes count bytes from long, the last byte written is the lowest byte from the long.
+     * <p>
      * Note the number of bytes is not written.
+     *
+     * @param bytes long to write
+     * @param count number of bytes
      */
     public void writeLong(long bytes, int count) {
         if (count < 0 || count > 8) throw new IllegalArgumentException("count must be >= 0 and <= 8: " + count);
@@ -396,6 +409,9 @@ public class Output extends OutputStream implements AutoCloseable {
 
     /**
      * Writes a 4 byte int.
+     *
+     * @param value value to write
+     * @throws PDKRuntimeException
      */
     public void writeInt(int value) throws PDKRuntimeException {
         require(4);
@@ -413,6 +429,8 @@ public class Output extends OutputStream implements AutoCloseable {
      * {@link #writeVarInt(int, boolean)} explicitly when writing values that should always use variable length encoding (eg values
      * that appear many times).
      *
+     * @param value            value to write
+     * @param optimizePositive true if optimize positive value
      * @return The number of bytes written.
      * @see #intLength(int, boolean)
      */

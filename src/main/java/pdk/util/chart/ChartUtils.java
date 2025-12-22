@@ -6,16 +6,20 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.labels.StandardXYToolTipGenerator;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYAreaRenderer;
+import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.chart.ui.ApplicationFrame;
 import org.jfree.chart.ui.UIUtils;
 import org.jfree.chart.urls.StandardXYURLGenerator;
+import org.jfree.chart.util.Args;
 import org.jfree.data.general.DatasetUtils;
+import org.jfree.data.xy.IntervalXYDataset;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
@@ -79,6 +83,66 @@ public final class ChartUtils {
             renderer.setURLGenerator(new StandardXYURLGenerator());
         }
 
+        JFreeChart chart = new JFreeChart(title, JFreeChart.DEFAULT_TITLE_FONT, plot, legend);
+        defaultTheme.apply(chart);
+        return chart;
+    }
+
+    /**
+     * Creates a histogram chart.  This chart is constructed with an
+     * {@link XYPlot} using an {@link XYBarRenderer}.  The domain and range
+     * axes are {@link NumberAxis} instances.
+     *
+     * @param title      the chart title ({@code null} permitted).
+     * @param xAxisLabel the x axis label ({@code null} permitted).
+     * @param yAxisLabel the y axis label ({@code null} permitted).
+     * @param dataset    the dataset ({@code null} permitted).
+     * @return A chart.
+     */
+    public static JFreeChart createHistogram(String title,
+            String xAxisLabel, String yAxisLabel, IntervalXYDataset dataset) {
+        return createHistogram(title, xAxisLabel, yAxisLabel, dataset,
+                PlotOrientation.VERTICAL, true, true, false);
+    }
+
+    /**
+     * Creates a histogram chart.  This chart is constructed with an
+     * {@link XYPlot} using an {@link XYBarRenderer}.  The domain and range
+     * axes are {@link NumberAxis} instances.
+     *
+     * @param title       the chart title ({@code null} permitted).
+     * @param xAxisLabel  the x axis label ({@code null} permitted).
+     * @param yAxisLabel  the y axis label ({@code null} permitted).
+     * @param dataset     the dataset ({@code null} permitted).
+     * @param orientation the orientation (horizontal or vertical)
+     *                    ({@code null} NOT permitted).
+     * @param legend      create a legend?
+     * @param tooltips    display tooltips?
+     * @param urls        generate URLs?
+     * @return The chart.
+     */
+    public static JFreeChart createHistogram(String title,
+            String xAxisLabel, String yAxisLabel, IntervalXYDataset dataset,
+            PlotOrientation orientation, boolean legend, boolean tooltips,
+            boolean urls) {
+
+        Args.nullNotPermitted(orientation, "orientation");
+        NumberAxis xAxis = new NumberAxis(xAxisLabel);
+        xAxis.setAutoRangeIncludesZero(false);
+        ValueAxis yAxis = new NumberAxis(yAxisLabel);
+
+        XYItemRenderer renderer = new XYBarRenderer();
+        if (tooltips) {
+            renderer.setDefaultToolTipGenerator(new StandardXYToolTipGenerator());
+        }
+        if (urls) {
+            renderer.setURLGenerator(new StandardXYURLGenerator());
+        }
+
+        XYPlot plot = new XYPlot(dataset, xAxis, yAxis, renderer);
+        plot.setOrientation(orientation);
+        plot.setDomainZeroBaselineVisible(true);
+        plot.setRangeZeroBaselineVisible(true);
         JFreeChart chart = new JFreeChart(title, JFreeChart.DEFAULT_TITLE_FONT, plot, legend);
         defaultTheme.apply(chart);
         return chart;
