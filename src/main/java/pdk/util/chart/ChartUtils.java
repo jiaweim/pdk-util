@@ -183,6 +183,23 @@ public final class ChartUtils {
     }
 
     /**
+     * Display a {@link JFreeChart}
+     *
+     * @param chart  {@link JFreeChart} instance
+     * @param width  width
+     * @param height height
+     */
+    public static void showChart(JFreeChart chart, int width, int height) {
+        ApplicationFrame frame = new ApplicationFrame("");
+        ChartPanel chartPanel = new ChartPanel(chart);
+        chartPanel.setPreferredSize(new Dimension(width, height));
+        frame.setContentPane(chartPanel);
+        frame.pack();
+        UIUtils.centerFrameOnScreen(frame);
+        frame.setVisible(true);
+    }
+
+    /**
      * Create a {@link JFreeChart} to show the probability density for a {@link ContinuousDistribution},
      * you can display it with {@link #showChart(JFreeChart)}.
      *
