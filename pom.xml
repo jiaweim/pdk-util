@@ -6,7 +6,7 @@
 
     <groupId>io.github.jiaweim</groupId>
     <artifactId>pdk-util</artifactId>
-    <version>1.21.0</version>
+    <version>1.22.0</version>
 
     <name>Proteomics Utilities</name>
     <url>https://github.com/jiaweim/pdk-util</url>

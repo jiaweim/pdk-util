@@ -520,6 +520,24 @@ public final class MathUtils {
     }
 
     /**
+     * Return the greatest value present in {@code values} with its index
+     *
+     * @param values a list of double values
+     * @return the greatest value with its index
+     */
+    public static Tuple2<Integer, Double> maxIndex(double[] values) {
+        double max = Double.NEGATIVE_INFINITY;
+        int index = -1;
+        for (int i = 0; i < values.length; i++) {
+            if (values[i] > max) {
+                max = values[i];
+                index = i;
+            }
+        }
+        return Tuple.of(index, max);
+    }
+
+    /**
      * Returns the least value present in {@code array}.
      *
      * @param array a <i>nonempty</i> array of {@code int} values
