@@ -1,6 +1,7 @@
 package pdk.util.math;
 
 import org.junit.jupiter.api.Test;
+import pdk.util.data.Point2D;
 
 import java.util.List;
 
@@ -17,6 +18,20 @@ class MathUtilsTest {
 
     private static final double EPS = 1E-15;
 
+
+    @Test
+    void linearInterpolateX() {
+        Point2D p1 = new Point2D(1, 1);
+        Point2D p2 = new Point2D(2, 2);
+        assertThat(MathUtils.linearInterpolateX(p1, p2, 3)).isEqualTo(3.0);
+    }
+
+    @Test
+    void linearInterpolateY() {
+        Point2D p1 = new Point2D(1, 1);
+        Point2D p2 = new Point2D(2, 2);
+        assertThat(MathUtils.linearInterpolateY(p1, p2, 3)).isEqualTo(3.0);
+    }
 
     @Test
     void factorial() {

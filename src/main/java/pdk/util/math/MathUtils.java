@@ -822,8 +822,21 @@ public final class MathUtils {
      * @param x3     the x value of the third point
      * @return y value of the third point
      */
-    public static double linearInterpolate(Point2D point1, Point2D point2, double x3) {
+    public static double linearInterpolateY(Point2D point1, Point2D point2, double x3) {
         double k = (point2.getY() - point1.getY()) / (point2.getX() - point1.getX());
         return k * (x3 - point1.getX()) + point1.getY();
+    }
+
+    /**
+     * Based on the line determined by two points, determine the x value of the third point
+     *
+     * @param point1 a {@link Point2D}
+     * @param point2 a {@link Point2D}
+     * @param y3     the y value of the third point
+     * @return x value of the third point
+     */
+    public static double linearInterpolateX(Point2D point1, Point2D point2, double y3) {
+        double k = (point2.getY() - point1.getY()) / (point2.getX() - point1.getX());
+        return (y3 - point1.getY()) / k + point1.getX();
     }
 }
