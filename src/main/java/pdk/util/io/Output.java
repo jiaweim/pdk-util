@@ -585,6 +585,8 @@ public class Output extends OutputStream implements AutoCloseable {
      * {@link #writeVarLong(long, boolean)} explicitly when writing values that should always use variable length encoding (eg
      * values that appear many times).
      *
+     * @param value            value to write
+     * @param optimizePositive true if optimize for positive value
      * @return The number of bytes written.
      * @see #longLength(int, boolean)
      */
@@ -598,6 +600,7 @@ public class Output extends OutputStream implements AutoCloseable {
     /**
      * Writes a 1-9 byte long.
      *
+     * @param value            value to write
      * @param optimizePositive If true, small positive numbers will be more efficient (1 byte) and small negative numbers will be
      *                         inefficient (9 bytes).
      * @return The number of bytes written.
@@ -711,6 +714,10 @@ public class Output extends OutputStream implements AutoCloseable {
 
     /**
      * Returns the number of bytes that would be written with {@link #writeLong(long, boolean)}.
+     *
+     * @param value            value to write
+     * @param optimizePositive true if optimize for positive value
+     * @return the coding length
      */
     public int longLength(int value, boolean optimizePositive) {
         if (varEncoding) return varLongLength(value, optimizePositive);

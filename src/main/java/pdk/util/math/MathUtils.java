@@ -482,6 +482,23 @@ public final class MathUtils {
     }
 
     /**
+     * Returns the greatest value present in {@code collection}.
+     *
+     * @param collection a collection of double values
+     * @return the value present in {@code collection} that is greater than or equal to every other value
+     * in the collection
+     */
+    public static double max(Collection<Double> collection) {
+        checkNotNull(collection);
+        checkArgument(!collection.isEmpty());
+        double max = Double.NEGATIVE_INFINITY;
+        for (Double value : collection) {
+            max = Math.max(max, value);
+        }
+        return max;
+    }
+
+    /**
      * Returns the least value present in {@code array}.
      *
      * @param array a <i>nonempty</i> array of {@code int} values

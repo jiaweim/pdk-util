@@ -28,6 +28,7 @@ module pdk.util {
 
     // exports
     exports pdk.util;
+    exports pdk.util.chart;
     exports pdk.util.data;
     exports pdk.util.data.func;
     exports pdk.util.exception;
