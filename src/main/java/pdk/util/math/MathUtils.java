@@ -14,6 +14,8 @@ import org.apache.commons.numbers.core.Precision;
 import org.apache.commons.numbers.core.Sum;
 import org.apache.commons.statistics.descriptive.*;
 import pdk.util.ArrayUtils;
+import pdk.util.tuple.Tuple;
+import pdk.util.tuple.Tuple2;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -496,6 +498,24 @@ public final class MathUtils {
             max = Math.max(max, value);
         }
         return max;
+    }
+
+    /**
+     * Return the greatest value present in {@code values} with its index
+     *
+     * @param values a list of double values
+     * @return the greatest value with its index
+     */
+    public static Tuple2<Integer, Double> maxIndex(List<Double> values) {
+        double max = Double.NEGATIVE_INFINITY;
+        int index = -1;
+        for (int i = 0; i < values.size(); i++) {
+            if (values.get(i) > max) {
+                max = values.get(i);
+                index = i;
+            }
+        }
+        return Tuple.of(index, max);
     }
 
     /**
