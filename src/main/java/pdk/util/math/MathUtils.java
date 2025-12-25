@@ -14,6 +14,7 @@ import org.apache.commons.numbers.core.Precision;
 import org.apache.commons.numbers.core.Sum;
 import org.apache.commons.statistics.descriptive.*;
 import pdk.util.ArrayUtils;
+import pdk.util.data.Point2D;
 import pdk.util.tuple.Tuple;
 import pdk.util.tuple.Tuple2;
 
@@ -793,5 +794,18 @@ public final class MathUtils {
             while (i < end && input[i] == input[i + 1])
                 i++;
         }
+    }
+
+    /**
+     * Based on the line determined by two points, determine the y value of the third point
+     *
+     * @param point1 a {@link Point2D}
+     * @param point2 a {@link Point2D}
+     * @param x3     the x value of the third point
+     * @return y value of the third point
+     */
+    public static double linearInterpolate(Point2D point1, Point2D point2, double x3) {
+        double k = (point2.getY() - point1.getY()) / (point2.getX() - point1.getX());
+        return k * (x3 - point1.getX()) + point1.getY();
     }
 }
