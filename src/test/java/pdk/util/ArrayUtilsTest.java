@@ -5,10 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
@@ -22,7 +19,7 @@ class ArrayUtilsTest {
     @Test
     void repeat() {
         double[] array = ArrayUtils.repeat(1.0, 2);
-        assertThat(array).containsExactly(1.0, 1.0);
+        assertArrayEquals(new double[]{1.0, 1.0}, array);
     }
 
     @Test
@@ -38,9 +35,9 @@ class ArrayUtilsTest {
         Selection.select(a, 2);
         assertEquals(7.0, a[2]);
 
-        assertThat(ArrayUtils.least(a, 1)).isEqualTo(3.0);
-        assertThat(ArrayUtils.least(a, 2)).isEqualTo(4.0);
-        assertThat(ArrayUtils.least(a, 3)).isEqualTo(7.0);
+        assertEquals(3.0, ArrayUtils.least(a, 1));
+        assertEquals(4.0, ArrayUtils.least(a, 2));
+        assertEquals(7.0, ArrayUtils.least(a, 3));
     }
 
     @Test
@@ -78,37 +75,37 @@ class ArrayUtilsTest {
     @Test
     void greatestDouble() {
         double[] data = {4, 9, 16, 25, 36};
-        assertThat(ArrayUtils.greatest(data, 1)).isEqualTo(36);
-        assertThat(ArrayUtils.greatest(data, 2)).isEqualTo(25);
-        assertThat(ArrayUtils.greatest(data, 3)).isEqualTo(16);
-        assertThat(ArrayUtils.greatest(data, 4)).isEqualTo(9);
-        assertThat(ArrayUtils.greatest(data, 5)).isEqualTo(4);
+        assertEquals(36, ArrayUtils.greatest(data, 1));
+        assertEquals(25, ArrayUtils.greatest(data, 2));
+        assertEquals(16, ArrayUtils.greatest(data, 3));
+        assertEquals(9, ArrayUtils.greatest(data, 4));
+        assertEquals(4, ArrayUtils.greatest(data, 5));
     }
 
     @Test
     void greatestInt() {
         int[] data = {4, 9, 16, 25, 36};
-        assertThat(ArrayUtils.greatest(data, 1)).isEqualTo(36);
-        assertThat(ArrayUtils.greatest(data, 2)).isEqualTo(25);
-        assertThat(ArrayUtils.greatest(data, 3)).isEqualTo(16);
-        assertThat(ArrayUtils.greatest(data, 4)).isEqualTo(9);
-        assertThat(ArrayUtils.greatest(data, 5)).isEqualTo(4);
+        assertEquals(36, ArrayUtils.greatest(data, 1));
+        assertEquals(25, ArrayUtils.greatest(data, 2));
+        assertEquals(16, ArrayUtils.greatest(data, 3));
+        assertEquals(9, ArrayUtils.greatest(data, 4));
+        assertEquals(4, ArrayUtils.greatest(data, 5));
     }
 
     @Test
     void greatestEqual() {
         double[] data = {16, 16, 25, 25, 25, 4, 4, 9, 9, 36};
 
-        assertThat(ArrayUtils.greatest(data, 1)).isEqualTo(36);
-        assertThat(ArrayUtils.greatest(data, 2)).isEqualTo(25);
-        assertThat(ArrayUtils.greatest(data, 3)).isEqualTo(25);
-        assertThat(ArrayUtils.greatest(data, 4)).isEqualTo(25);
-        assertThat(ArrayUtils.greatest(data, 5)).isEqualTo(16);
-        assertThat(ArrayUtils.greatest(data, 6)).isEqualTo(16);
-        assertThat(ArrayUtils.greatest(data, 7)).isEqualTo(9);
-        assertThat(ArrayUtils.greatest(data, 8)).isEqualTo(9);
-        assertThat(ArrayUtils.greatest(data, 9)).isEqualTo(4);
-        assertThat(ArrayUtils.greatest(data, 10)).isEqualTo(4);
+        assertEquals(36, ArrayUtils.greatest(data, 1));
+        assertEquals(25, ArrayUtils.greatest(data, 2));
+        assertEquals(25, ArrayUtils.greatest(data, 3));
+        assertEquals(25, ArrayUtils.greatest(data, 4));
+        assertEquals(16, ArrayUtils.greatest(data, 5));
+        assertEquals(16, ArrayUtils.greatest(data, 6));
+        assertEquals(9, ArrayUtils.greatest(data, 7));
+        assertEquals(9, ArrayUtils.greatest(data, 8));
+        assertEquals(4, ArrayUtils.greatest(data, 9));
+        assertEquals(4, ArrayUtils.greatest(data, 10));
 
         assertThrows(IllegalArgumentException.class, () -> ArrayUtils.greatest(data, 0));
         assertThrows(IllegalArgumentException.class, () -> ArrayUtils.greatest(data, data.length + 1));
@@ -118,19 +115,19 @@ class ArrayUtilsTest {
     void greatestIntEquals() {
         int[] data = {16, 16, 25, 25, 25, 4, 4, 9, 9, 36};
 
-        assertThat(ArrayUtils.greatest(data, 1)).isEqualTo(36);
-        assertThat(ArrayUtils.greatest(data, 2)).isEqualTo(25);
-        assertThat(ArrayUtils.greatest(data, 3)).isEqualTo(25);
-        assertThat(ArrayUtils.greatest(data, 4)).isEqualTo(25);
-        assertThat(ArrayUtils.greatest(data, 5)).isEqualTo(16);
-        assertThat(ArrayUtils.greatest(data, 6)).isEqualTo(16);
-        assertThat(ArrayUtils.greatest(data, 7)).isEqualTo(9);
-        assertThat(ArrayUtils.greatest(data, 8)).isEqualTo(9);
-        assertThat(ArrayUtils.greatest(data, 9)).isEqualTo(4);
-        assertThat(ArrayUtils.greatest(data, 10)).isEqualTo(4);
+        assertEquals(36, ArrayUtils.greatest(data, 1));
+        assertEquals(25, ArrayUtils.greatest(data, 2));
+        assertEquals(25, ArrayUtils.greatest(data, 3));
+        assertEquals(25, ArrayUtils.greatest(data, 4));
+        assertEquals(16, ArrayUtils.greatest(data, 5));
+        assertEquals(16, ArrayUtils.greatest(data, 6));
+        assertEquals(9, ArrayUtils.greatest(data, 7));
+        assertEquals(9, ArrayUtils.greatest(data, 8));
+        assertEquals(4, ArrayUtils.greatest(data, 9));
+        assertEquals(4, ArrayUtils.greatest(data, 10));
 
-        assertThatThrownBy(() -> ArrayUtils.greatest(data, 0)).isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> ArrayUtils.greatest(data, data.length + 1)).isInstanceOf(IllegalArgumentException.class);
+        assertThrows(IllegalArgumentException.class, () -> ArrayUtils.greatest(data, 0));
+        assertThrows(IllegalArgumentException.class, () -> ArrayUtils.greatest(data, data.length + 1));
     }
 
     @Test
@@ -142,7 +139,7 @@ class ArrayUtilsTest {
         Arrays.sort(b);
 
         assertEquals(b[3], a[3]);
-        assertThat(ArrayUtils.least(a, 3)).isEqualTo(b[2]);
+        assertEquals(ArrayUtils.least(a, 3), b[2]);
     }
 
     @Test
@@ -150,8 +147,8 @@ class ArrayUtilsTest {
         int[] a = {7, 10, 4, 3, 10, 20, 15};
         Selection.select(a, 3);
         assertEquals(10, a[3]);
-        assertThat(ArrayUtils.least(a, 3)).isEqualTo(7);
-        assertThat(ArrayUtils.least(a, 4)).isEqualTo(10);
-        assertThat(ArrayUtils.least(a, 5)).isEqualTo(10);
+        assertEquals(7, ArrayUtils.least(a, 3));
+        assertEquals(10, ArrayUtils.least(a, 4));
+        assertEquals(10, ArrayUtils.least(a, 5));
     }
 }

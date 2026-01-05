@@ -5,7 +5,6 @@ import pdk.util.data.Point2D;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -22,14 +21,14 @@ class MathUtilsTest {
     void linearInterpolateX() {
         Point2D p1 = new Point2D(1, 1);
         Point2D p2 = new Point2D(2, 2);
-        assertThat(MathUtils.linearInterpolateX(p1, p2, 3)).isEqualTo(3.0);
+        assertEquals(3.0, MathUtils.linearInterpolateX(p1, p2, 3));
     }
 
     @Test
     void linearInterpolateY() {
         Point2D p1 = new Point2D(1, 1);
         Point2D p2 = new Point2D(2, 2);
-        assertThat(MathUtils.linearInterpolateY(p1, p2, 3)).isEqualTo(3.0);
+        assertEquals(3.0, MathUtils.linearInterpolateY(p1, p2, 3));
     }
 
     @Test
@@ -43,7 +42,6 @@ class MathUtilsTest {
         assertTrue(MathUtils.isOdd(1));
         assertFalse(MathUtils.isOdd(2));
     }
-
 
     @Test
     void nextPowerOfTwo() {
