@@ -4,6 +4,7 @@ import org.apache.commons.numbers.arrays.Selection;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import static pdk.util.ArgUtils.checkArgument;
@@ -18,6 +19,15 @@ import static pdk.util.ArgUtils.checkArgument;
 public final class ArrayUtils {
 
     private ArrayUtils() {}
+
+    /**
+     * Natural comparator for double
+     */
+    public static final Comparator<Double> DOUBLE_NATURAL_COMPARATOR = Double::compare;
+    /**
+     * Opposite comparator for double
+     */
+    public static final Comparator<Double> DOUBLE_OPPOSITE_COMPARATOR = (o1, o2) -> Double.compare(o2, o1);
 
     /**
      * An empty immutable {@code double} array.

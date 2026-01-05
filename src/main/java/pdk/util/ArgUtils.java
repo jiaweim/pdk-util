@@ -1,5 +1,7 @@
 package pdk.util;
 
+import java.util.Comparator;
+
 /**
  * Class for argument check.
  *
@@ -334,5 +336,25 @@ public final class ArgUtils {
         if (!expression) {
             throw new IllegalStateException(String.valueOf(errorMessage));
         }
+    }
+
+    /**
+     * Test whether the array is in sorted according to the given {@link Comparator}, if the array
+     * does not sorted, throw {@link AssertionError}.
+     *
+     * @param array      double array
+     * @param comparator {@link Comparator} to use
+     * @since 2026-01-05
+     */
+    public static boolean isSorted(double[] array, Comparator<Double> comparator) {
+        if (array.length <= 1)
+            return true;
+        for (int i = 0; i < array.length - 1; i++) {
+            int result = comparator.compare(array[i], array[i + 1]);
+            if (result > 0) {
+                return false;
+            }
+        }
+        return true;
     }
 }
