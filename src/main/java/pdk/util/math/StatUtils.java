@@ -218,19 +218,6 @@ public final class StatUtils {
         return Mean.of(values).getAsDouble();
     }
 
-    /**
-     * calculate the weighted average: \sum{xw}/\sum{w}
-     *
-     * @param values  values
-     * @param weights weight values
-     * @return weighted average, {@link Double#NaN} if the sum of weights is zero
-     * @since 2025-02-14 ⭐
-     */
-    public static double mean(double[] values, double[] weights) {
-        double weightedSum = weightedSum(values, weights);
-        double sum = sum(weights);
-        return weightedSum / sum;
-    }
 
     /**
      * Return sum of values in array.
@@ -315,6 +302,27 @@ public final class StatUtils {
     }
 
     /**
+     * Calculate the weighted average: \sum{xw}/\sum{w}
+     *
+     * @param values  values
+     * @param weights weight values
+     * @return weighted average, {@link Double#NaN} if the sum of weights is zero
+     * @since 2025-02-14 ⭐
+     */
+    public static double weightedAverage(double[] values, double[] weights) {
+        if (values.length != weights.length) {
+            throw new IllegalArgumentException("The number of values and weights should be same");
+        }
+        double weightValueSum = 0;
+        double weightSum = 0;
+        for (int i = 0; i < values.length; i++) {
+            weightValueSum += weights[i] * values[i];
+            weightSum += weights[i];
+        }
+        return weightValueSum / weightSum;
+    }
+
+    /**
      * calculate the weighted average of a given sample
      *
      * @param values  values
@@ -322,17 +330,18 @@ public final class StatUtils {
      * @param indexes sample indexes
      * @return weighted average, {@link Double#NaN} if the sum of weights is zero
      */
-    public static double weightedMean(double[] values, double[] weights, int[] indexes) {
-        if (values.length != weights.length)
+    public static double weightedAverage(double[] values, double[] weights, int[] indexes) {
+        if (values.length != weights.length) {
             throw new IllegalArgumentException("The number of values and weights should be same");
-
-        Sum weightSum = Sum.create();
-        Sum sum = Sum.create();
-        for (int index : indexes) {
-            sum.addProduct(values[index], weights[index]);
-            weightSum.add(weights[index]);
         }
-        return sum.getAsDouble() / weightSum.getAsDouble();
+
+        double weightValueSum = 0;
+        double weightSum = 0;
+        for (int index : indexes) {
+            weightValueSum += values[index] * weights[index];
+            weightSum += weights[index];
+        }
+        return weightValueSum / weightSum;
     }
 
 

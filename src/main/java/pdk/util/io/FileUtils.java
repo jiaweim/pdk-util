@@ -223,6 +223,47 @@ public final class FileUtils {
     }
 
     /**
+     * Gets the extension of a file name.
+     * <p>
+     * This method returns the textual part of the file name after the last period.
+     * There must be no directory separator after the period.
+     * </p>
+     * <pre>
+     * foo.txt      --&gt; "txt"
+     * a/b/c.jpg    --&gt; "jpg"
+     * a/b.txt/c    --&gt; ""
+     * a/b/c        --&gt; ""
+     * </pre>
+     * <p>
+     * The output will be the same irrespective of the machine that the code is running on, with the
+     * exception of a possible {@link IllegalArgumentException} on Windows (see below).
+     * </p>
+     * <p>
+     * <strong>Note:</strong> This method used to have a hidden problem for names like "foo.exe:bar.txt".
+     * In this case, the name wouldn't be the name of a file, but the identifier of an
+     * alternate data stream (bar.txt) on the file foo.exe. The method used to return
+     * ".txt" here, which would be misleading. Commons IO 2.7 and later throw
+     * an {@link IllegalArgumentException} for names like this.
+     * </p>
+     *
+     * @param fileName the file name to retrieve the extension of.
+     * @return the extension of the file or an empty string if none exists or {@code null}
+     * if the file name is {@code null}.
+     * @throws IllegalArgumentException <strong>Windows only:</strong> the file name parameter is, in fact,
+     *                                  the identifier of an Alternate Data Stream, for example "foo.exe:bar.txt".
+     */
+    public static String getExtension(final String fileName) throws IllegalArgumentException {
+        if (fileName == null) {
+            return null;
+        }
+        final int index = indexOfExtension(fileName);
+        if (index == NOT_FOUND) {
+            return "";
+        }
+        return fileName.substring(index + 1);
+    }
+
+    /**
      * Special handling for NTFS ADS: Don't accept colon in the file name.
      *
      * @param fileName a file name

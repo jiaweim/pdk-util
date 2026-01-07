@@ -2,10 +2,10 @@ package pdk.util.math;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
@@ -31,6 +31,11 @@ class StatUtilsTest {
     void meanCollection() {
         List<Double> data = List.of(1.0, 2.0, 3.0, 4.0);
         assertEquals(2.5, StatUtils.mean(data), EPS);
+
+        assertEquals(2, StatUtils.mean(List.of(1.0, 2.0, 3.0)), EPS);
+        assertEquals(2.5, StatUtils.mean(List.of(2.0, 3.0)), EPS);
+
+        assertThrows(IllegalArgumentException.class, () -> StatUtils.mean(new ArrayList<>()));
     }
 
     @Test
@@ -65,17 +70,19 @@ class StatUtilsTest {
 
 
     @Test
-    void weightedMean() {
+    void weightedAverage() {
         double[] values = new double[]{0.8, 0.6, 0.5, 0.8};
         double[] weights = new double[]{0.4, 0.2, 0.3, 0.1};
-        double v = StatUtils.mean(values, weights);
+        double v = StatUtils.weightedAverage(values, weights);
         assertEquals(0.67, v, 1E-2);
 
-        double v1 = StatUtils.mean(new double[]{19.99, 13.99, 25}, new double[]{5, 3, 2});
+        double v1 = StatUtils.weightedAverage(new double[]{19.99, 13.99, 25}, new double[]{5, 3, 2});
         assertEquals(19.192, v1, 1E-3);
 
-        double mean = StatUtils.mean(new double[]{2, 2, 1, 4, 2, 3}, new double[]{3, 4, 1, 3, 2, 3});
+        double mean = StatUtils.weightedAverage(new double[]{2, 2, 1, 4, 2, 3}, new double[]{3, 4, 1, 3, 2, 3});
         assertEquals(2.5, mean, EPS);
+
+        assertEquals(2.4, StatUtils.weightedAverage(new double[]{1, 2, 3}, new double[]{1, 1, 3}), EPS);
     }
 
     @Test
