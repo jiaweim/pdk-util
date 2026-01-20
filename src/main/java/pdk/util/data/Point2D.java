@@ -15,8 +15,8 @@ import java.util.Objects;
  */
 public class Point2D implements Copyable<Point2D>, Serializable, Comparable<Point2D> {
 
-    private double x;
-    private double y;
+    protected double x;
+    protected double y;
 
     public Point2D(double x, double y) {
         this.x = x;
