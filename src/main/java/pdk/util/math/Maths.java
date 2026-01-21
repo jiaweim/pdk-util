@@ -9,7 +9,6 @@ import org.apache.commons.numbers.core.Precision;
 import pdk.util.ArrayUtils;
 import pdk.util.data.Point2D;
 
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,9 +24,9 @@ import static pdk.util.ArgUtils.checkArgument;
  * @version 1.1.0
  * @since 20 Jul 2025, 7:01 PM
  */
-public final class MathUtils {
+public final class Maths {
 
-    private MathUtils() {}
+    private Maths() {}
 
     private static final double LN2 = Math.log(2.0);
 
@@ -121,6 +120,17 @@ public final class MathUtils {
      */
     public static double round(double value, int decimalPlaces) {
         return Precision.round(value, decimalPlaces);
+    }
+
+    /**
+     * Round a double value to the closest int
+     *
+     * @param value the value to round
+     * @return the closed int value
+     * @since 2026-01-21⭐
+     */
+    public static int roundInt(double value) {
+        return Math.toIntExact(Math.round(value));
     }
 
     /**

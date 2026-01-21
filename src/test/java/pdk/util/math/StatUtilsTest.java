@@ -135,8 +135,17 @@ class StatUtilsTest {
     @Test
     void round() {
         double a = 46.656;
-        double scale = MathUtils.round(a, 2);
+        double scale = Maths.round(a, 2);
         assertEquals(46.66, scale, 0.0001);
+    }
+
+    @Test
+    void roundInt() {
+        double a = 46.656;
+        assertEquals(47, Maths.roundInt(a));
+        assertEquals(46, Maths.roundInt(46.49));
+        assertEquals(47, Maths.roundInt(46.51));
+        assertEquals(47, Maths.roundInt(46.50));
     }
 
 
