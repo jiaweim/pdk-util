@@ -3,9 +3,9 @@ package pdk.util;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
+import java.util.Objects;
 
 import static pdk.util.ArgUtils.checkNonNegative;
-import static pdk.util.ArgUtils.checkNotNull;
 
 /**
  * Class to format number values.
@@ -91,7 +91,7 @@ public class DecimalFormatUtils {
      * @return {@link DecimalFormat} instance
      */
     public static DecimalFormat valueOf(String pattern) {
-        checkNotNull(pattern);
+        Objects.requireNonNull(pattern);
         return new DecimalFormat(pattern, US);
     }
 

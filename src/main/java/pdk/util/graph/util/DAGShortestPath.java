@@ -1,6 +1,6 @@
 package pdk.util.graph.util;
 
-import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.Nullable;
 import pdk.util.graph.*;
 
 import java.util.ArrayDeque;
@@ -85,8 +85,7 @@ public class DAGShortestPath<V> implements PathFinder<V> {
     }
 
     @Override
-    @Nullable
-    public GraphPath<V> getPath(V targetNode) {
+    public @Nullable GraphPath<V> getPath(V targetNode) {
         if (!hasPathTo(targetNode))
             return null;
         Deque<Edge<V>> path = new ArrayDeque<>();

@@ -1,14 +1,14 @@
 package pdk.util;
 
 import org.apache.commons.io.FileUtils;
-import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
-import static pdk.util.ArgUtils.checkNotNull;
+import static java.util.Objects.requireNonNull;
 import static pdk.util.ArgUtils.firstNonNull;
 
 /**
@@ -31,10 +31,11 @@ public final class ResourceUtils {
      * @throws NullPointerException if the resource is not found
      */
     public static URL getResourceURL(String resourceName) {
-        checkNotNull(resourceName);
+        requireNonNull(resourceName);
+
         ClassLoader loader = firstNonNull(Thread.currentThread().getContextClassLoader(), ResourceUtils.class.getClassLoader());
         URL url = loader.getResource(resourceName);
-        checkNotNull(url, String.format("resource %s not found", resourceName));
+        requireNonNull(url, String.format("resource %s not found", resourceName));
         return url;
     }
 
@@ -46,9 +47,10 @@ public final class ResourceUtils {
      * @throws IllegalArgumentException if the resource is not found
      */
     public static URL getResourceURL(ClassLoader classLoader, String resourceName) {
-        checkNotNull(resourceName);
+        requireNonNull(resourceName);
+
         URL url = classLoader.getResource(resourceName);
-        checkNotNull(url, String.format("resource %s not found.", resourceName));
+        requireNonNull(url, String.format("resource %s not found.", resourceName));
         return url;
     }
 
@@ -60,10 +62,10 @@ public final class ResourceUtils {
      * @throws IllegalArgumentException if the resource is not found
      */
     public static URL getResourceURL(Class<?> contextClass, String resourceName) {
-        checkNotNull(resourceName);
+        requireNonNull(resourceName);
 
         URL url = contextClass.getResource(resourceName);
-        checkNotNull(url, String.format("resource %s relative to %s not found.",
+        requireNonNull(url, String.format("resource %s relative to %s not found.",
                 resourceName, contextClass.getName()));
         return url;
     }
@@ -74,7 +76,8 @@ public final class ResourceUtils {
      * @param contextClass context class to define the relative path
      * @param resourceName resource name, <b>absolute path</b> should be start with '/', relative path only for resource in the same package
      */
-    public static @Nullable File getResourceFile(Class<?> contextClass, String resourceName) {
+    @Nullable
+    public static File getResourceFile(Class<?> contextClass, String resourceName) {
         URL url = getResourceURL(contextClass, resourceName);
         return org.apache.commons.io.FileUtils.toFile(url);
     }
@@ -98,9 +101,9 @@ public final class ResourceUtils {
      * @throws NullPointerException If {@code name} is {@code null}
      */
     public static @Nullable InputStream getResourceStream(ClassLoader classLoader, String name) {
-        checkNotNull(name);
+        requireNonNull(name);
         URL url = classLoader.getResource(name);
-        checkNotNull(url, String.format("resource %s not found.", name));
+        requireNonNull(url, String.format("resource %s not found.", name));
         try {
             return url.openStream();
         } catch (IOException e) {
@@ -117,10 +120,10 @@ public final class ResourceUtils {
      * @return An input stream for reading the resource; {@code null} if an I/O exception occurs
      */
     public static @Nullable InputStream getResourceStream(Class<?> contextClass, String name) {
-        checkNotNull(name);
+        requireNonNull(name);
 
         URL url = contextClass.getResource(name);
-        checkNotNull(url, String.format("resource %s relative to %s not found.",
+        requireNonNull(url, String.format("resource %s relative to %s not found.",
                 name, contextClass.getName()));
         try {
             return url.openStream();

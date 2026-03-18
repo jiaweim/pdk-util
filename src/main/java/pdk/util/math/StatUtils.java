@@ -15,7 +15,8 @@ import java.util.Collection;
 import java.util.List;
 
 import static java.util.Objects.requireNonNull;
-import static pdk.util.ArgUtils.*;
+import static pdk.util.ArgUtils.checkArgument;
+import static pdk.util.ArgUtils.checkNonNegative;
 
 /**
  * Statistic utilities.
@@ -71,7 +72,8 @@ public final class StatUtils {
      * in the collection
      */
     public static double max(Collection<Double> collection) {
-        checkNotNull(collection);
+        requireNonNull(collection);
+
         checkArgument(!collection.isEmpty());
         double max = Double.NEGATIVE_INFINITY;
         for (Double value : collection) {
@@ -242,7 +244,7 @@ public final class StatUtils {
      * @return sum of all values.⭐
      */
     public static double sum(double[] values) {
-        checkNotNull(values);
+        requireNonNull(values);
 
         return Sum.of(values).getAsDouble();
     }
@@ -257,7 +259,7 @@ public final class StatUtils {
      * @return sum⭐
      */
     public static double sum(Double[] values) {
-        checkNotNull(values);
+        requireNonNull(values);
 
         Sum sum = Sum.create();
         for (Double value : values) {
@@ -292,7 +294,7 @@ public final class StatUtils {
      * @return sum of the values or 0 if length=0⭐
      */
     public static double sum(final double[] values, final int begin, final int length) {
-        checkNotNull(values);
+        requireNonNull(values);
 
         Sum sum = Sum.create();
         for (int i = begin; i < begin + length; i++) {
@@ -525,7 +527,7 @@ public final class StatUtils {
      * @since 2025-02-18⭐
      */
     public static double[] mode(double[] sample) {
-        checkNotNull(sample);
+        requireNonNull(sample);
 
         return getMode(sample, 0, sample.length);
     }

@@ -19,7 +19,6 @@ import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.title.*;
 import org.jfree.chart.ui.RectangleInsets;
 import org.jfree.chart.util.*;
-import pdk.util.ArgUtils;
 
 import java.awt.*;
 import java.io.IOException;
@@ -29,6 +28,8 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * A default implementation of the {@link ChartTheme} interface.  This
@@ -268,7 +269,7 @@ public class PdkChartTheme implements ChartTheme, Cloneable,
      *               included.
      */
     public PdkChartTheme(String name, boolean shadow) {
-        ArgUtils.checkNotNull(name, "name");
+        requireNonNull(name, "Chart theme name must not be null");
 
         this.name = name;
         this.extraLargeFont = new Font("Tahoma", Font.BOLD, 20);
@@ -951,7 +952,7 @@ public class PdkChartTheme implements ChartTheme, Cloneable,
      */
     @Override
     public void apply(JFreeChart chart) {
-        ArgUtils.checkNotNull(chart, "chart");
+        requireNonNull(chart);
 
         TextTitle title = chart.getTitle();
         if (title != null) {

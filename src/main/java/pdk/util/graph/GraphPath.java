@@ -3,7 +3,7 @@ package pdk.util.graph;
 import java.util.Collection;
 import java.util.Objects;
 
-import static pdk.util.ArgUtils.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * A path in the graph
@@ -34,9 +34,10 @@ public final class GraphPath<V> {
      * @param weight    total weight of the path
      */
     public GraphPath(Graph<V> graph, V startNode, V endNode, Collection<V> nodeList, Collection<Edge<V>> edgeList, double weight) {
-        checkNotNull(nodeList);
-        checkNotNull(edgeList);
-        checkNotNull(graph);
+        requireNonNull(nodeList);
+        requireNonNull(edgeList);
+        requireNonNull(graph);
+
         this.graph = graph;
         this.startNode = startNode;
         this.endNode = endNode;

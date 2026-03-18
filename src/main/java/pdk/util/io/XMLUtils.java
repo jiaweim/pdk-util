@@ -1,6 +1,6 @@
 package pdk.util.io;
 
-import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import javax.xml.stream.*;
 import javax.xml.stream.events.XMLEvent;

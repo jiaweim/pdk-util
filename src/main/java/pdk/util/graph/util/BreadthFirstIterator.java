@@ -1,6 +1,6 @@
 package pdk.util.graph.util;
 
-import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.Nullable;
 import pdk.util.graph.Digraph;
 import pdk.util.graph.Edge;
 import pdk.util.graph.Graph;

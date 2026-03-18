@@ -2,6 +2,7 @@ package pdk.util.chart;
 
 import org.apache.commons.statistics.distribution.ContinuousDistribution;
 import org.apache.commons.statistics.distribution.NormalDistribution;
+import org.jetbrains.annotations.NotNull;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -25,7 +26,6 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.svg.SVGGraphics2D;
 import org.jfree.svg.SVGUtils;
-import org.jspecify.annotations.NonNull;
 import pdk.util.data.Point2D;
 import pdk.util.math.DistributionUtils;
 
@@ -35,7 +35,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import static pdk.util.ArgUtils.checkNotNull;
+import static java.util.Objects.requireNonNull;
+
 
 /**
  * Chart Utilities.
@@ -68,7 +69,7 @@ public final class ChartUtils {
     public static JFreeChart createXYLineChart(String title, String xAxisLabel,
             String yAxisLabel, XYDataset dataset, PlotOrientation orientation,
             boolean legend, boolean tooltips, boolean urls) {
-        checkNotNull(orientation);
+        requireNonNull(orientation);
 
         NumberAxis xAxis = new NumberAxis(xAxisLabel);
         xAxis.setAutoRangeIncludesZero(false);
@@ -156,7 +157,7 @@ public final class ChartUtils {
      * @param height the chart height.
      * @param file   the output file ({@code null} not permitted).
      */
-    public static void writeToSVG(@NonNull JFreeChart chart, int width, int height, @NonNull File file) {
+    public static void writeToSVG(@NotNull JFreeChart chart, int width, int height, @NotNull File file) {
         SVGGraphics2D graphics2D = new SVGGraphics2D(width, height);
         Rectangle2D drawArea = new Rectangle2D.Double(0, 0, width, height);
         chart.draw(graphics2D, drawArea);

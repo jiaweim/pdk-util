@@ -4,11 +4,11 @@ module pdk.util {
     requires java.xml;
 
     // 3rd party
-    requires org.jspecify;
     requires org.jheaps;
     requires it.unimi.dsi.fastutil;
     requires org.apache.commons.io;
     requires com.google.common;
+    requires org.jetbrains.annotations;
 
     // statistics
     requires org.apache.commons.statistics.descriptive;

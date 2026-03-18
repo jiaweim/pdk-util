@@ -1,6 +1,6 @@
 package pdk.util.graph;
 
-import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.Nullable;
 import pdk.util.graph.util.CollectListVisitor;
 
 import java.util.*;

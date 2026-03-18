@@ -5,7 +5,7 @@ import pdk.util.graph.Edge;
 
 import java.util.*;
 
-import static pdk.util.ArgUtils.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Find the nodes reachable from a given source node (or nodes) in a digraph using depth first search (unweighted).
@@ -43,7 +43,8 @@ public class DiDFS<V> {
     }
 
     public DiDFS(Digraph<V> g, Collection<V> sources) {
-        checkNotNull(sources);
+        requireNonNull(sources);
+
         this.digraph = g;
         if (sources.isEmpty()) {
             throw new IllegalArgumentException("zero source node");
