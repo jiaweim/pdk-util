@@ -1,6 +1,6 @@
 package pdk.util.data;
 
-import pdk.util.Copyable;
+import pdk.util.ICopy;
 
 import java.io.Serializable;
 import java.util.Comparator;
@@ -13,7 +13,7 @@ import java.util.Objects;
  * @version 1.0.0
  * @since 03 Jul 2025, 10:00 AM
  */
-public class Point2D implements Copyable<Point2D>, Serializable, Comparable<Point2D> {
+public class Point2D implements ICopy<Point2D>, Serializable, Comparable<Point2D> {
 
     protected double x;
     protected double y;

@@ -8,7 +8,7 @@ package pdk.util;
  * @version 1.0.0
  * @since 03 Jul 2025, 10:02 AM
  */
-public interface Copyable<T> {
+public interface ICopy<T> {
 
     /**
      * Creates and returns a copy of this object. The precise meaning of "copy"

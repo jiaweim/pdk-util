@@ -1,6 +1,6 @@
 package pdk.util.graph;
 
-import pdk.util.Copyable;
+import pdk.util.ICopy;
 
 import java.util.Objects;
 
@@ -12,7 +12,7 @@ import java.util.Objects;
  * @version 1.0.0
  * @since 22 Nov 2024, 23:57
  */
-public class Edge<V> implements Copyable<Edge<V>> {
+public class Edge<V> implements ICopy<Edge<V>> {
 
     /**
      * The default weight for an edge.
