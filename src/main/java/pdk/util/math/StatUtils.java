@@ -472,7 +472,6 @@ public final class StatUtils {
         return StandardDeviation.of(values).setBiased(true).getAsDouble();
     }
 
-
     /**
      * Return the relative standard deviation (RSD) of given double array.
      *
@@ -483,7 +482,6 @@ public final class StatUtils {
         DoubleStatistics statistics = statistics(values, Statistic.MEAN, Statistic.STANDARD_DEVIATION);
         return statistics.getAsDouble(Statistic.STANDARD_DEVIATION) / statistics.getAsDouble(Statistic.MEAN);
     }
-
 
     /**
      * Calculate a set of {@link Statistic}, support:
@@ -510,7 +508,6 @@ public final class StatUtils {
     public static DoubleStatistics statistics(double[] values, Statistic... statistics) {
         return DoubleStatistics.builder(statistics).build(values);
     }
-
 
     /**
      * Return the sample mode(s).

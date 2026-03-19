@@ -24,9 +24,9 @@ import static pdk.util.ArgUtils.checkArgument;
  * @version 1.1.0
  * @since 20 Jul 2025, 7:01 PM
  */
-public final class Maths {
+public final class MathUtils {
 
-    private Maths() {}
+    private MathUtils() {}
 
     private static final double LN2 = Math.log(2.0);
 

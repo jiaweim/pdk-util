@@ -51,18 +51,4 @@ public final class ProbUtils {
     public static double binomialCoefficientDouble(int n, int k) {
         return BinomialCoefficientDouble.value(n, k);
     }
-
-    static void main() {
-        double Millon = 1000000.0;
-
-        double pH1 = 35 / Millon;
-        double pH2 = 11 / Millon;
-
-        double likelihood1 = 0.98 * 0.3 * 0.28;
-        double likelihood2 = 0.94 * 0.83 * 0.49;
-
-        double r = pH1 * likelihood1 / (pH2 * likelihood2);
-        System.out.println(r);
-
-    }
 }

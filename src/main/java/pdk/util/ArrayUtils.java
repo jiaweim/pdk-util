@@ -2,11 +2,9 @@ package pdk.util;
 
 import org.apache.commons.numbers.arrays.Selection;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
+import static java.util.Objects.requireNonNull;
 import static pdk.util.ArgUtils.checkArgument;
 
 /**
@@ -153,4 +151,39 @@ public final class ArrayUtils {
         Selection.select(data, idx);
         return data[idx];
     }
+
+    /**
+     * Convert a double array of object type to primitive type.
+     *
+     * @param values Double array
+     * @return double array
+     */
+    public static double[] toPrimitive(Double[] values) {
+        requireNonNull(values);
+
+        double[] array = new double[values.length];
+        for (int i = 0; i < values.length; i++) {
+            array[i] = values[i];
+        }
+        return array;
+    }
+
+    /**
+     * Convert a double collection of object type to primitive array.
+     *
+     * @param values double Collection
+     * @return double array
+     */
+    public static double[] toPrimitive(Collection<Double> values) {
+        requireNonNull(values);
+
+        double[] array = new double[values.size()];
+        int i = 0;
+        for (Double value : values) {
+            array[i] = value;
+            i++;
+        }
+        return array;
+    }
+
 }

@@ -10,21 +10,24 @@ module pdk.util {
     requires com.google.common;
     requires org.jetbrains.annotations;
 
-    // statistics
-    requires org.apache.commons.statistics.descriptive;
-    requires org.apache.commons.statistics.distribution;
-    requires org.apache.commons.numbers.gamma;
-    requires org.apache.commons.numbers.combinatorics;
-    requires org.apache.commons.numbers.core;
-    requires org.apache.commons.numbers.arrays;
-    requires org.apache.commons.rng.sampling;
+    // math
     requires org.apache.commons.rng.simple;
     requires org.apache.commons.rng.api;
+    requires org.apache.commons.numbers.core;
+    requires org.apache.commons.numbers.arrays;
+    requires org.apache.commons.numbers.combinatorics;
+    requires org.apache.commons.numbers.gamma;
+
+    // statistics
+    requires org.apache.commons.statistics.distribution;
+    requires org.apache.commons.statistics.descriptive;
+
 
     // GUI
     requires java.desktop;
     requires org.jfree.jfreechart;
     requires org.jfree.svg;
+
 
     // exports
     exports pdk.util;

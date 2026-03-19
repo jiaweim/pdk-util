@@ -19,6 +19,11 @@ class StatUtilsTest {
     private static final double EPS = 1E-15;
 
     @Test
+    void statistics() {
+
+    }
+
+    @Test
     void sum() {
         double[] values = new double[]{1, 2, 3, 9};
         assertEquals(15.0, StatUtils.sum(values), EPS);
@@ -88,7 +93,7 @@ class StatUtilsTest {
     @Test
     void variance() {
         double[] values = new double[]{1, 2, 3, 3, 9, 10};
-        assertEquals(12.22222, StatUtils.variance(values, true), 1E-5);
+        assertEquals(12.22222, StatUtils.populationVariance(values), 1E-5);
         assertEquals(14.667, StatUtils.variance(values), 1E-3);
         assertEquals(3.83, StatUtils.standardDeviation(values), 0.01);
         assertEquals(4.667, StatUtils.mean(values), 0.001);
@@ -135,17 +140,17 @@ class StatUtilsTest {
     @Test
     void round() {
         double a = 46.656;
-        double scale = Maths.round(a, 2);
+        double scale = MathUtils.round(a, 2);
         assertEquals(46.66, scale, 0.0001);
     }
 
     @Test
     void roundInt() {
         double a = 46.656;
-        assertEquals(47, Maths.roundInt(a));
-        assertEquals(46, Maths.roundInt(46.49));
-        assertEquals(47, Maths.roundInt(46.51));
-        assertEquals(47, Maths.roundInt(46.50));
+        assertEquals(47, MathUtils.roundInt(a));
+        assertEquals(46, MathUtils.roundInt(46.49));
+        assertEquals(47, MathUtils.roundInt(46.51));
+        assertEquals(47, MathUtils.roundInt(46.50));
     }
 
 

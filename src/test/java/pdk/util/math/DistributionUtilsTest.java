@@ -1,8 +1,6 @@
 package pdk.util.math;
 
 import org.apache.commons.rng.UniformRandomProvider;
-import org.apache.commons.rng.sampling.distribution.ChengBetaSampler;
-import org.apache.commons.rng.sampling.distribution.SharedStateContinuousSampler;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -14,21 +12,24 @@ import org.junit.jupiter.api.Test;
  */
 class DistributionUtilsTest {
 
-    @Test
-    void beta() {
-        int trails = 100000;
-        SharedStateContinuousSampler sampler1 = ChengBetaSampler.of(SamplingUtils.rng, 3 + 36, 7 + 114);
-        SharedStateContinuousSampler sampler2 = ChengBetaSampler.of(SamplingUtils.rng, 3 + 50, 7 + 100);
-        double[] aSamples = sampler1.samples(trails).toArray();
-        double[] bSamples = sampler2.samples(trails).toArray();
-        int n = 0;
-        for (int i = 0; i < aSamples.length; i++) {
-            if (bSamples[i] > aSamples[i]) {
-                n++;
-            }
-        }
-        System.out.println((double) n / trails);
-    }
+//    @Test
+//    void beta() {
+//        int trails = 100000;
+//        RandomDataGenerator rng = new RandomDataGenerator();
+//        UncorrelatedRandomVectorGenerator sampler = new UncorrelatedRandomVectorGenerator()
+//
+//        SharedStateContinuousSampler sampler1 = ChengBetaSampler.of(SamplingUtils.rng, 3 + 36, 7 + 114);
+//        SharedStateContinuousSampler sampler2 = ChengBetaSampler.of(SamplingUtils.rng, 3 + 50, 7 + 100);
+//        double[] aSamples = sampler1.samples(trails).toArray();
+//        double[] bSamples = sampler2.samples(trails).toArray();
+//        int n = 0;
+//        for (int i = 0; i < aSamples.length; i++) {
+//            if (bSamples[i] > aSamples[i]) {
+//                n++;
+//            }
+//        }
+//        System.out.println((double) n / trails);
+//    }
 
     @Test
     void pi() {

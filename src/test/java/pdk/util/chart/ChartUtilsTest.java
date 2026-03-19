@@ -14,8 +14,7 @@ class ChartUtilsTest {
 
     static void createChart() {
         double mean = 20.6;
-        NormalDistribution distribution = NormalDistribution.of(mean, 1.62);
-        JFreeChart chart = ChartUtils.pdfChart(distribution, mean - 10, mean + 10, mean - 10, 18, 500);
+        JFreeChart chart = ChartUtils.pdfChart(NormalDistribution.of(mean, 1.62), mean - 10, mean + 10, mean - 10, 18, 500);
         ChartUtils.showChart(chart);
     }
 
