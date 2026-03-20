@@ -37,7 +37,7 @@ public final class StringUtils {
      * @return {@code true} if the CharSequence is empty or null.
      * @since 2026-03-18⭐
      */
-    public static boolean isEmpty(@Nullable final CharSequence cs) {
+    public static boolean isEmpty(@Nullable final String cs) {
         return cs == null || cs.isEmpty();
     }
 
@@ -48,7 +48,7 @@ public final class StringUtils {
      * @return {@code true} if the CharSequence is not empty and not null
      * @since 2026-03-18⭐
      */
-    public static boolean isNotEmpty(@Nullable final CharSequence cs) {
+    public static boolean isNotEmpty(@Nullable final String cs) {
         return !isEmpty(cs);
     }
 
@@ -258,7 +258,6 @@ public final class StringUtils {
         }
         return joiner.toString();
     }
-
 
     /**
      * join sequence array with given delimiter, element's toString() method is called
