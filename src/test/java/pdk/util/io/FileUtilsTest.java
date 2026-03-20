@@ -2,7 +2,13 @@ package pdk.util.io;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
@@ -21,9 +27,26 @@ class FileUtilsTest {
     }
 
     @Test
-    void appendSuffix2(){
+    void appendSuffix2() {
         String path = "E:\\dataset\\test.psm.tsv";
         String s = FileUtils.appendSuffix(path, ".decoy");
         System.out.println(s);
+    }
+
+    @Test
+    void endWith() {
+        Path path = Path.of("G:\\dataset\\a.fasta");
+        assertTrue(FileUtils.endWith(path, ".fasta"));
+
+        Path path1 = Path.of("C:\\repositories\\pdk-seq\\src\\test\\resources\\pdk\\seq\\io");
+        assertTrue(Files.isDirectory(path1));
+        assertTrue(FileUtils.endWith(path1, "io"));
+    }
+
+    @Test
+    void toPath() throws MalformedURLException {
+        URL fileUrl = new URL("file:///C:/Users/example/file.txt");
+        Path path = FileUtils.toPath(fileUrl);
+        assertEquals(Path.of("C:/Users/example/file.txt"), path);
     }
 }

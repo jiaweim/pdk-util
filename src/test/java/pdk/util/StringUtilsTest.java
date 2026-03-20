@@ -1,5 +1,6 @@
 package pdk.util;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -46,4 +47,69 @@ class StringUtilsTest {
         assertEquals("tab", StringUtils.reverse("bat"));
     }
 
+    @Test
+    void deleteWhitespace() {
+        assertNull(StringUtils.deleteWhitespace(null));
+        assertEquals("", StringUtils.deleteWhitespace(""));
+        assertEquals("abc", StringUtils.deleteWhitespace("abc"));
+        assertEquals("abc", StringUtils.deleteWhitespace("   ab  c  "));
+    }
+
+    @Test
+    void countMatches() {
+        assertEquals(0, StringUtils.countMatches(null, " "));
+        assertEquals(0, StringUtils.countMatches("", " "));
+        assertEquals(0, StringUtils.countMatches("abba", null));
+        assertEquals(0, StringUtils.countMatches("abba", ""));
+
+        assertEquals(2, StringUtils.countMatches("abba", "a"));
+        assertEquals(1, StringUtils.countMatches("abba", "ab"));
+        assertEquals(0, StringUtils.countMatches("abba", "xxx"));
+    }
+
+    @Test
+    void countMatchesChar() {
+        assertEquals(0, StringUtils.countMatches(null, ' '));
+        assertEquals(0, StringUtils.countMatches("", ' '));
+        assertEquals(0, StringUtils.countMatches("abba", '0'));
+        assertEquals(2, StringUtils.countMatches("abba", 'a'));
+        assertEquals(2, StringUtils.countMatches("abba", 'b'));
+        assertEquals(0, StringUtils.countMatches("abba", 'x'));
+    }
+
+    @Test
+    void indexOfPa() {
+        String seq = "AAINQK(1)LIETGER";
+        IntArrayList indexList = StringUtils.indexOf(seq, "(");
+        assertEquals(1, indexList.size());
+        assertEquals(6, indexList.getInt(0));
+
+        String seq2 = "_AANM(ox)LQQSGSK(me)NTGAK_";
+        IntArrayList idxes2 = StringUtils.indexOf(seq2, "(");
+        assertIterableEquals(idxes2, IntArrayList.of(5, 16));
+    }
+
+    @Test
+    void indexOf() {
+        String text = "AGCTTAGATAGC";
+        String p = "AG";
+        IntArrayList indexList = StringUtils.indexOf(text, p);
+        assertIterableEquals(IntArrayList.of(0, 5, 9), indexList);
+    }
+
+    @Test
+    void indexOfOverlap() {
+        String text = "AGCAGCAT";
+        String p = "AGCA";
+        IntArrayList indexList = StringUtils.indexOf(text, p);
+        assertIterableEquals(IntArrayList.of(0, 3), indexList);
+    }
+
+    @Test
+    void testIndexOfEmpty() {
+        String seq = "SEQUEENCE";
+        IntArrayList ints = StringUtils.indexOf(seq, "?");
+        assertNotNull(ints);
+        assertEquals(0, ints.size());
+    }
 }

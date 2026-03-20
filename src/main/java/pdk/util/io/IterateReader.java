@@ -18,7 +18,7 @@ public interface IterateReader<T> extends Iterator<T>, AutoCloseable {
      * {@code try}-with-resources statement.
      *
      * @throws Exception if this resource cannot be closed
-     * @apiNote While this interface method is declared to throw {@code
+     * @implNote While this interface method is declared to throw {@code
      * Exception}, implementers are <em>strongly</em> encouraged to
      * declare concrete implementations of the {@code close} method to
      * throw more specific exceptions, or to throw no exception at all

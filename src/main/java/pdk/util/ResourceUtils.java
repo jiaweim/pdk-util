@@ -1,12 +1,12 @@
 package pdk.util;
 
-import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.Nullable;
+import pdk.util.io.FileUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Path;
 
 import static java.util.Objects.requireNonNull;
 import static pdk.util.ArgUtils.firstNonNull;
@@ -77,9 +77,9 @@ public final class ResourceUtils {
      * @param resourceName resource name, <b>absolute path</b> should be start with '/', relative path only for resource in the same package
      */
     @Nullable
-    public static File getResourceFile(Class<?> contextClass, String resourceName) {
+    public static Path getResourceFile(Class<?> contextClass, String resourceName) {
         URL url = getResourceURL(contextClass, resourceName);
-        return org.apache.commons.io.FileUtils.toFile(url);
+        return FileUtils.toPath(url);
     }
 
     /**
@@ -88,9 +88,9 @@ public final class ResourceUtils {
      * @param resourceName resource name, should define from <b>package name</b>, excluding the leading `/`
      * @throws IllegalArgumentException if the resource is not found
      */
-    public static @Nullable File getResourceFile(ClassLoader classLoader, String resourceName) {
+    public static @Nullable Path getResourceFile(ClassLoader classLoader, String resourceName) {
         URL resourceURL = getResourceURL(classLoader, resourceName);
-        return FileUtils.toFile(resourceURL);
+        return FileUtils.toPath(resourceURL);
     }
 
     /**

@@ -6,7 +6,6 @@ module pdk.util {
     // 3rd party
     requires org.jheaps;
     requires it.unimi.dsi.fastutil;
-    requires org.apache.commons.io;
     requires com.google.common;
     requires org.jetbrains.annotations;
 
@@ -22,12 +21,10 @@ module pdk.util {
     requires org.apache.commons.statistics.distribution;
     requires org.apache.commons.statistics.descriptive;
 
-
     // GUI
     requires java.desktop;
     requires org.jfree.jfreechart;
     requires org.jfree.svg;
-
 
     // exports
     exports pdk.util;

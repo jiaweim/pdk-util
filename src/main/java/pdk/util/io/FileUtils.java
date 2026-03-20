@@ -1,6 +1,9 @@
 package pdk.util.io;
 
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Path;
 
 /**
@@ -284,4 +287,43 @@ public final class FileUtils {
         }
         return Math.max(offset1, offset2) + 1;
     }
+
+    /**
+     * Return true if the file corresponding to {@link Path} ends with the specified suffix, false otherwise.
+     *
+     * @param path   {@link Path} instance
+     * @param suffix file suffix
+     * @return true if the {@link Path} ends with the {@code suffix}
+     * @since 2026-03-19⭐
+     */
+    public static boolean endWith(Path path, String suffix) {
+        Path fileName = path.getFileName();
+        if (fileName == null) {
+            return false;
+        }
+        String name = fileName.toString();
+        return name.endsWith(suffix);
+    }
+
+    /**
+     * Converts from {@link URL} to a {@link Path}.
+     * <p>
+     * If the content pointed to by the URL is not a local file, return {@code null}.
+     *
+     * @param url the file {@link URL} to convert, {@code null} returns {@code null}
+     * @return the equivalent {@link Path} object, or {@code null} if the URL
+     * @since 2026-03-19⭐
+     */
+    public static Path toPath(final URL url) {
+        if (url == null) {
+            return null;
+        }
+        try {
+            URI uri = url.toURI();
+            return Path.of(uri);
+        } catch (URISyntaxException e) {
+            return null;
+        }
+    }
+
 }
