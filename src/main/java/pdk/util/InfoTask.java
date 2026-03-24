@@ -153,6 +153,16 @@ public abstract class InfoTask<V> {
     /**
      * Set the {@code progress} property.
      *
+     * @param workDone  work completed
+     * @param totalWork task to be completed
+     */
+    public final void updateProgress(int workDone, int totalWork) {
+        updateProgress(workDone / (double) totalWork);
+    }
+
+    /**
+     * Set the {@code progress} property.
+     *
      * @param progress new progress value
      */
     public final void updateProgressQuietly(double progress) {
