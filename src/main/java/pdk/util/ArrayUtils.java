@@ -3,6 +3,7 @@ package pdk.util;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntComparators;
 import org.apache.commons.numbers.arrays.Selection;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -199,7 +200,9 @@ public final class ArrayUtils {
      * @since 2025-02-20 ⭐
      */
     public static void reverse(final char[] array) {
-        reverse(array, 0, array.length);
+        if (array != null) {
+            reverse(array, 0, array.length);
+        }
     }
 
     /**
@@ -209,10 +212,8 @@ public final class ArrayUtils {
      * </p>
      *
      * @param array              the array to reverse, may be {@code null}
-     * @param fromIndexInclusive the starting index. Undervalue (&lt;0) is promoted to 0, overvalue (&gt;array.length)
-     *                           results in no change.
-     * @param toIndexExclusive   elements up to endIndex-1 are reversed in the array. Undervalue (&lt; start index)
-     *                           results in no change. Overvalue (&gt;array.length) is demoted to array length.
+     * @param fromIndexInclusive the starting index.
+     * @param toIndexExclusive   elements up to endIndex-1 are reversed in the array.
      * @since 2025-02-20 ⭐
      */
     public static void reverse(final char[] array, final int fromIndexInclusive, final int toIndexExclusive) {
@@ -237,6 +238,7 @@ public final class ArrayUtils {
      *
      * @throws IndexOutOfBoundsException if {@code fromIndex < 0}, {@code toIndex > array.length}, or
      *                                   {@code toIndex > fromIndex}
+     * @since 2026-03-24⭐
      */
     public static void reverse(int[] array, int fromIndexInclusive, int toIndexExclusive) {
         if (array == null)
@@ -261,7 +263,73 @@ public final class ArrayUtils {
      * @since 2026-03-24⭐
      */
     public static void reverse(int[] array) {
+        if (array != null) {
+            reverse(array, 0, array.length);
+        }
+    }
+
+    /**
+     * Reverses the elements of {@code array}.
+     *
+     * @throws IndexOutOfBoundsException if {@code fromIndex < 0}, {@code toIndex > array.length}, or
+     *                                   {@code toIndex > fromIndex}
+     * @since 2026-03-24⭐
+     */
+    public static void reverse(double[] array) {
+        if (array != null) {
+            reverse(array, 0, array.length);
+        }
+    }
+
+    /**
+     * Reverses the elements of {@code array} between {@code fromIndex} inclusive and {@code toIndex}
+     * exclusive. This is equivalent to {@code
+     * Collections.reverse(IntUtils.asList(array).subList(fromIndex, toIndex))}, but is likely to be more
+     * efficient.
+     *
+     * @throws IndexOutOfBoundsException if {@code fromIndex < 0}, {@code toIndex > array.length}, or
+     *                                   {@code toIndex > fromIndex}
+     * @since 2026-03-24⭐
+     */
+    public static void reverse(double[] array, int fromIndexInclusive, int toIndexExclusive) {
+        if (array == null)
+            return;
+        checkFromToIndex(fromIndexInclusive, toIndexExclusive, array.length);
+
+        for (int i = fromIndexInclusive, j = toIndexExclusive - 1; i < j; i++, j--) {
+            double tmp = array[i];
+            array[i] = array[j];
+            array[j] = tmp;
+        }
+    }
+
+    /**
+     * Reverse the elements of {@code array}.
+     *
+     */
+    public static <T> void reverse(@Nullable T[] array) {
+        if (array == null)
+            return;
         reverse(array, 0, array.length);
+    }
+
+    /**
+     * Reverse the elements of {@code array} between {@code fromIndex} inclusive and {@code toIndex} exclusive. ⭐
+     *
+     * @param array              array to reverse
+     * @param fromIndexInclusive start index (inclusive)
+     * @param toIndexExclusive   end index (exclusive)
+     */
+    public static <T> void reverse(@Nullable T[] array, int fromIndexInclusive, int toIndexExclusive) {
+        if (array == null)
+            return;
+        checkFromToIndex(fromIndexInclusive, toIndexExclusive, array.length);
+
+        for (int i = fromIndexInclusive, j = toIndexExclusive - 1; i < j; i++, j--) {
+            T tmp = array[i];
+            array[i] = array[j];
+            array[j] = tmp;
+        }
     }
 
     /**

@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class ArrayUtilsTest {
 
     @Test
-    void reverse() {
+    void reverseChar() {
         char[] a = new char[]{'a', 'b', 'c', 'd'};
         ArrayUtils.reverse(a, 1, 3);
         assertArrayEquals(new char[]{'a', 'c', 'b', 'd'}, a);
@@ -25,6 +25,10 @@ class ArrayUtilsTest {
         a = new char[]{'a', 'b', 'c', 'd'};
         ArrayUtils.reverse(a);
         assertArrayEquals(new char[]{'d', 'c', 'b', 'a'}, a);
+
+        char[] values = new char[]{'h', 'e', 'l', 'l', 'o'};
+        ArrayUtils.reverse(values, 1, 4);
+        assertArrayEquals(new char[]{'h', 'l', 'l', 'e', 'o'}, values);
     }
 
     @Test
@@ -32,6 +36,10 @@ class ArrayUtilsTest {
         int[] a = new int[]{1, 2, 3, 4, 5};
         ArrayUtils.reverse(a);
         assertArrayEquals(new int[]{5, 4, 3, 2, 1}, a);
+
+        a = new int[]{1, 2, 3, 4, 5};
+        ArrayUtils.reverse(a, 1, 3);
+        assertArrayEquals(new int[]{1, 3, 2, 4, 5}, a);
     }
 
     @Test

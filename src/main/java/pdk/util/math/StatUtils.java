@@ -95,7 +95,30 @@ public final class StatUtils {
      * @throws IllegalArgumentException if {@code array} is empty
      * @since 2026-03-24⭐
      */
+    public static short max(short... array) {
+        requireNonNull(array);
+        checkArgument(array.length > 0);
+
+        short max = Short.MIN_VALUE;
+        for (short value : array) {
+            if (value > max) {
+                max = value;
+            }
+        }
+        return max;
+    }
+
+    /**
+     * Returns the greatest value present in {@code array}.
+     *
+     * @param array a <i>nonempty</i> array of {@code int} values
+     * @return the value present in {@code array} that is greater than or equal to every other value
+     * in the array
+     * @throws IllegalArgumentException if {@code array} is empty
+     * @since 2026-03-24⭐
+     */
     public static int max(int... array) {
+        requireNonNull(array);
         checkArgument(array.length > 0);
 
         int max = Integer.MIN_VALUE;
