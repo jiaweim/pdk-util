@@ -30,6 +30,7 @@ module pdk.util {
     exports pdk.util;
     exports pdk.util.chart;
     exports pdk.util.collect;
+    exports pdk.util.color;
     exports pdk.util.data;
     exports pdk.util.data.func;
     exports pdk.util.exception;
