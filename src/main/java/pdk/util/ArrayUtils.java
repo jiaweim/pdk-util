@@ -1,9 +1,12 @@
 package pdk.util;
 
+import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntComparators;
 import org.apache.commons.numbers.arrays.Selection;
 
 import java.util.*;
 
+import static java.util.Objects.checkFromToIndex;
 import static java.util.Objects.requireNonNull;
 import static pdk.util.ArgUtils.checkArgument;
 
@@ -184,6 +187,105 @@ public final class ArrayUtils {
             i++;
         }
         return array;
+    }
+
+    /**
+     * Reverse element order in specified array
+     * <p>
+     * This method does nothing for a {@code null} input array.
+     * </p>
+     *
+     * @param array the array to reverse, may be {@code null}
+     * @since 2025-02-20 ⭐
+     */
+    public static void reverse(final char[] array) {
+        reverse(array, 0, array.length);
+    }
+
+    /**
+     * Reverse element order in specified range of the given array
+     * <p>
+     * This method does nothing for a {@code null} input array.
+     * </p>
+     *
+     * @param array              the array to reverse, may be {@code null}
+     * @param fromIndexInclusive the starting index. Undervalue (&lt;0) is promoted to 0, overvalue (&gt;array.length)
+     *                           results in no change.
+     * @param toIndexExclusive   elements up to endIndex-1 are reversed in the array. Undervalue (&lt; start index)
+     *                           results in no change. Overvalue (&gt;array.length) is demoted to array length.
+     * @since 2025-02-20 ⭐
+     */
+    public static void reverse(final char[] array, final int fromIndexInclusive, final int toIndexExclusive) {
+        if (array == null)
+            return;
+        checkFromToIndex(fromIndexInclusive, toIndexExclusive, array.length);
+
+        char tmp;
+        for (int i = fromIndexInclusive, j = toIndexExclusive - 1; i < j; i++, j--) {
+            tmp = array[i];
+            array[i] = array[j];
+            array[j] = tmp;
+        }
+    }
+
+
+    /**
+     * Reverses the elements of {@code array} between {@code fromIndex} inclusive and {@code toIndex}
+     * exclusive. This is equivalent to {@code
+     * Collections.reverse(IntUtils.asList(array).subList(fromIndex, toIndex))}, but is likely to be more
+     * efficient.
+     *
+     * @throws IndexOutOfBoundsException if {@code fromIndex < 0}, {@code toIndex > array.length}, or
+     *                                   {@code toIndex > fromIndex}
+     */
+    public static void reverse(int[] array, int fromIndexInclusive, int toIndexExclusive) {
+        if (array == null)
+            return;
+
+        checkFromToIndex(fromIndexInclusive, toIndexExclusive, array.length);
+
+        for (int i = fromIndexInclusive, j = toIndexExclusive - 1; i < j; i++, j--) {
+            int tmp = array[i];
+            array[i] = array[j];
+            array[j] = tmp;
+        }
+    }
+
+    /**
+     * Reverses the elements of {@code array}. This is equivalent to {@code
+     * Collections.reverse(IntUtils.asList(array))}, but is likely to be more
+     * efficient.
+     *
+     * @throws IndexOutOfBoundsException if {@code fromIndex < 0}, {@code toIndex > array.length}, or
+     *                                   {@code toIndex > fromIndex}
+     * @since 2026-03-24⭐
+     */
+    public static void reverse(int[] array) {
+        reverse(array, 0, array.length);
+    }
+
+    /**
+     * Sorts the elements of {@code array} between {@code fromIndex} inclusive and {@code toIndex}
+     * exclusive in descending order.
+     *
+     * @param array     array to sort
+     * @param fromIndex from index (inclusive)
+     * @param toIndex   to index (exclusive)
+     */
+    public static void sortDescending(int[] array, int fromIndex, int toIndex) {
+        requireNonNull(array);
+        checkFromToIndex(fromIndex, toIndex, array.length);
+
+        Arrays.sort(array, fromIndex, toIndex);
+        reverse(array, fromIndex, toIndex);
+    }
+
+    /**
+     * Sorts the elements of {@code array} in descending order.
+     */
+    public static void sortDescending(int[] array) {
+        requireNonNull(array);
+        IntArrays.stableSort(array, IntComparators.OPPOSITE_COMPARATOR);
     }
 
 }

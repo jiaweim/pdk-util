@@ -1,5 +1,6 @@
 package pdk.util;
 
+import com.google.common.base.Joiner;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import org.junit.jupiter.api.Test;
 
@@ -45,6 +46,16 @@ class StringUtilsTest {
         assertEquals(null, StringUtils.reverse(null));
         assertEquals("", StringUtils.reverse(""));
         assertEquals("tab", StringUtils.reverse("bat"));
+    }
+
+    @Test
+    void reversePart() {
+        String a = "PEPTIDE";
+
+        assertEquals("EDITPEP", StringUtils.reverse(a));
+
+        assertEquals("PDITPEE", StringUtils.reverse(a, 1, a.length() - 1));
+        assertEquals("PEITPDE", StringUtils.reverse(a, 2, a.length() - 2));
     }
 
     @Test
@@ -111,5 +122,12 @@ class StringUtilsTest {
         IntArrayList ints = StringUtils.indexOf(seq, "?");
         assertNotNull(ints);
         assertEquals(0, ints.size());
+    }
+
+    @Test
+    void createJoiner() {
+        Joiner joiner = StringUtils.createJoiner("; ").skipNulls();
+        String str = joiner.join("Harry", null, "Ron", "Hermione");
+        assertEquals("Harry; Ron; Hermione", str);
     }
 }

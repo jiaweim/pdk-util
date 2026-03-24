@@ -1,7 +1,9 @@
 package pdk.util;
 
+import com.google.common.base.Joiner;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import org.jetbrains.annotations.Nullable;
+import pdk.util.math.SamplingUtils;
 
 import java.util.Collection;
 import java.util.StringJoiner;
@@ -88,6 +90,45 @@ public final class StringUtils {
             return null;
         }
         return new StringBuilder(str).reverse().toString();
+    }
+
+    /**
+     * reverse part of string between left and right
+     *
+     * @param str            string to reverse
+     * @param leftInclusive  left index
+     * @param rightExclusive right index
+     * @return String reverse given range
+     * @since 2026-03-23⭐
+     */
+    public static String reverse(final String str, int leftInclusive, int rightExclusive) {
+        if (str == null)
+            return null;
+
+        char[] charArray = str.toCharArray();
+        ArrayUtils.reverse(charArray, leftInclusive, rightExclusive);
+
+        return new String(charArray);
+    }
+
+    /**
+     * This method shuffles the characters in the sequence.
+     *
+     * @return shuffle sequence of the original protein sequence.
+     */
+    public static String shuffle(String aSequence) {
+
+        char[] chars = aSequence.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            int j = (int) (SamplingUtils.rng.nextDouble() * chars.length);
+            if (i != j) {
+                char temp = chars[i];
+                chars[i] = chars[j];
+                chars[j] = temp;
+            }
+        }
+
+        return new String(chars);
     }
 
     /**
@@ -301,5 +342,17 @@ public final class StringUtils {
             joiner.add(String.valueOf(element));
         }
         return joiner.toString();
+    }
+
+    /**
+     * Create a {@link Joiner} of given delimiter
+     *
+     * @param delimiter delimiter
+     * @return {@link Joiner} instance
+     */
+    public static Joiner createJoiner(String delimiter) {
+        requireNonNull(delimiter);
+
+        return Joiner.on(delimiter);
     }
 }

@@ -19,8 +19,17 @@ class StatUtilsTest {
     private static final double EPS = 1E-15;
 
     @Test
-    void statistics() {
+    void min() {
+        int[] array = new int[]{4, 2, 1, 0, -7};
+        int min = StatUtils.min(array);
+        assertEquals(-7, min);
+    }
 
+    @Test
+    void max() {
+        int[] array = new int[]{4, 2, 1, 0, -7};
+        int max = StatUtils.max(array);
+        assertEquals(4, max);
     }
 
     @Test

@@ -36,12 +36,15 @@ public final class StatUtils {
      * @return the value present in {@code array} that is less than or equal to every other value in
      * the array
      * @throws IllegalArgumentException if {@code array} is empty
+     * @since 2026-03-24⭐
      */
     public static int min(int... array) {
         checkArgument(array.length > 0);
-        int min = array[0];
-        for (int i = 1; i < array.length; i++) {
-            min = Math.min(min, array[i]);
+        int min = Integer.MAX_VALUE;
+        for (int value : array) {
+            if (value < min) {
+                min = value;
+            }
         }
         return min;
     }
@@ -90,13 +93,16 @@ public final class StatUtils {
      * @return the value present in {@code array} that is greater than or equal to every other value
      * in the array
      * @throws IllegalArgumentException if {@code array} is empty
+     * @since 2026-03-24⭐
      */
     public static int max(int... array) {
         checkArgument(array.length > 0);
 
-        int max = array[0];
-        for (int i = 1; i < array.length; i++) {
-            max = Math.max(max, array[i]);
+        int max = Integer.MIN_VALUE;
+        for (int value : array) {
+            if (value > max) {
+                max = value;
+            }
         }
         return max;
     }
