@@ -39,7 +39,9 @@ public final class StatUtils {
      * @since 2026-03-24⭐
      */
     public static int min(int... array) {
+        requireNonNull(array);
         checkArgument(array.length > 0);
+
         int min = Integer.MAX_VALUE;
         for (int value : array) {
             if (value < min) {
@@ -106,6 +108,50 @@ public final class StatUtils {
             }
         }
         return max;
+    }
+
+    /**
+     * Returns the greatest value present in {@code array}.
+     *
+     * @param array a <i>nonempty</i> array of {@code int} values
+     * @return the value present in {@code array} that is greater than or equal to every other value
+     * in the array
+     * @throws IllegalArgumentException if {@code array} is empty
+     * @since 2026-03-24⭐
+     */
+    public static double max(double... array) {
+        requireNonNull(array);
+        checkArgument(array.length > 0);
+
+        double max = Double.MIN_VALUE;
+        for (double value : array) {
+            if (value > max) {
+                max = value;
+            }
+        }
+        return max;
+    }
+
+    /**
+     * Finds and returns the index of the maximum value in the array.
+     * If the array contains multiple occurrences of the maximum value,
+     * the index of the first occurrence is returned.
+     *
+     * @param array the array to be searched
+     * @return the zero-based index of the maximum value in the given array
+     * @since 2026-03-25⭐
+     */
+    public static int indexOfMax(double... array) {
+        requireNonNull(array);
+        checkArgument(array.length > 0);
+
+        int maxIndex = 0;
+        for (int i = 1; i < array.length; i++) {
+            if (array[i] > array[maxIndex]) {
+                maxIndex = i;
+            }
+        }
+        return maxIndex;
     }
 
     /**

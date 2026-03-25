@@ -4,6 +4,8 @@ import com.google.common.base.Joiner;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -129,5 +131,37 @@ class StringUtilsTest {
         Joiner joiner = StringUtils.createJoiner("; ").skipNulls();
         String str = joiner.join("Harry", null, "Ron", "Hermione");
         assertEquals("Harry; Ron; Hermione", str);
+    }
+
+    @Test
+    void commonPrefix() {
+        String s1 = "ACCATGT";
+        String s2 = "ACCAGAC";
+        String lcp = StringUtils.commonPrefix(s1, s2);
+        assertEquals("ACCA", lcp);
+    }
+
+
+    @Test
+    void toSuperscript() {
+        assertEquals("Fe³⁺", StringUtils.toSuperscript("Fe3+"));
+        assertEquals("H₂O", StringUtils.toSubscript("H2O"));
+        assertEquals("CO₂", StringUtils.toSubscript("CO2"));
+    }
+
+    @Test
+    void join() {
+        List<String> a = List.of("a", "b", "c");
+        String str = StringUtils.join(";", a);
+        assertEquals("a;b;c", str);
+    }
+
+    @Test
+    void split() {
+        assertTrue(StringUtils.split("", ' ').isEmpty());
+        assertIterableEquals(List.of("a", "b", "c"), StringUtils.split("a.b.c", '.'));
+        assertIterableEquals(List.of("a", "b", "c"), StringUtils.split("a..b.c", '.'));
+        assertIterableEquals(List.of("a:b:c"), StringUtils.split("a:b:c", '.'));
+        assertIterableEquals(List.of("a", "b", "c"), StringUtils.split("a b c", ' '));
     }
 }

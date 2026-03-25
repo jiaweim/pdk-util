@@ -216,4 +216,16 @@ class StatUtilsTest {
         double standardDeviation = StatUtils.populationStandardDeviation(values);
         assertEquals(3.0, standardDeviation, 1E-1);
     }
+
+    @Test
+    void indexOfMax(){
+        assertEquals(3, StatUtils.indexOfMax(3, 7, 2, 9, 4));
+        assertEquals(1, StatUtils.indexOfMax(-5, -2, -8));
+    }
+
+    @Test
+    void maxChar(){
+        char[] array = new  char[]{'a', 'b', 'c'};
+        System.out.println(Character.codePointAt(array, 0));
+    }
 }
