@@ -25,6 +25,7 @@ module pdk.util {
     requires java.desktop;
     requires org.jfree.jfreechart;
     requires org.jfree.svg;
+    requires hipparchus.stat;
 
     // exports
     exports pdk.util;
