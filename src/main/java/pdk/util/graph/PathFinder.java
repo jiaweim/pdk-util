@@ -1,6 +1,6 @@
 package pdk.util.graph;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Interface for algorithms finding shortest or longest path in a graph.

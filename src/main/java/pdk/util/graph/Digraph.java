@@ -1,8 +1,7 @@
 package pdk.util.graph;
 
-import org.jetbrains.annotations.Nullable;
-import org.jheaps.AddressableHeap;
-import org.jheaps.tree.PairingHeap;
+import it.unimi.dsi.fastutil.doubles.Double2ObjectRBTreeMap;
+import org.jspecify.annotations.Nullable;
 import pdk.util.graph.util.BellmanFordShortestPath;
 import pdk.util.graph.util.BreadthFirstIterator;
 
@@ -11,9 +10,11 @@ import java.util.*;
 /**
  * Directed Graph implementation, the node should implement hashCode and equals.
  *
+ * <li>2026-03-31: remove jheaps, and use fastutil implementation</li>
+ *
  * @param <V> type of the node
  * @author Jiawei Mao
- * @version 2.0.0
+ * @version 2.1.0
  * @since 23 Nov 2024, 00:02
  */
 public class Digraph<V> extends AbstractGraph<V> {
@@ -231,11 +232,11 @@ public class Digraph<V> extends AbstractGraph<V> {
         }
         distTo.put(startNode, 0.0);
 
-        PairingHeap<Double, V> heap = new PairingHeap<>();
-        heap.insert(distTo.get(startNode), startNode);
+        Double2ObjectRBTreeMap<V> heap = new Double2ObjectRBTreeMap<>();
+        heap.put(distTo.get(startNode), startNode);
         while (!heap.isEmpty()) {
-            AddressableHeap.Handle<Double, V> handle = heap.deleteMin();
-            V v = handle.getValue();
+            double currentMin = heap.firstDoubleKey();
+            V v = heap.remove(currentMin);
             if (v == endNode) {
                 break;
             }
@@ -248,10 +249,11 @@ public class Digraph<V> extends AbstractGraph<V> {
                     distTo.put(w, distTo.get(v) + edge.getWeight());
                     edgeTo.put(w, edge);
                 }
-                heap.insert(distTo.get(w), w);
+                heap.put(distTo.get(w), w);
             }
             visited.add(v);
         }
+
         if (distTo.get(endNode) == Double.MAX_VALUE) {
             return null;
         }

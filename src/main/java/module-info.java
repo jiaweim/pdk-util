@@ -4,14 +4,14 @@ module pdk.util {
     requires java.xml;
 
     // 3rd party
-    requires org.jheaps;
     requires it.unimi.dsi.fastutil;
     requires com.google.common;
-    requires org.jetbrains.annotations;
+    requires org.jspecify;
 
     // math
     requires org.apache.commons.rng.simple;
     requires org.apache.commons.rng.api;
+    requires org.apache.commons.rng.sampling;
     requires org.apache.commons.numbers.core;
     requires org.apache.commons.numbers.arrays;
     requires org.apache.commons.numbers.combinatorics;
@@ -20,12 +20,13 @@ module pdk.util {
     // statistics
     requires org.apache.commons.statistics.distribution;
     requires org.apache.commons.statistics.descriptive;
+    requires hipparchus.core;
+    requires hipparchus.stat;
 
     // GUI
     requires java.desktop;
     requires org.jfree.jfreechart;
     requires org.jfree.svg;
-    requires hipparchus.stat;
 
     // exports
     exports pdk.util;

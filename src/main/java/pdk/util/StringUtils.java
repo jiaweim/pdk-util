@@ -4,7 +4,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import pdk.util.math.SamplingUtils;
 
 import java.util.Collection;
@@ -305,9 +305,12 @@ public final class StringUtils {
      * @return a new {@code String} that is composed from the {@code elements}
      * argument
      */
-    public static String join(String delimiter, int[] elements) {
+    public static String join(String delimiter, int... elements) {
         requireNonNull(delimiter);
         requireNonNull(elements);
+        if (elements.length == 0) {
+            return "";
+        }
 
         StringJoiner joiner = new StringJoiner(delimiter);
         for (int element : elements) {

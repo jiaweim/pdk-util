@@ -2,23 +2,31 @@ package pdk.util.chart;
 
 import org.apache.commons.statistics.distribution.ContinuousDistribution;
 import org.apache.commons.statistics.distribution.NormalDistribution;
-import org.jetbrains.annotations.NotNull;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.labels.ItemLabelAnchor;
+import org.jfree.chart.labels.ItemLabelPosition;
+import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
 import org.jfree.chart.labels.StandardXYToolTipGenerator;
+import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.xy.XYAreaRenderer;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.chart.ui.ApplicationFrame;
+import org.jfree.chart.ui.TextAnchor;
 import org.jfree.chart.ui.UIUtils;
+import org.jfree.chart.urls.StandardCategoryURLGenerator;
 import org.jfree.chart.urls.StandardXYURLGenerator;
 import org.jfree.chart.util.Args;
+import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.general.DatasetUtils;
 import org.jfree.data.xy.IntervalXYDataset;
 import org.jfree.data.xy.XYDataset;
@@ -26,6 +34,7 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.svg.SVGGraphics2D;
 import org.jfree.svg.SVGUtils;
+import org.jspecify.annotations.NonNull;
 import pdk.util.data.Point2D;
 import pdk.util.math.DistributionUtils;
 
@@ -34,6 +43,7 @@ import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import static java.util.Objects.requireNonNull;
 
@@ -42,7 +52,7 @@ import static java.util.Objects.requireNonNull;
  * Chart Utilities.
  *
  * @author Jiawei Mao
- * @version 1.0.0
+ * @version 1.1.0
  * @since 11 Dec 2025, 11:04 AM
  */
 public final class ChartUtils {
@@ -50,6 +60,147 @@ public final class ChartUtils {
     private static final PdkChartTheme defaultTheme = new PdkChartTheme("pdk");
 
     private ChartUtils() {}
+
+    /**
+     * Creates a bar chart with a vertical orientation.  The chart object
+     * returned by this method uses a {@link CategoryPlot} instance as the
+     * plot, with a {@link CategoryAxis} for the domain axis, a
+     * {@link NumberAxis} as the range axis, and a {@link BarRenderer} as the
+     * renderer.
+     *
+     * @param title             the chart title ({@code null} permitted).
+     * @param categoryAxisLabel the label for the category axis
+     *                          ({@code null} permitted).
+     * @param valueAxisLabel    the label for the value axis
+     *                          ({@code null} permitted).
+     * @param dataset           the dataset for the chart ({@code null} permitted).
+     * @return A bar chart.
+     */
+    public static JFreeChart createBarChart(String title,
+            String categoryAxisLabel, String valueAxisLabel,
+            CategoryDataset dataset) {
+        return createBarChart(title, categoryAxisLabel, valueAxisLabel, dataset,
+                PlotOrientation.VERTICAL, true, true, false);
+    }
+
+    /**
+     * Creates a bar chart.  The chart object returned by this method uses a
+     * {@link CategoryPlot} instance as the plot, with a {@link CategoryAxis}
+     * for the domain axis, a {@link NumberAxis} as the range axis, and a
+     * {@link BarRenderer} as the renderer.
+     *
+     * @param title             the chart title ({@code null} permitted).
+     * @param categoryAxisLabel the label for the category axis
+     *                          ({@code null} permitted).
+     * @param valueAxisLabel    the label for the value axis
+     *                          ({@code null} permitted).
+     * @param dataset           the dataset for the chart ({@code null} permitted).
+     * @param orientation       the plot orientation (horizontal or vertical)
+     *                          ({@code null} not permitted).
+     * @param legend            a flag specifying whether a legend is required.
+     * @param tooltips          configure chart to generate tool tips?
+     * @param urls              configure chart to generate URLs?
+     * @return A bar chart.
+     */
+    public static JFreeChart createBarChart(String title, String categoryAxisLabel, String valueAxisLabel,
+            CategoryDataset dataset, PlotOrientation orientation, boolean legend, boolean tooltips, boolean urls) {
+        Objects.requireNonNull(orientation);
+
+        CategoryAxis categoryAxis = new CategoryAxis(categoryAxisLabel);
+        ValueAxis valueAxis = new NumberAxis(valueAxisLabel);
+
+        BarRenderer renderer = new BarRenderer();
+        if (orientation == PlotOrientation.HORIZONTAL) {
+            ItemLabelPosition position1 = new ItemLabelPosition(
+                    ItemLabelAnchor.OUTSIDE3, TextAnchor.CENTER_LEFT);
+            renderer.setDefaultPositiveItemLabelPosition(position1);
+            ItemLabelPosition position2 = new ItemLabelPosition(
+                    ItemLabelAnchor.OUTSIDE9, TextAnchor.CENTER_RIGHT);
+            renderer.setDefaultNegativeItemLabelPosition(position2);
+        } else if (orientation == PlotOrientation.VERTICAL) {
+            ItemLabelPosition position1 = new ItemLabelPosition(
+                    ItemLabelAnchor.OUTSIDE12, TextAnchor.BOTTOM_CENTER);
+            renderer.setDefaultPositiveItemLabelPosition(position1);
+            ItemLabelPosition position2 = new ItemLabelPosition(
+                    ItemLabelAnchor.OUTSIDE6, TextAnchor.TOP_CENTER);
+            renderer.setDefaultNegativeItemLabelPosition(position2);
+        }
+        if (tooltips) {
+            renderer.setDefaultToolTipGenerator(new StandardCategoryToolTipGenerator());
+        }
+        if (urls) {
+            renderer.setDefaultItemURLGenerator(new StandardCategoryURLGenerator());
+        }
+
+        CategoryPlot plot = new CategoryPlot(dataset, categoryAxis, valueAxis, renderer);
+        plot.setOrientation(orientation);
+        JFreeChart chart = new JFreeChart(title, JFreeChart.DEFAULT_TITLE_FONT, plot, legend);
+        defaultTheme.apply(chart);
+        return chart;
+    }
+
+    /**
+     * Creates a line chart (based on an {@link XYDataset}) with default
+     * settings.
+     *
+     * @param title       the chart title ({@code null} permitted).
+     * @param xAxisLabel  a label for the X-axis ({@code null} permitted).
+     * @param yAxisLabel  a label for the Y-axis ({@code null} permitted).
+     * @param orientation the plot orientation (horizontal or vertical)
+     *                    ({@code null} NOT permitted).
+     * @param legend      a flag specifying whether a legend is required.
+     * @return The chart.
+     */
+    public static JFreeChart createXYLineChart(String title, String xAxisLabel,
+            String yAxisLabel, double[] xValues, double[] yValues, PlotOrientation orientation,
+            boolean legend) {
+        return createXYLineChart(title, xAxisLabel, yAxisLabel, xValues, yValues, orientation, legend, false, false);
+    }
+
+    /**
+     * Creates a line chart (based on an {@link XYDataset}) with default
+     * settings.
+     *
+     * @param title       the chart title ({@code null} permitted).
+     * @param xAxisLabel  a label for the X-axis ({@code null} permitted).
+     * @param yAxisLabel  a label for the Y-axis ({@code null} permitted).
+     * @param orientation the plot orientation (horizontal or vertical)
+     *                    ({@code null} NOT permitted).
+     * @param legend      a flag specifying whether a legend is required.
+     * @param tooltips    configure chart to generate tool tips?
+     * @param urls        configure chart to generate URLs?
+     * @return The chart.
+     */
+    public static JFreeChart createXYLineChart(String title, String xAxisLabel,
+            String yAxisLabel, double[] xValues, double[] yValues, PlotOrientation orientation,
+            boolean legend, boolean tooltips, boolean urls) {
+        requireNonNull(orientation);
+
+        NumberAxis xAxis = new NumberAxis(xAxisLabel);
+        xAxis.setAutoRangeIncludesZero(false);
+        NumberAxis yAxis = new NumberAxis(yAxisLabel);
+        XYItemRenderer renderer = new XYLineAndShapeRenderer(true, false);
+
+        XYSeriesCollection dataset = new XYSeriesCollection();
+        XYSeries series = new XYSeries("");
+        for (int i = 0; i < xValues.length; i++) {
+            series.add(xValues[i], yValues[i]);
+        }
+        dataset.addSeries(series);
+
+        XYPlot plot = new XYPlot(dataset, xAxis, yAxis, renderer);
+        plot.setOrientation(orientation);
+        if (tooltips) {
+            renderer.setDefaultToolTipGenerator(new StandardXYToolTipGenerator());
+        }
+        if (urls) {
+            renderer.setURLGenerator(new StandardXYURLGenerator());
+        }
+
+        JFreeChart chart = new JFreeChart(title, JFreeChart.DEFAULT_TITLE_FONT, plot, legend);
+        defaultTheme.apply(chart);
+        return chart;
+    }
 
     /**
      * Creates a line chart (based on an {@link XYDataset}) with default
@@ -157,7 +308,7 @@ public final class ChartUtils {
      * @param height the chart height.
      * @param file   the output file ({@code null} not permitted).
      */
-    public static void writeToSVG(@NotNull JFreeChart chart, int width, int height, @NotNull File file) {
+    public static void writeToSVG(@NonNull JFreeChart chart, int width, int height, @NonNull File file) {
         SVGGraphics2D graphics2D = new SVGGraphics2D(width, height);
         Rectangle2D drawArea = new Rectangle2D.Double(0, 0, width, height);
         chart.draw(graphics2D, drawArea);
@@ -272,8 +423,7 @@ public final class ChartUtils {
 
         plot.setOrientation(PlotOrientation.VERTICAL);
 
-        JFreeChart chart = new JFreeChart("", JFreeChart.DEFAULT_TITLE_FONT, plot, false);
-        return chart;
+        return new JFreeChart("", JFreeChart.DEFAULT_TITLE_FONT, plot, false);
     }
 
 
@@ -312,10 +462,8 @@ public final class ChartUtils {
         dataset.addSeries(series1);
         dataset.addSeries(series2);
 
-        JFreeChart chart = createXYLineChart("", "X", "Probability Density", dataset, PlotOrientation.VERTICAL, true,
+        return createXYLineChart("", "X", "Probability Density", dataset, PlotOrientation.VERTICAL, true,
                 true, false);
-
-        return chart;
     }
 
     static void main() {

@@ -1,6 +1,6 @@
 package pdk.util.graph.util;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import pdk.util.graph.*;
 
 import java.util.ArrayDeque;

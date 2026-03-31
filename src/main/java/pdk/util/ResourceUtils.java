@@ -1,6 +1,6 @@
 package pdk.util;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import pdk.util.io.FileUtils;
 
 import java.io.IOException;

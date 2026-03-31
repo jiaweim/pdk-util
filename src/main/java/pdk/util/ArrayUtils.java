@@ -4,7 +4,7 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntComparators;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import org.apache.commons.numbers.arrays.Selection;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import pdk.util.tuple.Tuple;
 import pdk.util.tuple.Tuple2;
 
@@ -729,5 +729,23 @@ public final class ArrayUtils {
         }
 
         return longestStreak;
+    }
+
+    /**
+     * Return evenly spaced numbers over a specified interval [start,end]
+     *
+     * @param start The starting value of the sequence.
+     * @param end   The end value of the sequence
+     * @param num   Number of samples to generate.
+     * @return Returns num evenly spaced samples, calculated over the interval [start, stop].
+     * @since 2026-03-31⭐
+     */
+    public static double[] linspace(double start, double end, int num) {
+        double space = (end - start) / (num - 1);
+        double[] result = new double[num];
+        for (int i = 0; i < num; i++) {
+            result[i] = start + i * space;
+        }
+        return result;
     }
 }

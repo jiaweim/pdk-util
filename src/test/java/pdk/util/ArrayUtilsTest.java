@@ -20,6 +20,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class ArrayUtilsTest {
 
     @Test
+    void linspace() {
+        double[] array = ArrayUtils.linspace(2, 3, 5);
+        assertArrayEquals(new double[]{2.0, 2.25, 2.5, 2.75, 3.0}, array, 1E-10);
+    }
+
+    @Test
     void reverseChar() {
         char[] a = new char[]{'a', 'b', 'c', 'd'};
         ArrayUtils.reverse(a, 1, 3);
