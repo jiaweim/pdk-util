@@ -1,4 +1,4 @@
-package pdk.util.math.bayes;
+package pdk.util.math.demo;
 
 import org.hipparchus.linear.MatrixUtils;
 import org.hipparchus.linear.RealMatrix;

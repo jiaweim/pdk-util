@@ -8,10 +8,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
-import org.jfree.chart.labels.ItemLabelAnchor;
-import org.jfree.chart.labels.ItemLabelPosition;
-import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
-import org.jfree.chart.labels.StandardXYToolTipGenerator;
+import org.jfree.chart.labels.*;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
@@ -25,7 +22,7 @@ import org.jfree.chart.ui.TextAnchor;
 import org.jfree.chart.ui.UIUtils;
 import org.jfree.chart.urls.StandardCategoryURLGenerator;
 import org.jfree.chart.urls.StandardXYURLGenerator;
-import org.jfree.chart.util.Args;
+import org.jfree.chart.urls.XYURLGenerator;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.general.DatasetUtils;
 import org.jfree.data.xy.IntervalXYDataset;
@@ -57,9 +54,80 @@ import static java.util.Objects.requireNonNull;
  */
 public final class ChartUtils {
 
-    private static final PdkChartTheme defaultTheme = new PdkChartTheme("pdk");
+    public static final PDKChartTheme defaultTheme = new PDKChartTheme("pdk");
 
     private ChartUtils() {}
+
+    /**
+     * Creates a scatter plot with default settings.  The chart object
+     * returned by this method uses an {@link XYPlot} instance as the plot,
+     * with a {@link NumberAxis} for the domain axis, a  {@link NumberAxis}
+     * as the range axis, and an {@link XYLineAndShapeRenderer} as the
+     * renderer.
+     *
+     * @param title      the chart title ({@code null} permitted).
+     * @param xAxisLabel a label for the X-axis ({@code null} permitted).
+     * @param yAxisLabel a label for the Y-axis ({@code null} permitted).
+     * @param dataset    the dataset for the chart ({@code null} permitted).
+     * @return A scatter plot.
+     */
+    public static JFreeChart createScatterPlot(String title, String xAxisLabel,
+            String yAxisLabel, XYDataset dataset) {
+        return createScatterPlot(title, xAxisLabel, yAxisLabel, dataset,
+                PlotOrientation.VERTICAL, true, true, false);
+    }
+
+    /**
+     * Creates a scatter plot with default settings.  The chart object
+     * returned by this method uses an {@link XYPlot} instance as the plot,
+     * with a {@link NumberAxis} for the domain axis, a  {@link NumberAxis}
+     * as the range axis, and an {@link XYLineAndShapeRenderer} as the
+     * renderer.
+     *
+     * @param title       the chart title ({@code null} permitted).
+     * @param xAxisLabel  a label for the X-axis ({@code null} permitted).
+     * @param yAxisLabel  a label for the Y-axis ({@code null} permitted).
+     * @param dataset     the dataset for the chart ({@code null} permitted).
+     * @param orientation the plot orientation (horizontal or vertical)
+     *                    ({@code null} NOT permitted).
+     * @param legend      a flag specifying whether a legend is required.
+     * @param tooltips    configure chart to generate tool tips?
+     * @param urls        configure chart to generate URLs?
+     * @return A scatter plot.
+     */
+    public static JFreeChart createScatterPlot(String title, String xAxisLabel,
+            String yAxisLabel, XYDataset dataset, PlotOrientation orientation,
+            boolean legend, boolean tooltips, boolean urls) {
+        Objects.requireNonNull(orientation);
+
+        NumberAxis xAxis = new NumberAxis(xAxisLabel);
+        xAxis.setAutoRangeIncludesZero(false);
+        NumberAxis yAxis = new NumberAxis(yAxisLabel);
+        yAxis.setAutoRangeIncludesZero(false);
+
+        XYPlot plot = new XYPlot(dataset, xAxis, yAxis, null);
+
+        XYToolTipGenerator toolTipGenerator = null;
+        if (tooltips) {
+            toolTipGenerator = new StandardXYToolTipGenerator();
+        }
+
+        XYURLGenerator urlGenerator = null;
+        if (urls) {
+            urlGenerator = new StandardXYURLGenerator();
+        }
+        XYItemRenderer renderer = new XYLineAndShapeRenderer(false, true);
+        renderer.setDefaultToolTipGenerator(toolTipGenerator);
+        renderer.setURLGenerator(urlGenerator);
+        plot.setRenderer(renderer);
+        plot.setOrientation(orientation);
+
+        JFreeChart chart = new JFreeChart(title, JFreeChart.DEFAULT_TITLE_FONT,
+                plot, legend);
+        defaultTheme.apply(chart);
+        return chart;
+    }
+
 
     /**
      * Creates a bar chart with a vertical orientation.  The chart object
@@ -277,8 +345,8 @@ public final class ChartUtils {
             String xAxisLabel, String yAxisLabel, IntervalXYDataset dataset,
             PlotOrientation orientation, boolean legend, boolean tooltips,
             boolean urls) {
+        Objects.requireNonNull(orientation);
 
-        Args.nullNotPermitted(orientation, "orientation");
         NumberAxis xAxis = new NumberAxis(xAxisLabel);
         xAxis.setAutoRangeIncludesZero(false);
         ValueAxis yAxis = new NumberAxis(yAxisLabel);
@@ -411,6 +479,7 @@ public final class ChartUtils {
         NumberAxis xAxis = new NumberAxis("X");
         xAxis.setAutoRangeIncludesZero(false);
         NumberAxis yAxis = new NumberAxis("Probability Density");
+
         XYPlot plot = new XYPlot();
         plot.setDomainAxis(xAxis);
         plot.setRangeAxis(yAxis);
@@ -424,46 +493,6 @@ public final class ChartUtils {
         plot.setOrientation(PlotOrientation.VERTICAL);
 
         return new JFreeChart("", JFreeChart.DEFAULT_TITLE_FONT, plot, false);
-    }
-
-
-    /**
-     * Create a {@link JFreeChart} for two {@link ContinuousDistribution}s, you can display it with {@link #showChart(JFreeChart)}.
-     * </p>
-     * <img src="shade_chart.png" width="140"/>
-     *
-     * @param distribution1 {@link ContinuousDistribution}
-     * @param distribution2 {@link ContinuousDistribution}
-     * @param start         start x
-     * @param end           end x
-     * @param samples       number of data points
-     * @return {@link JFreeChart}
-     */
-    public static JFreeChart pdfChart(
-            ContinuousDistribution distribution1, String name1,
-            ContinuousDistribution distribution2, String name2,
-            double start, double end, int samples) {
-
-        ArrayList<Point2D> sample1 = DistributionUtils.sample(distribution1, start, end, samples);
-        ArrayList<Point2D> sample2 = DistributionUtils.sample(distribution2, start, end, samples);
-
-        XYSeries series1 = new XYSeries(name1);
-        XYSeries series2 = new XYSeries(name2);
-
-        for (Point2D point2D : sample1) {
-            series1.add(point2D.getX(), point2D.getY());
-        }
-
-        for (Point2D point2D : sample2) {
-            series2.add(point2D.getX(), point2D.getY());
-        }
-
-        XYSeriesCollection dataset = new XYSeriesCollection();
-        dataset.addSeries(series1);
-        dataset.addSeries(series2);
-
-        return createXYLineChart("", "X", "Probability Density", dataset, PlotOrientation.VERTICAL, true,
-                true, false);
     }
 
     static void main() {

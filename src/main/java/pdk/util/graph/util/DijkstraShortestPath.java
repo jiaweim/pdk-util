@@ -46,7 +46,6 @@ public class DijkstraShortestPath<V> implements PathFinder<V> {
         }
 
         int V = graph.getNodeCount();
-//        distTo_ = new HashMap<>(V);
         distTo_ = new Object2DoubleOpenHashMap<>(V);
         edgeTo_ = new HashMap<>(V);
         HashMap<V, Boolean> visited = new HashMap<>(V);
@@ -75,25 +74,6 @@ public class DijkstraShortestPath<V> implements PathFinder<V> {
             }
             visited.put(v, true);
         }
-
-//        PairingHeap<Double, V> heap = new PairingHeap<>();
-//        heap.insert(distTo_.get(startNode), startNode);
-//        while (!heap.isEmpty()) {
-//            AddressableHeap.Handle<Double, V> handle = heap.deleteMin();
-//            V v = handle.getValue();
-//            for (Edge<V> edge : graph.getOutgoingEdges(v)) {
-//                V w = edge.getTarget();
-//                if (visited.get(w))
-//                    continue;
-//                // relaxation
-//                if (distTo_.get(w) > distTo_.get(v) + edge.getWeight()) {
-//                    distTo_.put(w, distTo_.get(v) + edge.getWeight());
-//                    edgeTo_.put(w, edge);
-//                }
-//                heap.insert(distTo_.get(w), w);
-//            }
-//            visited.put(v, true);
-//        }
     }
 
     @Override

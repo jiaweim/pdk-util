@@ -19,6 +19,7 @@ import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.title.*;
 import org.jfree.chart.ui.RectangleInsets;
 import org.jfree.chart.util.*;
+import pdk.util.color.JColorQualitative;
 
 import java.awt.*;
 import java.io.IOException;
@@ -37,7 +38,7 @@ import static java.util.Objects.requireNonNull;
  * the manual process of applying each attribute to the right sub-object
  * within the JFreeChart instance.  It's not elegant code, but it works.
  */
-public class PdkChartTheme implements ChartTheme, Cloneable,
+public class PDKChartTheme implements ChartTheme, Cloneable,
         PublicCloneable, Serializable {
 
     /**
@@ -208,7 +209,7 @@ public class PdkChartTheme implements ChartTheme, Cloneable,
      * @return A chart theme.
      */
     public static ChartTheme createJFreeTheme() {
-        return new PdkChartTheme("JFree");
+        return new PDKChartTheme("JFree");
     }
 
     /**
@@ -218,7 +219,7 @@ public class PdkChartTheme implements ChartTheme, Cloneable,
      * @return The "Darkness" theme.
      */
     public static ChartTheme createDarknessTheme() {
-        PdkChartTheme theme = new PdkChartTheme("Darkness");
+        PDKChartTheme theme = new PDKChartTheme("Darkness");
         theme.titlePaint = Color.WHITE;
         theme.subtitlePaint = Color.WHITE;
         theme.legendBackgroundPaint = Color.BLACK;
@@ -257,7 +258,7 @@ public class PdkChartTheme implements ChartTheme, Cloneable,
      *
      * @param name the name of the theme ({@code null} not permitted).
      */
-    public PdkChartTheme(String name) {
+    public PDKChartTheme(String name) {
         this(name, false);
     }
 
@@ -268,7 +269,7 @@ public class PdkChartTheme implements ChartTheme, Cloneable,
      * @param shadow a flag that controls whether a shadow generator is
      *               included.
      */
-    public PdkChartTheme(String name, boolean shadow) {
+    public PDKChartTheme(String name, boolean shadow) {
         requireNonNull(name, "Chart theme name must not be null");
 
         this.name = name;
@@ -281,14 +282,17 @@ public class PdkChartTheme implements ChartTheme, Cloneable,
         this.legendBackgroundPaint = Color.WHITE;
         this.legendItemPaint = Color.DARK_GRAY;
         this.chartBackgroundPaint = Color.WHITE;
-        this.drawingSupplier = new DefaultDrawingSupplier();
-        this.plotBackgroundPaint = Color.LIGHT_GRAY;
+        this.drawingSupplier = new DefaultDrawingSupplier(JColorQualitative.Plotly(), DefaultDrawingSupplier.DEFAULT_FILL_PAINT_SEQUENCE,
+                DefaultDrawingSupplier.DEFAULT_OUTLINE_PAINT_SEQUENCE, DefaultDrawingSupplier.DEFAULT_STROKE_SEQUENCE,
+                DefaultDrawingSupplier.DEFAULT_OUTLINE_STROKE_SEQUENCE, DefaultDrawingSupplier.DEFAULT_SHAPE_SEQUENCE);
+
+        this.plotBackgroundPaint = Color.WHITE;
         this.plotOutlinePaint = Color.BLACK;
         this.labelLinkPaint = Color.BLACK;
         this.labelLinkStyle = PieLabelLinkStyle.CUBIC_CURVE;
         this.axisOffset = new RectangleInsets(4, 4, 4, 4);
-        this.domainGridlinePaint = Color.WHITE;
-        this.rangeGridlinePaint = Color.WHITE;
+        this.domainGridlinePaint = Color.LIGHT_GRAY;
+        this.rangeGridlinePaint = Color.LIGHT_GRAY;
         this.baselinePaint = Color.BLACK;
         this.crosshairPaint = Color.BLUE;
         this.axisLabelPaint = Color.DARK_GRAY;
@@ -1475,10 +1479,10 @@ public class PdkChartTheme implements ChartTheme, Cloneable,
         if (obj == this) {
             return true;
         }
-        if (!(obj instanceof PdkChartTheme)) {
+        if (!(obj instanceof PDKChartTheme)) {
             return false;
         }
-        PdkChartTheme that = (PdkChartTheme) obj;
+        PDKChartTheme that = (PDKChartTheme) obj;
         if (!Objects.equals(this.name, that.name)) {
             return false;
         }

@@ -1,14 +1,14 @@
 package pdk.util.math;
 
-import org.apache.commons.statistics.distribution.BetaDistribution;
-import org.apache.commons.statistics.distribution.ContinuousDistribution;
-import org.apache.commons.statistics.distribution.NormalDistribution;
-import org.apache.commons.statistics.distribution.UniformContinuousDistribution;
+import org.apache.commons.statistics.distribution.*;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.ui.TextAnchor;
 import pdk.util.ArgUtils;
 import pdk.util.chart.ChartUtils;
+import pdk.util.chart.XYChartBuilder;
 import pdk.util.data.Point2D;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 /**
@@ -81,10 +81,20 @@ public final class DistributionUtils {
     }
 
     static void main() {
-        BetaDistribution beta1 = beta(36 + 3, 114 + 7);
-        BetaDistribution beta2 = beta(50 + 3, 100 + 7);
+        TDistribution t1 = TDistribution.of(1);
+        TDistribution t2 = TDistribution.of(2);
+        TDistribution t3 = TDistribution.of(5);
+        NormalDistribution n1 = NormalDistribution.of(0, 1);
 
-        JFreeChart chart = ChartUtils.pdfChart(beta1, "A", beta2, "B", 0.1, 0.5, 100);
-        ChartUtils.showChart(chart);
+        JFreeChart chart1 = XYChartBuilder.start()
+                .addLineChart("1", sample(t1, -6, 6, 500), 4.0)
+                .addLineChart("2", sample(t2, -6, 6, 500), 4.0)
+                .addLineChart("3", sample(t3, -6, 6, 500), 4.0)
+                .addLineChart("4", sample(n1, -6, 6, 500), 4.0)
+                .addPointerAnnotation("normal", 0, 0.4, Math.toRadians(0), 0, TextAnchor.CENTER_LEFT, Color.YELLOW)
+                .showDomainGridLines(false)
+                .showRangeGridLines(false)
+                .build();
+        ChartUtils.showChart(chart1);
     }
 }
