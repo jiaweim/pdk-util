@@ -45,15 +45,23 @@ public class AMGSampler {
     private final int batchSize_;
     private int batchCount_;
 
-    private final BoxMullerNormalizedGaussianSampler sampler_;
+    private final BoxMullerNormalizedGaussianSampler normSampler_;
 
+    /**
+     * Create a {@link AMGSampler} with default batch size 50.
+     *
+     * @param data
+     * @param model
+     * @param seed
+     */
     public AMGSampler(double[] data, Model model, Integer seed) {
-        this(data, model, seed, 3);
+        this(data, model, seed, 50);
     }
 
     /**
+     * Create a {@link AMGSampler}
      *
-     * @param data
+     * @param data      init dataset
      * @param model
      * @param seed      seed for random number generator
      * @param batchSize Batch size for adaptive adjustment (adjust the step size after every 50 updates)
@@ -66,6 +74,7 @@ public class AMGSampler {
             data_[i] = new WeightPoint2D(data[i], 0);
         }
         this.batchSize_ = batchSize;
+
         this.logSd_ = new double[model.modelParameters.length];
         this.acceptanceCount = new double[model.modelParameters.length];
         this.currentState_ = new double[model.modelParameters.length];
@@ -73,12 +82,12 @@ public class AMGSampler {
         for (int i = 0; i < currentState_.length; i++) {
             currentState_[i] = model.modelParameters[i].initialGuess_;
         }
-        this.sampler_ = BoxMullerNormalizedGaussianSampler.of(rng_);
+        this.normSampler_ = BoxMullerNormalizedGaussianSampler.of(rng_);
     }
 
 
     public AMGSampler(WeightPoint2D[] data, Model model, Integer seed) {
-        this(data, model, seed, 3);
+        this(data, model, seed, 50);
     }
 
     public AMGSampler(WeightPoint2D[] data, Model model, Integer seed, int batchSize) {
@@ -93,7 +102,7 @@ public class AMGSampler {
         for (int i = 0; i < currentState_.length; i++) {
             currentState_[i] = model.modelParameters[i].initialGuess_;
         }
-        this.sampler_ = BoxMullerNormalizedGaussianSampler.of(rng_);
+        this.normSampler_ = BoxMullerNormalizedGaussianSampler.of(rng_);
     }
 
     /**
@@ -122,23 +131,28 @@ public class AMGSampler {
     public double[] nextSample() {
         markovChain_.add(currentState_.clone());
 
-        for (int p = 0; p < model_.modelParameters.length; p++) {
-            double parameterProposal = sampler_.sample() * Math.exp(logSd_[p]) + currentState_[p];
-            proposedState_ = currentState_.clone();
-            proposedState_[p] = parameterProposal;
+        for (int paramIdx = 0; paramIdx < model_.modelParameters.length; paramIdx++) {
+            // 从以当前值为中心、标准差为 exp(log_sd[i]) 的正态分布中抽取候选值。
+            double paramProposal = normSampler_.sample() * Math.exp(logSd_[paramIdx]) + currentState_[paramIdx];
 
+            // 复制当前状态，只替换第 paramIdx 个分量。
+            proposedState_ = currentState_.clone();
+            proposedState_[paramIdx] = paramProposal;
+
+            // // 计算接受概率
             double acceptProb = 0;
-            if (model_.modelParameters[p].isValid(parameterProposal)) {
-                double currentPosteriorProb = model_.logPosteriorProbability(currentState_, data_);
-                double proposedPosteriorProb = model_.logPosteriorProbability(proposedState_, data_);
-                if (!Double.isFinite(currentPosteriorProb)) {
+            if (model_.modelParameters[paramIdx].isValid(paramProposal)) {
+                // 提议分布对称（正态随机游走）,接受概率为 min(1,prop/curr)
+                double currPostDens = model_.logPosteriorProbability(currentState_, data_);
+                double propPostDens = model_.logPosteriorProbability(proposedState_, data_);
+                if (!Double.isFinite(currPostDens)) {
                     acceptProb = 1;
                 } else {
-                    acceptProb = Math.exp(proposedPosteriorProb - currentPosteriorProb);
+                    acceptProb = Math.exp(propPostDens - currPostDens);
                 }
             }
             if (acceptProb > rng_.nextDouble()) {
-                acceptanceCount[p]++;
+                acceptanceCount[paramIdx]++;
                 currentState_ = proposedState_;
             }
         }
