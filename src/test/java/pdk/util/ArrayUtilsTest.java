@@ -20,6 +20,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class ArrayUtilsTest {
 
     @Test
+    void concat() {
+        double[] array = ArrayUtils.concat(new double[]{1, 2, 3}, new double[]{4, 5});
+        assertArrayEquals(new double[]{1, 2, 3, 4, 5}, array);
+    }
+
+    @Test
     void linspace() {
         double[] array = ArrayUtils.linspace(2, 3, 5);
         assertArrayEquals(new double[]{2.0, 2.25, 2.5, 2.75, 3.0}, array, 1E-10);

@@ -51,4 +51,6 @@ public final class ProbUtils {
     public static double binomialCoefficientDouble(int n, int k) {
         return BinomialCoefficientDouble.value(n, k);
     }
+
+
 }

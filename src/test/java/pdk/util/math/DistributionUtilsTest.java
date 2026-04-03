@@ -1,7 +1,11 @@
 package pdk.util.math;
 
 import org.apache.commons.rng.UniformRandomProvider;
+import org.apache.commons.statistics.distribution.NormalDistribution;
+import org.hipparchus.distribution.continuous.TDistribution;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  *
@@ -30,6 +34,30 @@ class DistributionUtilsTest {
 //        }
 //        System.out.println((double) n / trails);
 //    }
+
+    @Test
+    void getNormalPDF() {
+        NormalDistribution distribution = NormalDistribution.of(0, 1);
+        for (int i = -100; i <= 100; i++) {
+            double density1 = DistributionUtils.getNormalPDF(0, 1, i);
+            double density2 = distribution.density(i);
+            assertEquals(density1, density2, 1E-15);
+        }
+    }
+
+    @Test
+    void getTDistributionPDF() {
+        double pdf = DistributionUtils.getTDistributionPDF(0, 1, 15, 1.25);
+        assertEquals(0.17758247, pdf, 1E-8);
+        for (int i = 1; i < 100; i++) {
+            TDistribution tDistribution = new TDistribution(i);
+            for (int j = -50; j <= 50; j++) {
+                double d2 = tDistribution.density(j);
+                double d1 = DistributionUtils.getTDistributionPDF(0, 1, i, j);
+                assertEquals(d1, d2, 1E-10);
+            }
+        }
+    }
 
     @Test
     void pi() {

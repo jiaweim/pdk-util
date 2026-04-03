@@ -346,7 +346,6 @@ public final class StatUtils {
      */
     public static double sum(Iterable<Double> values) {
         requireNonNull(values);
-
         Sum sum = Sum.create();
         for (Double value : values) {
             sum.add(value);

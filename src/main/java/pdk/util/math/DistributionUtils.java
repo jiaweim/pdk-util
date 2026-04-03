@@ -1,6 +1,7 @@
 package pdk.util.math;
 
 import org.apache.commons.statistics.distribution.*;
+import org.hipparchus.special.Gamma;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.ui.TextAnchor;
 import pdk.util.ArgUtils;
@@ -21,6 +22,47 @@ import java.util.ArrayList;
 public final class DistributionUtils {
 
     private DistributionUtils() {}
+
+    private static final NormalDistribution NORMAL = NormalDistribution.of(0, 1);
+
+    /**
+     * Computes the probability density of Normal distribution at x.
+     *
+     * @param mean   The mean (μ) of the normal distribution.
+     * @param stddev The standard deviation (σ) of the normal distribution. Range: σ ≥ 0.
+     * @param x      The location at which to compute the density.
+     * @return the density at x.
+     */
+    public static double getNormalPDF(double mean, double stddev, double x) {
+        if (stddev < 0.0) {
+            throw new IllegalArgumentException("Invalid parametrization for the distribution.");
+        }
+        double num = (x - mean) / stddev;
+        return NORMAL.density(num);
+    }
+
+    /**
+     * Computes the probability density of the TDistribution at x.
+     *
+     * @param mean              the location (μ) of the TDistribution
+     * @param standardDeviation the scale (σ) of the TDistribution. Range: σ>0.
+     * @param freedom           the degrees of freedom (ν) for the TDistribution. Range: ν>0.
+     * @param x                 the location at which to compute the density.
+     * @return density at x.
+     * @since 2026-04-03⭐
+     */
+    public static double getTDistributionPDF(double mean, double standardDeviation, double freedom, double x) {
+        if (standardDeviation <= 0.0 || freedom <= 0.0) {
+            throw new IllegalArgumentException("Invalid parametrization for the distribution.");
+        }
+        if (freedom >= 100000000.0) {
+            return getNormalPDF(mean, standardDeviation, x);
+        }
+        double num = (x - mean) / standardDeviation;
+        return Math.exp(Gamma.logGamma((freedom + 1.0) / 2.0) - Gamma.logGamma(freedom / 2.0))
+                * Math.pow(1.0 + num * num / freedom, -0.5 * (freedom + 1.0))
+                / Math.sqrt(freedom * Math.PI) / standardDeviation;
+    }
 
     /**
      * Creates a uniform continuous distribution.

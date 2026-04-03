@@ -42,4 +42,5 @@ module pdk.util {
     exports pdk.util.io;
     exports pdk.util.math;
     exports pdk.util.tuple;
+    exports pdk.util.bayesian;
 }

@@ -44,6 +44,22 @@ public final class ArrayUtils {
     public static final char[] EMPTY_CHAR_ARRAY = {};
 
     /**
+     * Merge the two arrays.
+     *
+     * @param array1 a double array
+     * @param array2 a double array
+     * @return concated array
+     * @since 2026-04-03⭐
+     */
+    public static double[] concat(double[] array1, double[] array2) {
+        double[] result = new double[array1.length + array2.length];
+        System.arraycopy(array1, 0, result, 0, array1.length);
+        System.arraycopy(array2, 0, result, array1.length, array2.length);
+        return result;
+    }
+
+
+    /**
      * Returns the code point of the character with the largest code point in the character array.
      *
      * @param array target character array
