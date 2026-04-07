@@ -46,14 +46,14 @@ class DistributionUtilsTest {
     }
 
     @Test
-    void getTDistributionPDF() {
-        double pdf = DistributionUtils.getTDistributionPDF(0, 1, 15, 1.25);
+    void getStudentTPDF() {
+        double pdf = DistributionUtils.getStudentTPDF(0, 1, 15, 1.25);
         assertEquals(0.17758247, pdf, 1E-8);
         for (int i = 1; i < 100; i++) {
             TDistribution tDistribution = new TDistribution(i);
             for (int j = -50; j <= 50; j++) {
                 double d2 = tDistribution.density(j);
-                double d1 = DistributionUtils.getTDistributionPDF(0, 1, i, j);
+                double d1 = DistributionUtils.getStudentTPDF(0, 1, i, j);
                 assertEquals(d1, d2, 1E-10);
             }
         }

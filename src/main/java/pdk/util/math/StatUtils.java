@@ -503,15 +503,14 @@ public final class StatUtils {
     }
 
     /**
-     * Return the standard deviation of given sample.
+     * Return the standard deviation of a given sample.
      *
      * @param values sample data
      * @return standard deviation.
      */
     public static double standardDeviation(final double[] values) {
-        return StandardDeviation.of(values).getAsDouble();
+        return StandardDeviation.of(values).setBiased(false).getAsDouble();
     }
-
 
     /**
      * Returns the <a href="http://en.wikibooks.org/wiki/Statistics/Summary/Variance">

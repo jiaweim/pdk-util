@@ -30,7 +30,6 @@ public class AMGSampler {
      * Current parameter state
      */
     private double[] currentState_;
-    private double[] proposedState_;
     private final UniformRandomProvider rng_;
     private final Model model_;
     private final WeightPoint2D[] data_;
@@ -78,7 +77,6 @@ public class AMGSampler {
         this.logSd_ = new double[model.modelParameters.length];
         this.acceptanceCount = new double[model.modelParameters.length];
         this.currentState_ = new double[model.modelParameters.length];
-        this.proposedState_ = new double[model.modelParameters.length];
         for (int i = 0; i < currentState_.length; i++) {
             currentState_[i] = model.modelParameters[i].initialGuess_;
         }
@@ -98,7 +96,6 @@ public class AMGSampler {
         this.logSd_ = new double[model.modelParameters.length];
         this.acceptanceCount = new double[model.modelParameters.length];
         this.currentState_ = new double[model.modelParameters.length];
-        this.proposedState_ = new double[model.modelParameters.length];
         for (int i = 0; i < currentState_.length; i++) {
             currentState_[i] = model.modelParameters[i].initialGuess_;
         }
@@ -132,39 +129,43 @@ public class AMGSampler {
         markovChain_.add(currentState_.clone());
 
         for (int paramIdx = 0; paramIdx < model_.modelParameters.length; paramIdx++) {
-            // 从以当前值为中心、标准差为 exp(log_sd[i]) 的正态分布中抽取候选值。
-            double paramProposal = normSampler_.sample() * Math.exp(logSd_[paramIdx]) + currentState_[paramIdx];
+            // 从以当前值为中心、标准差为 exp(log_sd[i]) 的正态分布中抽取候选值
+            double paramProp = normSampler_.sample() * Math.exp(logSd_[paramIdx]) + currentState_[paramIdx];
 
             // 复制当前状态，只替换第 paramIdx 个分量。
-            proposedState_ = currentState_.clone();
-            proposedState_[paramIdx] = paramProposal;
+            double[] prop = currentState_.clone();
+            prop[paramIdx] = paramProp;
 
-            // // 计算接受概率
-            double acceptProb = 0;
-            if (model_.modelParameters[paramIdx].isValid(paramProposal)) {
+            // 计算接受概率
+            double acceptProb = 0; // 当参数无效，默认概率为 0（比如标准差为负数）
+            if (model_.modelParameters[paramIdx].isValid(paramProp)) {
                 // 提议分布对称（正态随机游走）,接受概率为 min(1,prop/curr)
                 double currPostDens = model_.logPosteriorProbability(currentState_, data_);
-                double propPostDens = model_.logPosteriorProbability(proposedState_, data_);
+                double propPostDens = model_.logPosteriorProbability(prop, data_);
                 if (!Double.isFinite(currPostDens)) {
-                    acceptProb = 1;
+                    acceptProb = 1; // 跳出不良区域
                 } else {
                     acceptProb = Math.exp(propPostDens - currPostDens);
                 }
             }
             if (acceptProb > rng_.nextDouble()) {
                 acceptanceCount[paramIdx]++;
-                currentState_ = proposedState_;
+                currentState_ = prop;
             }
         }
+        // 每完成 batch_size 次完整 Gibbs 扫描（即 chain.length % batch_size == 0），进行自适应调整
         if (markovChain_.size() % batchSize_ == 0) {
             batchCount_++;
-            for (int paramIndex = 0; paramIndex < model_.modelParameters.length; paramIndex++) {
-                if (acceptanceCount[paramIndex] / batchSize_ > 0.44) {
-                    logSd_[paramIndex] += Math.min(0.01, 1.0 / Math.sqrt(batchCount_));
-                } else if (acceptanceCount[paramIndex] / batchSize_ < 0.44) {
-                    logSd_[paramIndex] -= Math.min(0.01, 1.0 / Math.sqrt(batchCount_));
+            for (int paramI = 0; paramI < model_.modelParameters.length; paramI++) {
+                // 目标接受率：0.44，这是一维随机游走 Metropolis 在目标分布为正态时的最优值。
+                // 接受率高于目标 → 增大步长（log_sd 增加 → 标准差变大）；低于目标 → 减小步长。
+                // 批次大小固定为 50，平衡了自适应稳定性和计算开销。
+                if (acceptanceCount[paramI] / batchSize_ > 0.44) {
+                    logSd_[paramI] += Math.min(0.01, 1 / Math.sqrt(batchCount_));
+                } else if (acceptanceCount[paramI] / batchSize_ < 0.44) {
+                    logSd_[paramI] -= Math.min(0.01, 1 / Math.sqrt(batchCount_));
                 }
-                acceptanceCount[paramIndex] = 0;
+                acceptanceCount[paramI] = 0;
             }
         }
 

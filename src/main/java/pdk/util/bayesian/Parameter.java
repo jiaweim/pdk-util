@@ -4,7 +4,7 @@ import com.google.common.collect.RangeSet;
 import org.apache.commons.statistics.distribution.ContinuousDistribution;
 
 /**
- *
+ * This class is used to define a model parameter.
  *
  * @author Jiawei Mao
  * @version 1.0.0
@@ -19,7 +19,7 @@ public class Parameter {
     /**
      * Create a  parameter
      *
-     * @param priorDistribution         Prior distribution of the parameters
+     * @param priorDistribution         Prior distribution of this parameter
      * @param acceptableParameterRanges The range of parameter values
      * @param initialGuess              Initial values of the parameters
      */

@@ -44,24 +44,24 @@ public final class DistributionUtils {
     /**
      * Computes the probability density of the TDistribution at x.
      *
-     * @param mean              the location (μ) of the TDistribution
-     * @param standardDeviation the scale (σ) of the TDistribution. Range: σ>0.
-     * @param freedom           the degrees of freedom (ν) for the TDistribution. Range: ν>0.
-     * @param x                 the location at which to compute the density.
+     * @param mean    the location (μ) of the TDistribution
+     * @param scale   the scale (σ) of the TDistribution. Range: σ>0.
+     * @param freedom the degrees of freedom (ν) for the TDistribution. Range: ν>0.
+     * @param x       the location at which to compute the density.
      * @return density at x.
      * @since 2026-04-03⭐
      */
-    public static double getTDistributionPDF(double mean, double standardDeviation, double freedom, double x) {
-        if (standardDeviation <= 0.0 || freedom <= 0.0) {
+    public static double getStudentTPDF(double mean, double scale, double freedom, double x) {
+        if (scale <= 0.0 || freedom <= 0.0) {
             throw new IllegalArgumentException("Invalid parametrization for the distribution.");
         }
         if (freedom >= 100000000.0) {
-            return getNormalPDF(mean, standardDeviation, x);
+            return getNormalPDF(mean, scale, x);
         }
-        double num = (x - mean) / standardDeviation;
+        double num = (x - mean) / scale;
         return Math.exp(Gamma.logGamma((freedom + 1.0) / 2.0) - Gamma.logGamma(freedom / 2.0))
                 * Math.pow(1.0 + num * num / freedom, -0.5 * (freedom + 1.0))
-                / Math.sqrt(freedom * Math.PI) / standardDeviation;
+                / Math.sqrt(freedom * Math.PI) / scale;
     }
 
     /**

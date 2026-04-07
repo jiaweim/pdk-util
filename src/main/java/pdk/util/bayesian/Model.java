@@ -87,7 +87,7 @@ public abstract class Model {
     }
 
     /**
-     * Calculates the log probability of the model with the proposed parameters and data.
+     * Calculates the log probability of the model with the proposed parameters and data (likelihood).
      *
      * @param proposalParams proposed parameters
      * @param data           data
@@ -109,10 +109,11 @@ public abstract class Model {
      * @return log prior probability
      */
     public double logPriorProbability(double[] proposalParams) {
+        // 概率的 log 值相加，等价于概率相乘，用于计算多个参数的组合概率
         double logP = 0;
         for (int p = 0; p < proposalParams.length; p++) {
-            double priorProbability = modelParameters[p].priorDistribution_.density(proposalParams[p]);
-            logP += Math.log(priorProbability);
+            double priorProb = modelParameters[p].priorDistribution_.density(proposalParams[p]);
+            logP += Math.log(priorProb);
         }
         return logP;
     }
