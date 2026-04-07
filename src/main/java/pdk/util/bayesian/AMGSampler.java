@@ -3,6 +3,7 @@ package pdk.util.bayesian;
 import org.apache.commons.rng.UniformRandomProvider;
 import org.apache.commons.rng.sampling.distribution.BoxMullerNormalizedGaussianSampler;
 import org.apache.commons.rng.simple.RandomSource;
+import org.jspecify.annotations.Nullable;
 import pdk.util.data.WeightPoint2D;
 
 import java.util.ArrayList;
@@ -88,7 +89,15 @@ public class AMGSampler {
         this(data, model, seed, 50);
     }
 
-    public AMGSampler(WeightPoint2D[] data, Model model, Integer seed, int batchSize) {
+    /**
+     * Create a {@link AMGSampler}
+     *
+     * @param data      sample data
+     * @param model     {@link Model}
+     * @param seed      random seed
+     * @param batchSize batch size
+     */
+    public AMGSampler(WeightPoint2D[] data, Model model, @Nullable Integer seed, int batchSize) {
         this.rng_ = RandomSource.XO_SHI_RO_256_PP.create(seed);
         this.model_ = model;
         this.data_ = data;
@@ -96,6 +105,7 @@ public class AMGSampler {
         this.logSd_ = new double[model.modelParameters.length];
         this.acceptanceCount = new double[model.modelParameters.length];
         this.currentState_ = new double[model.modelParameters.length];
+
         for (int i = 0; i < currentState_.length; i++) {
             currentState_[i] = model.modelParameters[i].initialGuess_;
         }
@@ -113,7 +123,7 @@ public class AMGSampler {
      * Burn in and them sample the MC chain.
      *
      * @param burnin number of burin samplings
-     * @param n      number of samples
+     * @param n      number of samples, 10,0000
      */
     public void run(int burnin, int n) {
         nSamples(burnin);

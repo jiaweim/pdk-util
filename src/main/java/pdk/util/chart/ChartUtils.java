@@ -1,6 +1,7 @@
 package pdk.util.chart;
 
 import org.apache.commons.statistics.distribution.ContinuousDistribution;
+import org.apache.commons.statistics.distribution.ExponentialDistribution;
 import org.apache.commons.statistics.distribution.NormalDistribution;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -498,9 +499,13 @@ public final class ChartUtils {
     static void main() {
         double mean = 20.6;
         double sigma = 1.62;
-        NormalDistribution distribution = NormalDistribution.of(mean, 1.62);
-        System.out.println(distribution.probability(mean - 6 * sigma, mean + 6 * sigma));
-        JFreeChart chart = pdfChart(distribution, mean - 10, mean + 10, mean - sigma * 4, mean + sigma * 4, 500);
+        ExponentialDistribution exponentialDistribution = ExponentialDistribution.of(29);
+        System.out.println(exponentialDistribution.getMean());
+
+//        NormalDistribution distribution = NormalDistribution.of(mean, 1.62);
+//        System.out.println(distribution.probability(mean - 6 * sigma, mean + 6 * sigma));
+
+        JFreeChart chart = pdfChart(exponentialDistribution, 1, 200, 500);
         XYPlot plot = (XYPlot) chart.getPlot();
         plot.getDomainAxis().setLabel("");
         plot.getRangeAxis().setLabel("");

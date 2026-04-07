@@ -60,7 +60,10 @@ public class StudentTDistributionModel extends Model {
     }
 
     /**
-     * Create a {@link StudentTDistributionModel}
+     * Create a {@link StudentTDistributionModel}.
+     * <p>
+     * 采用范围很广，信息模糊的先验分布，以体现参数取值的高度先验不确定性。因此，先验分布对参数估计的影响极小，在进行贝叶斯参数估计时，
+     * 即使数据量不多，也足以覆盖先验假设带来的影响
      *
      * @param nuInitialGuess initial value of parameter nu
      */
@@ -68,12 +71,13 @@ public class StudentTDistributionModel extends Model {
         double[] data = ArrayUtils.concat(y1, y2);
         double pooledSd = StatUtils.standardDeviation(data);
 
-        // 所有数据的整体均值
+        // 均值先验的均值设定为合并数据的均值
         double pooledMean = StatUtils.mean(data);
-        // 极大（乘以 10⁶），使均值先验近乎平坦（无信息）。
-        double sdMu = pooledSd * 1000000;
+        // 均值 μ 先验的标准差 S 设定为合并数据标准差的 10⁶ 倍，使均值先验近乎平坦（无信息）。
+        double sdMu = pooledSd * 1000;
 
-        // 均匀分布的边界，范围极宽（从千分之一到千倍的数据标准差），确保先验对合理的 σ 值几乎无影响。
+        // 标准差采用均匀分布
+        // 均匀分布的边界，范围极宽（从千分之一到千倍的数据标准差），确保先验对合理的 σ 值几乎无影响
         double sigmaLow = pooledSd / 1000;
         double sigmaHigh = pooledSd * 1000;
 
@@ -91,6 +95,7 @@ public class StudentTDistributionModel extends Model {
                 pooledSd
         );
         // nu, exponential distribution
+        // 参数 ν 的先验服从指数分布，该分布将先验可信度相对均匀地分配在近似正态分布与厚尾分布之间
         modelParameters[2] = new Parameter(
                 ExponentialDistribution.of(29.0), // 常用在 BEST 模型中：让 ν 偏向 30 左右（接近正态），但允许厚尾（ν 较小时也有非零概率）
                 createRange(0, Double.MAX_VALUE),
@@ -109,11 +114,12 @@ public class StudentTDistributionModel extends Model {
      * @param priorSdEnd      Prior maximum of parameter σ
      * @param sdInitialGuess  Initial value of parameter σ
      * @param priorNuExponent The degrees of freedom are sampled from an exponential distribution, where this
-     *                        represents the mean of the exponential distribution.
-     * @param nuInitialGuess  initial value of paramter nu
+     *                        represents the mean of the exponential distribution, range: >1
+     * @param nuInitialGuess  initial value of parameter nu
      */
     public StudentTDistributionModel(double priorMuMean, double priorMuSd, double muInitialGuess,
-            double priorSdStart, double priorSdEnd, double sdInitialGuess, double priorNuExponent, double nuInitialGuess) {
+            double priorSdStart, double priorSdEnd, double sdInitialGuess,
+            double priorNuExponent, double nuInitialGuess) {
         modelParameters = new Parameter[3];
         // mean
         modelParameters[0] = new Parameter(
