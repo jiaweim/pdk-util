@@ -5,7 +5,9 @@ import org.apache.commons.statistics.distribution.NormalDistribution;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.annotations.XYAnnotation;
 import org.jfree.chart.annotations.XYPointerAnnotation;
+import org.jfree.chart.annotations.XYTextAnnotation;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.labels.StandardXYToolTipGenerator;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYAreaRenderer;
@@ -18,6 +20,7 @@ import org.jfree.data.statistics.HistogramType;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+import pdk.util.IBuilder;
 import pdk.util.data.Point2D;
 import pdk.util.math.DistributionUtils;
 import pdk.util.tuple.Tuple;
@@ -31,10 +34,10 @@ import java.util.List;
  * Builder class for assisting in creating XYChart.
  *
  * @author Jiawei Mao
- * @version 1.0.0
+ * @version 1.1.0
  * @since 01 Apr 2026, 1:01 PM
  */
-public class XYChartBuilder {
+public class XYChartBuilder implements IBuilder<JFreeChart> {
 
     public static XYChartBuilder start() {
         return new XYChartBuilder();
@@ -42,12 +45,11 @@ public class XYChartBuilder {
 
     private XYChartBuilder() {}
 
-    private HashMap<String, XYSeries> dataset_ = new HashMap<>();
-    private HashMap<String, XYChartType> chartTypeMap_ = new HashMap<>();
-    private HashMap<String, Double> lineWidthMap_ = new HashMap<>();
-    private HashMap<String, Boolean> addTooltipMap_ = new HashMap<>();
-    private ArrayList<Tuple2<XYDataset, XYChartType>> xyDatasetList_ = new ArrayList<>();
-    private ArrayList<XYAnnotation> xyAnnotationList_ = new ArrayList<>();
+    private final HashMap<String, XYSeries> dataset_ = new HashMap<>();
+    private final HashMap<String, XYChartType> chartTypeMap_ = new HashMap<>();
+    private final HashMap<String, Double> lineWidthMap_ = new HashMap<>();
+    private final ArrayList<Tuple2<XYDataset, XYChartType>> xyDatasetList_ = new ArrayList<>();
+    private final ArrayList<XYAnnotation> xyAnnotationList_ = new ArrayList<>();
 
     private String title = "";
     private String domainAxisLabel_ = "";
@@ -59,6 +61,7 @@ public class XYChartBuilder {
     private boolean showDomainGridLines_ = true;
     private boolean showRangeGridLines_ = true;
     private boolean addLegend_ = true;
+    private boolean addTooltips_ = false;
     private PlotOrientation orientation_ = PlotOrientation.VERTICAL;
 
     /**
@@ -157,6 +160,17 @@ public class XYChartBuilder {
      */
     public XYChartBuilder addLegend(boolean createLegend) {
         this.addLegend_ = createLegend;
+        return this;
+    }
+
+    /**
+     * configure chart to generate tool tips
+     *
+     * @param addTooltip true if generate tool tips
+     * @return this
+     */
+    public XYChartBuilder addTooltips(boolean addTooltip) {
+        this.addTooltips_ = addTooltip;
         return this;
     }
 
@@ -262,7 +276,7 @@ public class XYChartBuilder {
     }
 
     /**
-     * Add a new {@link XYDataset} to plat
+     * Add a new {@link XYDataset} to plot
      *
      * @param dataset   {@link XYDataset} instance
      * @param chartType {@link XYChartType}
@@ -283,6 +297,24 @@ public class XYChartBuilder {
     public XYChartBuilder addDataset(HistogramDataset dataset, HistogramType histogramType) {
         dataset.setType(histogramType);
         xyDatasetList_.add(Tuple.of(dataset, XYChartType.HISTOGRAM));
+        return this;
+    }
+
+    /**
+     * Add a new {@link XYTextAnnotation}
+     *
+     * @param label      annotation text
+     * @param x          the x-coordinate (measured against the chart's domain axis).
+     * @param y          the y-coordinate (measured against the chart's range axis).
+     * @param font       the font (null not permitted).
+     * @param textAnchor the anchor point (null not permitted).
+     * @return this
+     */
+    public XYChartBuilder addTextAnnotation(String label, double x, double y, Font font, TextAnchor textAnchor) {
+        XYTextAnnotation annotation = new XYTextAnnotation(label, x, y);
+        annotation.setFont(font);
+        annotation.setTextAnchor(textAnchor);
+        xyAnnotationList_.add(annotation);
         return this;
     }
 
@@ -308,6 +340,7 @@ public class XYChartBuilder {
         return this;
     }
 
+    @Override
     public JFreeChart build() {
         // Merge the added XYSeries data according to the chart type.
         ArrayListMultimap<XYChartType, String> typeMap = ArrayListMultimap.create();
@@ -343,22 +376,10 @@ public class XYChartBuilder {
 
             XYItemRenderer renderer = null;
             switch (chartType) {
-                case SCATTER: {
-                    renderer = new XYLineAndShapeRenderer(false, true);
-                    break;
-                }
-                case LINE: {
-                    renderer = new XYLineAndShapeRenderer(true, false);
-                    break;
-                }
-                case AREA: {
-                    renderer = new XYAreaRenderer(XYAreaRenderer.AREA);
-                    break;
-                }
-                case HISTOGRAM: {
-                    renderer = new XYBarRenderer();
-                    break;
-                }
+                case SCATTER -> renderer = new XYLineAndShapeRenderer(false, true);
+                case LINE -> renderer = new XYLineAndShapeRenderer(true, false);
+                case AREA -> renderer = new XYAreaRenderer(XYAreaRenderer.AREA);
+                case HISTOGRAM -> renderer = new XYBarRenderer();
             }
             if (renderer != null) {
                 plot.setRenderer(i, renderer);
@@ -420,6 +441,13 @@ public class XYChartBuilder {
                         renderer.setSeriesStroke(seriesIndex, new BasicStroke(lineWidth.floatValue()));
                     }
                 }
+            }
+        }
+
+        if (addTooltips_) {
+            StandardXYToolTipGenerator generator = new StandardXYToolTipGenerator();
+            for (XYItemRenderer renderer : renderers.values()) {
+                renderer.setDefaultToolTipGenerator(generator);
             }
         }
 
