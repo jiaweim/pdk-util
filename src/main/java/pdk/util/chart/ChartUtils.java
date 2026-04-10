@@ -2,7 +2,6 @@ package pdk.util.chart;
 
 import org.apache.commons.statistics.distribution.ContinuousDistribution;
 import org.apache.commons.statistics.distribution.ExponentialDistribution;
-import org.apache.commons.statistics.distribution.NormalDistribution;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;

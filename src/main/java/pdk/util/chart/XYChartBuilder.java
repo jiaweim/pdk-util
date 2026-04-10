@@ -288,7 +288,7 @@ public class XYChartBuilder implements IBuilder<JFreeChart> {
     }
 
     /**
-     * Add a new {@link XYDataset} to plat
+     * Add a new {@link XYDataset} to plot
      *
      * @param dataset       {@link XYDataset} instance
      * @param histogramType {@link HistogramType}

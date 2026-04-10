@@ -11,5 +11,5 @@ public enum XYChartType {
     SCATTER,
     LINE,
     AREA,
-    HISTOGRAM
+    HISTOGRAM,
 }
