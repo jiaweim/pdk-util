@@ -411,7 +411,7 @@ public class XYChartBuilder implements IBuilder<JFreeChart> {
         }
 
         JFreeChart chart = new JFreeChart(title, JFreeChart.DEFAULT_TITLE_FONT, plot, addLegend_);
-        ChartUtils.defaultTheme.apply(chart);
+        ChartUtils.DEFAULT_THEME.apply(chart);
 
         // Custom settings must be applied after the theme has been applied; otherwise, they will be overwritten by the theme.
 

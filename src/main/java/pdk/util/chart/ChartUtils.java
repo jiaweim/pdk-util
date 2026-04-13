@@ -54,7 +54,12 @@ import static java.util.Objects.requireNonNull;
  */
 public final class ChartUtils {
 
-    public static final PDKChartTheme defaultTheme = new PDKChartTheme("pdk");
+    public static final PDKChartTheme DEFAULT_THEME = new PDKChartTheme("pdk");
+
+    /**
+     * The default font for titles.
+     */
+    public static final Font DEFAULT_TITLE_FONT = new Font("SansSerif", Font.BOLD, 18);
 
     private ChartUtils() {}
 
@@ -124,7 +129,7 @@ public final class ChartUtils {
 
         JFreeChart chart = new JFreeChart(title, JFreeChart.DEFAULT_TITLE_FONT,
                 plot, legend);
-        defaultTheme.apply(chart);
+        DEFAULT_THEME.apply(chart);
         return chart;
     }
 
@@ -203,7 +208,7 @@ public final class ChartUtils {
         CategoryPlot plot = new CategoryPlot(dataset, categoryAxis, valueAxis, renderer);
         plot.setOrientation(orientation);
         JFreeChart chart = new JFreeChart(title, JFreeChart.DEFAULT_TITLE_FONT, plot, legend);
-        defaultTheme.apply(chart);
+        DEFAULT_THEME.apply(chart);
         return chart;
     }
 
@@ -266,7 +271,7 @@ public final class ChartUtils {
         }
 
         JFreeChart chart = new JFreeChart(title, JFreeChart.DEFAULT_TITLE_FONT, plot, legend);
-        defaultTheme.apply(chart);
+        DEFAULT_THEME.apply(chart);
         return chart;
     }
 
@@ -304,7 +309,7 @@ public final class ChartUtils {
         }
 
         JFreeChart chart = new JFreeChart(title, JFreeChart.DEFAULT_TITLE_FONT, plot, legend);
-        defaultTheme.apply(chart);
+        DEFAULT_THEME.apply(chart);
         return chart;
     }
 
@@ -364,7 +369,7 @@ public final class ChartUtils {
         plot.setDomainZeroBaselineVisible(true);
         plot.setRangeZeroBaselineVisible(true);
         JFreeChart chart = new JFreeChart(title, JFreeChart.DEFAULT_TITLE_FONT, plot, legend);
-        defaultTheme.apply(chart);
+        DEFAULT_THEME.apply(chart);
         return chart;
     }
 

@@ -160,7 +160,7 @@ public class CategoryChartBuilder implements IBuilder<JFreeChart> {
 
 
         JFreeChart chart = new JFreeChart(title_, JFreeChart.DEFAULT_TITLE_FONT, plot, addLegend_);
-        ChartUtils.defaultTheme.apply(chart);
+        ChartUtils.DEFAULT_THEME.apply(chart);
 
         plot.setOrientation(orientation_);
         if (addTooltips_) {
