@@ -272,6 +272,21 @@ public final class StringUtils {
     }
 
     /**
+     * Insert a char at a specific position in a string.
+     *
+     * @param seq   a string
+     * @param index position to insert the char
+     * @param c     character to insert
+     * @return updated String
+     * @since 2026-04-14⭐
+     */
+    public static String insert(String seq, int index, char c) {
+        StringBuilder sb = new StringBuilder(seq);
+        sb.insert(index, c);
+        return sb.toString();
+    }
+
+    /**
      * Join sequence array with given delimiter, element's toString() method is called
      * in the join method.
      *

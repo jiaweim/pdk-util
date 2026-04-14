@@ -18,6 +18,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class StringUtilsTest {
 
     @Test
+    void insert() {
+        String insert = StringUtils.insert("abcde", 2, 'X');
+        assertEquals("abXcde", insert);
+    }
+
+    @Test
     void isEmpty() {
         assertTrue(StringUtils.isEmpty(null));
         assertTrue(StringUtils.isEmpty(""));
@@ -127,7 +133,7 @@ class StringUtilsTest {
     }
 
     @Test
-    void indexOfChar(){
+    void indexOfChar() {
         String seq = "VQPVQPSQTSTYPGQGM(Oxidation)PTPK";
         IntArrayList indexes = StringUtils.indexOf(seq, '(');
         assertIterableEquals(List.of(17), indexes);
