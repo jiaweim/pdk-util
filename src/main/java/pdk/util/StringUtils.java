@@ -4,6 +4,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import pdk.util.math.SamplingUtils;
 
@@ -248,6 +249,26 @@ public final class StringUtils {
             list.add(id);
         }
         return list.toIntArray();
+    }
+
+    /**
+     * Returns all positions where the specified character occurs in the character sequence.
+     *
+     * @param seq {@link CharSequence}
+     * @param c   a character
+     * @return list of indexes
+     * @since 2026-04-14⭐
+     */
+    public static IntArrayList indexOf(@NonNull final CharSequence seq, char c) {
+        requireNonNull(seq);
+
+        IntArrayList list = new IntArrayList(seq.length());
+        for (int i = 0; i < seq.length(); i++) {
+            if (c == seq.charAt(i)) {
+                list.add(i);
+            }
+        }
+        return list;
     }
 
     /**

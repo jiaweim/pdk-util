@@ -127,6 +127,13 @@ class StringUtilsTest {
     }
 
     @Test
+    void indexOfChar(){
+        String seq = "VQPVQPSQTSTYPGQGM(Oxidation)PTPK";
+        IntArrayList indexes = StringUtils.indexOf(seq, '(');
+        assertIterableEquals(List.of(17), indexes);
+    }
+
+    @Test
     void createJoiner() {
         Joiner joiner = StringUtils.createJoiner("; ").skipNulls();
         String str = joiner.join("Harry", null, "Ron", "Hermione");

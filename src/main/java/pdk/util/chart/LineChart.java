@@ -18,8 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static pdk.util.chart.ChartUtils.DEFAULT_TITLE_FONT;
-
 /**
  * Line Chart.
  *
@@ -43,8 +41,10 @@ public class LineChart implements IBuilder<LineChart>, Chart {
     private NumberAxis rangeAxis_;
     private boolean showLegend_ = true;
     private boolean showTooltips_ = true;
+    private boolean showDomainGridlines_ = true;
+    private boolean showRangeGridlines_ = true;
 
-    public LineChart() {}
+    private LineChart() {}
 
     /**
      * Add a data series
@@ -150,6 +150,28 @@ public class LineChart implements IBuilder<LineChart>, Chart {
         return this;
     }
 
+    /**
+     * Whether grid-lines are drawn against the domain axis.
+     *
+     * @param showDomainGridlines true if show grid lines
+     * @return this
+     */
+    public LineChart showDomainGridlines(boolean showDomainGridlines) {
+        this.showDomainGridlines_ = showDomainGridlines;
+        return this;
+    }
+
+    /**
+     * Whether grid-lines are drawn against the range axis.
+     *
+     * @param showRangeGridlines true if show grid lines
+     * @return this
+     */
+    public LineChart showRangeGridlines(boolean showRangeGridlines) {
+        this.showRangeGridlines_ = showRangeGridlines;
+        return this;
+    }
+
     @Override
     public LineChart build() {
         domainAxis_ = new NumberAxis(domainAxisTitle_);
@@ -163,6 +185,10 @@ public class LineChart implements IBuilder<LineChart>, Chart {
         XYItemRenderer renderer = new XYLineAndShapeRenderer(true, false);
         XYPlot plot = new XYPlot(dataset, domainAxis_, rangeAxis_, renderer);
         plot.setOrientation(orientation_);
+
+        // grid lines
+        plot.setDomainGridlinesVisible(showDomainGridlines_);
+        plot.setRangeGridlinesVisible(showRangeGridlines_);
 
         if (showTooltips_) {
             renderer.setDefaultToolTipGenerator(new StandardXYToolTipGenerator());

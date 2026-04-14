@@ -2,6 +2,8 @@ package pdk.util.chart;
 
 import org.jfree.chart.JFreeChart;
 
+import java.awt.*;
+
 /**
  * This interface is used to represent any chart.
  *
@@ -10,6 +12,14 @@ import org.jfree.chart.JFreeChart;
  * @since 13 Apr 2026, 9:12 AM
  */
 public interface Chart {
+
+    PDKChartTheme DEFAULT_THEME = new PDKChartTheme("pdk");
+
+    /**
+     * The default font for titles.
+     */
+    Font DEFAULT_TITLE_FONT = new Font("SansSerif", Font.BOLD, 18);
+
 
     /**
      * Returns the created JFreeChart.
