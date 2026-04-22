@@ -117,7 +117,6 @@ public class UndirectedGraph<V> extends AbstractGraph<V> {
         return Collections.unmodifiableList(adjacencyMap_.get(node));
     }
 
-
     @Override
     public boolean removeEdge(Edge<V> edge) {
         if (edgeSet_.contains(edge)) {

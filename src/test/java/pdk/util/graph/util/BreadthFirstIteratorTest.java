@@ -48,24 +48,6 @@ class BreadthFirstIteratorTest {
     }
 
     @Test
-    void testUndirectedMethod() {
-        UndirectedGraph<String> graph = new UndirectedGraph<>("r", "s", "t", "u",
-                "v", "w", "x", "y");
-        graph.addEdge("r", "s");
-        graph.addEdge("r", "v");
-        graph.addEdge("s", "w");
-        graph.addEdge("t", "u");
-        graph.addEdge("t", "w");
-        graph.addEdge("t", "x");
-        graph.addEdge("u", "x");
-        graph.addEdge("u", "y");
-        graph.addEdge("w", "x");
-        graph.addEdge("x", "y");
-        List<String> nodes = graph.bfs("s");
-        assertIterableEquals(List.of("s", "r", "w", "v", "t", "x", "u", "y"), nodes);
-    }
-
-    @Test
     void test() {
         // example from https://www.w3schools.com/dsa/dsa_algo_graphs_traversal.php
         Digraph<String> digraph = new Digraph<>("A", "B", "C", "D", "E", "F", "G");

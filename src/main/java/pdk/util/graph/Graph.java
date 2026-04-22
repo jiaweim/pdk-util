@@ -1,6 +1,8 @@
 package pdk.util.graph;
 
 import org.jspecify.annotations.Nullable;
+import pdk.util.graph.util.BreadthFirstIterator;
+import pdk.util.graph.util.DepthFirstIterator;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,6 +24,17 @@ import static pdk.util.ArgUtils.checkArgument;
  * @since 27 Nov 2024, 3:42 PM
  */
 public interface Graph<V> {
+
+    /**
+     * Create an undirected graph
+     *
+     * @param nodes nodes
+     * @param <V>   node type
+     * @return {@link UndirectedGraph} instance
+     */
+    public static <V> UndirectedGraph<V> undirectedGraph(V... nodes) {
+        return new UndirectedGraph<>(nodes);
+    }
 
     /**
      * add a new node to this graph
@@ -313,5 +326,25 @@ public interface Graph<V> {
             removeEdge(edge);
         }
         return edge;
+    }
+
+    /**
+     * Create a {@link BreadthFirstIterator} for this graph
+     *
+     * @param startNode start node
+     * @return an iterator
+     */
+    default GraphIterator<V> breadthFirstIterator(V startNode) {
+        return new BreadthFirstIterator<>(this, startNode);
+    }
+
+    /**
+     * Create a {@link DepthFirstIterator} for this graph
+     *
+     * @param startNode start node
+     * @return an iterator
+     */
+    default GraphIterator<V> depthFirstIterator(V startNode) {
+        return new DepthFirstIterator<>(this, startNode);
     }
 }
