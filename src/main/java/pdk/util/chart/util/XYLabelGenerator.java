@@ -1,4 +1,4 @@
-package pdk.util.chart;
+package pdk.util.chart.util;
 
 import org.jfree.chart.labels.AbstractXYItemLabelGenerator;
 import org.jfree.chart.labels.XYItemLabelGenerator;

@@ -4,6 +4,7 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.junit.jupiter.api.Test;
 import pdk.util.DecimalFormatUtils;
+import pdk.util.chart.util.XYLabelGenerator;
 
 import java.text.MessageFormat;
 
