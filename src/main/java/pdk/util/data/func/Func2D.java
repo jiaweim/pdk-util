@@ -1,5 +1,8 @@
 package pdk.util.data.func;
 
+import org.jfree.data.xy.XYDataset;
+import pdk.util.chart.Data;
+import pdk.util.chart.LineChart;
 import pdk.util.data.Point2D;
 
 import java.util.ArrayList;
@@ -42,6 +45,25 @@ public interface Func2D {
             list.add(new Point2D(x, y));
         }
         return list;
+    }
+
+    /**
+     * Create a chart for this function, used to display this function.
+     *
+     * @param start           start x
+     * @param end             end x
+     * @param numberOfSamples number of data points
+     * @return {@link LineChart}
+     */
+    default LineChart show(double start, double end, int numberOfSamples) {
+        List<Point2D> sample = sample(start, end, numberOfSamples);
+        XYDataset dataset = Data.xyDataset().addSeries("", sample).build();
+        LineChart chart = LineChart.lineChart()
+                .dataset(dataset)
+                .xAxisName("X")
+                .yAxisName("Y")
+                .build();
+        return chart;
     }
 
 }

@@ -1,6 +1,5 @@
 package pdk.util.chart;
 
-import org.jfree.chart.JFreeChart;
 import org.jfree.chart.ui.TextAnchor;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
@@ -11,8 +10,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 /**
  *
@@ -86,11 +83,10 @@ public class AnnotationDemo1 {
     static void main() throws IOException {
         Font font = new Font("SansSerif", Font.PLAIN, 9);
 
-        JFreeChart chart = XYChartBuilder.start()
-                .addDataset(createDataset(), XYChartType.LINE)
-                .xAxisName("Age in Months")
+        XYChart chart = XYChart.chart()
                 .yAxisName("kg")
                 .addLegend(true)
+                .dataset(createDataset(), XYChartType.LINE)
                 .addTooltips(true)
                 .addTextAnnotation("3rd", 36.5, 11.76, font, TextAnchor.HALF_ASCENT_LEFT)
                 .addTextAnnotation("5th", 36.5, 12.04, font, TextAnchor.HALF_ASCENT_LEFT)
@@ -102,6 +98,6 @@ public class AnnotationDemo1 {
                 .addTextAnnotation("95th", 36.5, 17.408, font, TextAnchor.HALF_ASCENT_LEFT)
                 .addTextAnnotation("97th", 36.5, 17.936, font, TextAnchor.HALF_ASCENT_LEFT)
                 .build();
-        ChartUtils.showChart(chart, 360, 500);
+        chart.show();
     }
 }

@@ -62,7 +62,7 @@ public class ScatterPlotDemo1 {
                 .showShape(true)
                 .seriesOutlinePaint(0, Color.BLACK)
                 .useOutlinePaint(true)
-                .xAxisIncludesZero(false)
+                .xAxisAutoRangeIncludesZero(false)
                 .domainZeroBaselineVisible(true)
                 .rangeZeroBaselineVisible(true)
                 .addLegend(true)

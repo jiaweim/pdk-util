@@ -2,11 +2,11 @@ package pdk.util.math;
 
 import org.apache.commons.statistics.distribution.*;
 import org.hipparchus.special.Gamma;
-import org.jfree.chart.JFreeChart;
 import org.jfree.chart.ui.TextAnchor;
+import org.jfree.data.xy.XYDataset;
 import pdk.util.ArgUtils;
-import pdk.util.chart.ChartUtils;
-import pdk.util.chart.XYChartBuilder;
+import pdk.util.chart.Data;
+import pdk.util.chart.LineChart;
 import pdk.util.data.Point2D;
 
 import java.awt.*;
@@ -128,15 +128,23 @@ public final class DistributionUtils {
         TDistribution t3 = TDistribution.of(5);
         NormalDistribution n1 = NormalDistribution.of(0, 1);
 
-        JFreeChart chart1 = XYChartBuilder.start()
-                .addLineChart("1", sample(t1, -6, 6, 500), 4.0)
-                .addLineChart("2", sample(t2, -6, 6, 500), 4.0)
-                .addLineChart("3", sample(t3, -6, 6, 500), 4.0)
-                .addLineChart("4", sample(n1, -6, 6, 500), 4.0)
-                .addPointerAnnotation("normal", 0, 0.4, Math.toRadians(0), 0, TextAnchor.CENTER_LEFT, Color.YELLOW)
-                .showDomainGridLines(false)
-                .showRangeGridLines(false)
+        XYDataset dataset = Data.xyDataset()
+                .addSeries("1", sample(t1, -6, 6, 500))
+                .addSeries("2", sample(t2, -6, 6, 500))
+                .addSeries("3", sample(t3, -6, 6, 500))
+                .addSeries("4", sample(n1, -6, 6, 500))
                 .build();
-        ChartUtils.showChart(chart1);
+        LineChart chart = LineChart
+                .lineChart()
+                .dataset(dataset)
+                .seriesLinesWidth(0, 4F)
+                .seriesLinesWidth(1, 4F)
+                .seriesLinesWidth(2, 4F)
+                .seriesLinesWidth(3, 4F)
+                .addPointerAnnotation("normal", 0, 0.4, Math.toRadians(0), 0, TextAnchor.CENTER_LEFT, Color.YELLOW)
+                .showDomainGridlines(false)
+                .showRangeGridlines(false)
+                .build();
+        chart.show();
     }
 }

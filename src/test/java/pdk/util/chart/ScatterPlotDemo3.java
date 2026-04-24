@@ -18,7 +18,7 @@ public class ScatterPlotDemo3 {
                 .showShape(true)
                 .xAxisName("X")
                 .yAxisName("Y")
-                .xAxisIncludesZero(false)
+                .xAxisAutoRangeIncludesZero(false)
                 .build();
         chart.show();
     }

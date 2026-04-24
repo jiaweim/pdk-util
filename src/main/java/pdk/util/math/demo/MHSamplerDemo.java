@@ -3,11 +3,11 @@ package pdk.util.math.demo;
 import org.apache.commons.rng.UniformRandomProvider;
 import org.apache.commons.statistics.distribution.NormalDistribution;
 import org.hipparchus.random.RandomDataGenerator;
-import org.jfree.chart.JFreeChart;
 import org.jfree.data.statistics.HistogramDataset;
 import org.jfree.data.statistics.HistogramType;
-import pdk.util.chart.ChartUtils;
-import pdk.util.chart.XYChartBuilder;
+import org.jfree.data.xy.XYDataset;
+import pdk.util.chart.Data;
+import pdk.util.chart.XYChart;
 import pdk.util.chart.XYChartType;
 import pdk.util.math.SamplingUtils;
 
@@ -45,18 +45,24 @@ public class MHSamplerDemo {
             }
         }
 
-        HistogramDataset dataset = new HistogramDataset();
-        dataset.addSeries("", pi, 50);
+        HistogramDataset dataset1 = Data.histogramDataset()
+                .addSeries("", pi, 50)
+                .type(HistogramType.SCALE_AREA_TO_1)
+                .build();
 
         double[] yValues = new double[T];
         for (int i = 0; i < T; i++) {
             yValues[i] = gaussian.density(pi[i]);
         }
 
-        JFreeChart chart = XYChartBuilder.start()
-                .addDataset(dataset, HistogramType.SCALE_AREA_TO_1)
-                .addSeries("Target", pi, yValues, XYChartType.SCATTER)
+        XYDataset dataset2 = Data.xyDataset()
+                .addSeries("Target", pi, yValues).build();
+
+        XYChart chart = XYChart.chart()
+                .addDataset(1, dataset1, XYChartType.HISTOGRAM)
+                .addDataset(0, dataset2, XYChartType.SCATTER)
+                .addLegend(true)
                 .build();
-        ChartUtils.showChart(chart);
+        chart.show();
     }
 }
