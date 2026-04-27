@@ -142,7 +142,7 @@ public final class DistributionUtils {
                 .seriesLinesWidth(2, 4F)
                 .seriesLinesWidth(3, 4F)
                 .addPointerAnnotation("normal", 0, 0.4, Math.toRadians(0), 0, TextAnchor.CENTER_LEFT, Color.YELLOW)
-                .showDomainGridlines(false)
+                .domainGridlinesVisible(false)
                 .showRangeGridlines(false)
                 .build();
         chart.show();

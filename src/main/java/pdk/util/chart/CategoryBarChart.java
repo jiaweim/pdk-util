@@ -9,9 +9,15 @@ import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.title.LegendTitle;
+import org.jfree.chart.ui.RectangleEdge;
+import org.jfree.chart.ui.RectangleInsets;
 import org.jfree.chart.ui.TextAnchor;
 import org.jfree.data.category.CategoryDataset;
+import org.jspecify.annotations.Nullable;
 import pdk.util.IBuilder;
+
+import java.awt.*;
 
 /**
  * Bar Chart with category domain axis.
@@ -26,34 +32,21 @@ public class CategoryBarChart implements IBuilder<CategoryBarChart>, Chart {
         return new CategoryBarChart();
     }
 
-    private JFreeChart chart_;
-    private CategoryDataset dataset_;
-    private String title_;
+    private final JFreeChart chart_;
     private PlotOrientation orientation_ = PlotOrientation.VERTICAL;
-    private String domainAxisTitle_;
-    private String rangeAxisTitle_;
-    private CategoryAxis domainAxis_;
-    private NumberAxis rangeAxis_;
-    private boolean showLegend_ = true;
-    private boolean showTooltips_ = true;
-    private boolean showDomainGridlines_ = true;
-    private boolean showRangeGridlines_ = true;
+    private final CategoryAxis domainAxis_;
+    private final NumberAxis rangeAxis_;
+    private final BarRenderer renderer_;
+    private final CategoryPlot plot_;
 
-    // CategoryAxis
-    /**
-     * The amount of space reserved between categories.
-     * a percentage of the axis length
-     */
-    private double categoryMargin_ = 0.20;
-
-    // BarRenderer
-    /**
-     * The margin between items (bars) within a category.
-     * a percentage of the available space for all bars.
-     */
-    private double itemMargin_ = 0.20;
-
-    private CategoryBarChart() {}
+    private CategoryBarChart() {
+        domainAxis_ = new CategoryAxis();
+        rangeAxis_ = new NumberAxis();
+        renderer_ = new BarRenderer();
+        plot_ = new CategoryPlot(null, domainAxis_, rangeAxis_, renderer_);
+        chart_ = new JFreeChart(null, DEFAULT_TITLE_FONT, plot_, false);
+        DEFAULT_THEME.apply(chart_);
+    }
 
     /**
      * Set the dataset for this plot
@@ -62,7 +55,7 @@ public class CategoryBarChart implements IBuilder<CategoryBarChart>, Chart {
      * @return this
      */
     public CategoryBarChart dataset(CategoryDataset dataset) {
-        dataset_ = dataset;
+        plot_.setDataset(dataset);
         return this;
     }
 
@@ -73,7 +66,7 @@ public class CategoryBarChart implements IBuilder<CategoryBarChart>, Chart {
      * @return this
      */
     public CategoryBarChart title(String title) {
-        this.title_ = title;
+        chart_.setTitle(title);
         return this;
     }
 
@@ -84,7 +77,7 @@ public class CategoryBarChart implements IBuilder<CategoryBarChart>, Chart {
      * @return this
      */
     public CategoryBarChart orientation(PlotOrientation orientation) {
-        this.orientation_ = orientation;
+        plot_.setOrientation(this.orientation_);
         return this;
     }
 
@@ -95,7 +88,7 @@ public class CategoryBarChart implements IBuilder<CategoryBarChart>, Chart {
      * @return this
      */
     public CategoryBarChart xAxisName(String xAxisTitle) {
-        this.domainAxisTitle_ = xAxisTitle;
+        domainAxis_.setLabel(xAxisTitle);
         return this;
     }
 
@@ -106,7 +99,7 @@ public class CategoryBarChart implements IBuilder<CategoryBarChart>, Chart {
      * @return this
      */
     public CategoryBarChart yAxisName(String yAxisTitle) {
-        this.rangeAxisTitle_ = yAxisTitle;
+        rangeAxis_.setLabel(yAxisTitle);
         return this;
     }
 
@@ -117,7 +110,24 @@ public class CategoryBarChart implements IBuilder<CategoryBarChart>, Chart {
      * @return this
      */
     public CategoryBarChart addLegend(boolean createLegend) {
-        this.showLegend_ = createLegend;
+        if (createLegend) {
+            LegendTitle legend = new LegendTitle(this.plot_);
+            legend.setMargin(new RectangleInsets(1.0, 1.0, 1.0, 1.0));
+            legend.setBackgroundPaint(Color.WHITE);
+            legend.setPosition(RectangleEdge.BOTTOM);
+            chart_.addSubtitle(legend);
+        }
+        return this;
+    }
+
+    /**
+     * Set the legend.
+     *
+     * @param legendTitle {@link LegendTitle}
+     * @return this
+     */
+    public CategoryBarChart legend(LegendTitle legendTitle) {
+        chart_.addSubtitle(0, legendTitle);
         return this;
     }
 
@@ -128,7 +138,9 @@ public class CategoryBarChart implements IBuilder<CategoryBarChart>, Chart {
      * @return this
      */
     public CategoryBarChart addTooltips(boolean addTooltip) {
-        this.showTooltips_ = addTooltip;
+        if (addTooltip) {
+            renderer_.setDefaultToolTipGenerator(new StandardCategoryToolTipGenerator());
+        }
         return this;
     }
 
@@ -138,8 +150,8 @@ public class CategoryBarChart implements IBuilder<CategoryBarChart>, Chart {
      * @param showDomainGridlines true if show grid lines
      * @return this
      */
-    public CategoryBarChart showDomainGridlines(boolean showDomainGridlines) {
-        this.showDomainGridlines_ = showDomainGridlines;
+    public CategoryBarChart domainGridlinesVisible(boolean showDomainGridlines) {
+        plot_.setDomainGridlinesVisible(showDomainGridlines);
         return this;
     }
 
@@ -149,8 +161,8 @@ public class CategoryBarChart implements IBuilder<CategoryBarChart>, Chart {
      * @param showRangeGridlines true if show grid lines
      * @return this
      */
-    public CategoryBarChart showRangeGridlines(boolean showRangeGridlines) {
-        this.showRangeGridlines_ = showRangeGridlines;
+    public CategoryBarChart rangeGridlinesVisible(boolean showRangeGridlines) {
+        plot_.setRangeGridlinesVisible(showRangeGridlines);
         return this;
     }
 
@@ -161,7 +173,7 @@ public class CategoryBarChart implements IBuilder<CategoryBarChart>, Chart {
      * @return this
      */
     public CategoryBarChart categoryMargin(double categoryMargin) {
-        this.categoryMargin_ = categoryMargin;
+        domainAxis_.setCategoryMargin(categoryMargin);
         return this;
     }
 
@@ -172,47 +184,39 @@ public class CategoryBarChart implements IBuilder<CategoryBarChart>, Chart {
      * @return this
      */
     public CategoryBarChart itemMargin(double itemMargin) {
-        this.itemMargin_ = itemMargin;
+        renderer_.setItemMargin(itemMargin);
+        return this;
+    }
+
+    /**
+     * Sets the paint used for a series.
+     *
+     * @param series the series index (zero-based).
+     * @param paint  the paint.
+     */
+    public CategoryBarChart seriesPaint(int series, @Nullable Paint paint) {
+        renderer_.setSeriesPaint(series, paint, false);
         return this;
     }
 
     @Override
     public CategoryBarChart build() {
-        domainAxis_ = new CategoryAxis(domainAxisTitle_);
-        domainAxis_.setCategoryMargin(categoryMargin_);
-
-        rangeAxis_ = new NumberAxis(rangeAxisTitle_);
-
-        BarRenderer renderer = new BarRenderer();
-        renderer.setItemMargin(itemMargin_);
         if (orientation_ == PlotOrientation.HORIZONTAL) {
             ItemLabelPosition position1 = new ItemLabelPosition(
                     ItemLabelAnchor.OUTSIDE3, TextAnchor.CENTER_LEFT);
-            renderer.setDefaultPositiveItemLabelPosition(position1);
+            renderer_.setDefaultPositiveItemLabelPosition(position1);
             ItemLabelPosition position2 = new ItemLabelPosition(
                     ItemLabelAnchor.OUTSIDE9, TextAnchor.CENTER_RIGHT);
-            renderer.setDefaultNegativeItemLabelPosition(position2);
+            renderer_.setDefaultNegativeItemLabelPosition(position2);
         } else if (orientation_ == PlotOrientation.VERTICAL) {
             ItemLabelPosition position1 = new ItemLabelPosition(
                     ItemLabelAnchor.OUTSIDE12, TextAnchor.BOTTOM_CENTER);
-            renderer.setDefaultPositiveItemLabelPosition(position1);
+            renderer_.setDefaultPositiveItemLabelPosition(position1);
             ItemLabelPosition position2 = new ItemLabelPosition(
                     ItemLabelAnchor.OUTSIDE6, TextAnchor.TOP_CENTER);
-            renderer.setDefaultNegativeItemLabelPosition(position2);
-        }
-        if (showTooltips_) {
-            renderer.setDefaultToolTipGenerator(new StandardCategoryToolTipGenerator());
+            renderer_.setDefaultNegativeItemLabelPosition(position2);
         }
 
-        CategoryPlot plot = new CategoryPlot(dataset_, domainAxis_, rangeAxis_, renderer);
-        plot.setOrientation(orientation_);
-
-        // grid lines
-        plot.setDomainGridlinesVisible(showDomainGridlines_);
-        plot.setRangeGridlinesVisible(showRangeGridlines_);
-
-        chart_ = new JFreeChart(title_, DEFAULT_TITLE_FONT, plot, showLegend_);
-        DEFAULT_THEME.apply(chart_);
         return this;
     }
 

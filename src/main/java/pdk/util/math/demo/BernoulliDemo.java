@@ -1,10 +1,7 @@
 package pdk.util.math.demo;
 
 import org.apache.commons.statistics.distribution.BetaDistribution;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
 import pdk.util.ArrayUtils;
-import pdk.util.chart.ChartUtils;
 import pdk.util.math.BernoulliSampler;
 import pdk.util.math.SamplingUtils;
 import pdk.util.math.StatUtils;
@@ -31,9 +28,5 @@ public class BernoulliDemo {
         for (int i = 0; i < xValues.length; i++) {
             yValues[i] = betaDistribution.density(xValues[i]);
         }
-
-        JFreeChart chart = ChartUtils.createXYLineChart("Bayesian posterior probabilities", "probability of heads", "",
-                xValues, yValues, PlotOrientation.VERTICAL, false, false, false);
-        ChartUtils.showChart(chart);
     }
 }

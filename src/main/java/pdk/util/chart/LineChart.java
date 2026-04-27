@@ -560,7 +560,7 @@ public class LineChart implements IBuilder<LineChart>, Chart {
      * @param showDomainGridlines true if show grid lines
      * @return this
      */
-    public LineChart showDomainGridlines(boolean showDomainGridlines) {
+    public LineChart domainGridlinesVisible(boolean showDomainGridlines) {
         xyPlot_.setDomainGridlinesVisible(showDomainGridlines);
         return this;
     }

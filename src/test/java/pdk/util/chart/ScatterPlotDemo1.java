@@ -67,7 +67,7 @@ public class ScatterPlotDemo1 {
                 .rangeZeroBaselineVisible(true)
                 .addLegend(true)
                 .showRangeGridlines(false)
-                .showDomainGridlines(false)
+                .domainGridlinesVisible(false)
                 .build();
         lineChart.show();
     }

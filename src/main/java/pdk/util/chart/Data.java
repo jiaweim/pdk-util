@@ -4,6 +4,9 @@ import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.statistics.HistogramDataset;
 import org.jfree.data.statistics.HistogramType;
+import org.jfree.data.time.RegularTimePeriod;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
@@ -151,6 +154,48 @@ public interface Data {
         }
     }
 
+    class TimeDatasetBuilder implements IBuilder<XYDataset> {
+
+        private final TimeSeriesCollection dataset_ = new TimeSeriesCollection();
+
+        private TimeDatasetBuilder() {}
+
+        /**
+         * Add a new {@link TimeSeries}
+         *
+         * @param series {@link TimeSeries}
+         * @return this
+         */
+        public TimeDatasetBuilder addSeries(TimeSeries series) {
+            dataset_.addSeries(series);
+            return this;
+        }
+
+        /**
+         * Add a new time series
+         *
+         * @param name   series name
+         * @param times  times
+         * @param values values
+         * @return this
+         */
+        public TimeDatasetBuilder addSeries(String name, RegularTimePeriod[] times, double[] values) {
+            Objects.requireNonNull(times);
+            Objects.requireNonNull(values);
+            TimeSeries series = new TimeSeries(name);
+            for (int i = 0; i < times.length; i++) {
+                series.add(times[i], values[i]);
+            }
+            dataset_.addSeries(series);
+            return this;
+        }
+
+        @Override
+        public XYDataset build() {
+            return dataset_;
+        }
+    }
+
     class CategoryDatasetBuilder implements IBuilder<CategoryDataset> {
 
         private final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
@@ -160,7 +205,7 @@ public interface Data {
         /**
          * Add a value
          *
-         * @param rowKey    row key
+         * @param rowKey    row (series) key
          * @param columnKey column key
          * @param value     the value
          * @return this

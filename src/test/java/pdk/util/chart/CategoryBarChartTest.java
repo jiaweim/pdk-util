@@ -1,9 +1,6 @@
 package pdk.util.chart;
 
 import org.jfree.data.category.DefaultCategoryDataset;
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
@@ -35,8 +32,8 @@ public class CategoryBarChartTest {
                 .title("Antidepressant Medication Usage")
                 .xAxisName("Age Category")
                 .yAxisName("Percent")
-                .showDomainGridlines(true)
-                .showRangeGridlines(true)
+                .domainGridlinesVisible(true)
+                .rangeGridlinesVisible(true)
                 .categoryMargin(0.5)
                 .itemMargin(0.0)
                 .build();

@@ -5,6 +5,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.ui.ApplicationFrame;
 import org.jfree.chart.ui.UIUtils;
 
+import javax.swing.*;
 import java.awt.*;
 
 /**
@@ -34,11 +35,13 @@ public interface Chart {
      * display the chart.
      */
     default void show() {
-        ApplicationFrame frame = new ApplicationFrame("");
-        ChartPanel chartPanel = new ChartPanel(getChart());
-        frame.setContentPane(chartPanel);
-        frame.pack();
-        UIUtils.centerFrameOnScreen(frame);
-        frame.setVisible(true);
+        SwingUtilities.invokeLater(() -> {
+            ApplicationFrame frame = new ApplicationFrame("");
+            ChartPanel chartPanel = new ChartPanel(getChart());
+            frame.setContentPane(chartPanel);
+            frame.pack();
+            UIUtils.centerFrameOnScreen(frame);
+            frame.setVisible(true);
+        });
     }
 }
