@@ -14,7 +14,11 @@ import java.util.Objects;
  * @version 1.0.0
  * @since 03 Jul 2025, 11:16 AM
  */
-public class ExponentiallyModifiedGaussianFunc2D implements Func2D, Serializable {
+public class ExponentiallyModifiedGaussianFunc implements Func2D, Serializable {
+
+    public static ExponentiallyModifiedGaussianFunc of(double mu, double sigma, double lambda) {
+        return new ExponentiallyModifiedGaussianFunc(mu, sigma, lambda);
+    }
 
     private final double mean;
     private final double sigma;
@@ -34,7 +38,7 @@ public class ExponentiallyModifiedGaussianFunc2D implements Func2D, Serializable
      * @param sigma  standard deviation of Gaussian
      * @param lambda exponential rate
      */
-    public ExponentiallyModifiedGaussianFunc2D(double mu, double sigma, double lambda) {
+    public ExponentiallyModifiedGaussianFunc(double mu, double sigma, double lambda) {
         ArgUtils.checkArgument(lambda > 0);
 
         this.mean = mu;
@@ -96,10 +100,9 @@ public class ExponentiallyModifiedGaussianFunc2D implements Func2D, Serializable
         return lambda * 0.5 * Math.exp(exp1 - lambda * x) * Erfc.value(erfc2 - x / sqrt2sigma);
     }
 
-
     @Override
     public boolean equals(Object object) {
-        if (!(object instanceof ExponentiallyModifiedGaussianFunc2D that)) return false;
+        if (!(object instanceof ExponentiallyModifiedGaussianFunc that)) return false;
         return Double.compare(mean, that.mean) == 0 && Double.compare(sigma, that.sigma) == 0
                 && Double.compare(lambda, that.lambda) == 0;
     }

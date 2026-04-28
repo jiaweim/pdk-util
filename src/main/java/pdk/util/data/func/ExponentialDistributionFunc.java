@@ -12,16 +12,16 @@ import static pdk.util.ArgUtils.checkArgument;
  * @version 1.0.0
  * @since 03 Jul 2025, 11:36 AM
  */
-public class ExponentialDistributionFunc2D implements Func2D, Serializable {
+public class ExponentialDistributionFunc implements Func2D, Serializable {
 
     private final double lambda;
 
     /**
      * Create an Exponential distribution function
      *
-     * @param lambda the rate parameter
+     * @param lambda the rate parameter, the scale ν is equal to 1/λ
      */
-    public ExponentialDistributionFunc2D(double lambda) {
+    public ExponentialDistributionFunc(double lambda) {
         checkArgument(lambda > 0);
 
         this.lambda = lambda;
@@ -63,7 +63,7 @@ public class ExponentialDistributionFunc2D implements Func2D, Serializable {
 
     @Override
     public boolean equals(Object object) {
-        if (!(object instanceof ExponentialDistributionFunc2D that)) return false;
+        if (!(object instanceof ExponentialDistributionFunc that)) return false;
         return Double.compare(lambda, that.lambda) == 0;
     }
 

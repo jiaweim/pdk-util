@@ -9,7 +9,7 @@ import pdk.util.IBuilder;
 import java.awt.*;
 
 /**
- *
+ * Builder class for {@link CrosshairOverlay}.
  *
  * @author Jiawei Mao
  * @version 1.0.0

@@ -64,6 +64,7 @@ public class LineChart implements IBuilder<LineChart>, Chart {
 
         xyPlot_ = new XYPlot(null, domainAxis_, rangeAxis_, renderer_);
         chart_ = new JFreeChart(null, DEFAULT_TITLE_FONT, xyPlot_, false);
+        DEFAULT_THEME.apply(chart_);
     }
 
     /**
@@ -601,7 +602,6 @@ public class LineChart implements IBuilder<LineChart>, Chart {
 
     @Override
     public LineChart build() {
-        DEFAULT_THEME.apply(chart_);
         return this;
     }
 

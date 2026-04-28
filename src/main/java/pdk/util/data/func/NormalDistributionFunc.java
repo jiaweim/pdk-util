@@ -12,7 +12,7 @@ import java.util.Objects;
  * @version 1.0.0⭐
  * @since 03 Jul 2025, 10:17 AM
  */
-public class NormalDistributionFunc2D implements Func2D, Serializable {
+public class NormalDistributionFunc implements Func2D, Serializable {
 
     private final double mean;
     private final double std;
@@ -23,7 +23,7 @@ public class NormalDistributionFunc2D implements Func2D, Serializable {
     private final double factor;
     private final double denominator;
 
-    public NormalDistributionFunc2D(double mean, double std) {
+    public NormalDistributionFunc(double mean, double std) {
         ArgUtils.checkArgument(std > 0, "Standard deviation should > 0");
         this.mean = mean;
         this.std = std;
@@ -57,7 +57,7 @@ public class NormalDistributionFunc2D implements Func2D, Serializable {
 
     @Override
     public boolean equals(Object object) {
-        if (!(object instanceof NormalDistributionFunc2D that)) return false;
+        if (!(object instanceof NormalDistributionFunc that)) return false;
         return Double.compare(mean, that.mean) == 0 && Double.compare(std, that.std) == 0;
     }
 
