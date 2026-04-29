@@ -28,10 +28,10 @@ public class EMGDemo {
         List<Point2D> sample4 = emg4.sample(-10, 10, 500);
 
         XYDataset dataset = Data.xyDataset()
-                .addSeries("μ=0, σ=1, λ=1", sample1)
-                .addSeries("μ=-2, σ=1, λ=1", sample2)
-                .addSeries("μ=0, σ=3, λ=1", sample3)
-                .addSeries("μ=-3, σ=1, λ=0.25", sample4)
+                .addSeries("μ=0, σ=1, τ=1", sample1)
+                .addSeries("μ=-2, σ=1, τ=1", sample2)
+                .addSeries("μ=0, σ=3, τ=1", sample3)
+                .addSeries("μ=-3, σ=1, τ=0.25", sample4)
                 .build();
         LineChart chart = LineChart.lineChart()
                 .addLegend(true)

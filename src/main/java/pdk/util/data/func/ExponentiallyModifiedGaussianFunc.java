@@ -16,13 +16,13 @@ import java.util.Objects;
  */
 public class ExponentiallyModifiedGaussianFunc implements Func2D, Serializable {
 
-    public static ExponentiallyModifiedGaussianFunc of(double mu, double sigma, double lambda) {
-        return new ExponentiallyModifiedGaussianFunc(mu, sigma, lambda);
+    public static ExponentiallyModifiedGaussianFunc of(double mu, double sigma, double tau) {
+        return new ExponentiallyModifiedGaussianFunc(mu, sigma, tau);
     }
 
-    private final double mean;
-    private final double sigma;
-    private final double lambda;
+    private final double mean_;
+    private final double sigma_;
+    private final double tau_;
 
     /**
      * precomputed values
@@ -34,20 +34,20 @@ public class ExponentiallyModifiedGaussianFunc implements Func2D, Serializable {
     /**
      * Create a ExGaussian
      *
-     * @param mu     mean of Gaussian
-     * @param sigma  standard deviation of Gaussian
-     * @param lambda exponential rate
+     * @param mu    mean of Gaussian
+     * @param sigma standard deviation of Gaussian
+     * @param tau   decay, or mean of the exponential part
      */
-    public ExponentiallyModifiedGaussianFunc(double mu, double sigma, double lambda) {
-        ArgUtils.checkArgument(lambda > 0);
+    public ExponentiallyModifiedGaussianFunc(double mu, double sigma, double tau) {
+        ArgUtils.checkArgument(tau > 0);
 
-        this.mean = mu;
-        this.sigma = sigma;
-        this.lambda = lambda;
+        this.mean_ = mu;
+        this.sigma_ = sigma;
+        this.tau_ = tau;
 
-        exp1 = lambda * mu + lambda * lambda * sigma * sigma * 0.5;
+        exp1 = mu / tau + sigma * sigma / (tau * tau * 2.0);
         sqrt2sigma = Math.sqrt(2.0) * sigma;
-        erfc2 = (mu + lambda * sigma * sigma) / sqrt2sigma;
+        erfc2 = (mu + sigma * sigma / tau) / sqrt2sigma;
     }
 
     /**
@@ -56,7 +56,7 @@ public class ExponentiallyModifiedGaussianFunc implements Func2D, Serializable {
      * @return mean
      */
     public double getMu() {
-        return mean;
+        return mean_;
     }
 
     /**
@@ -65,7 +65,7 @@ public class ExponentiallyModifiedGaussianFunc implements Func2D, Serializable {
      * @return the standard deviation of the normal distribution
      */
     public double getSigma() {
-        return sigma;
+        return sigma_;
     }
 
     /**
@@ -74,7 +74,16 @@ public class ExponentiallyModifiedGaussianFunc implements Func2D, Serializable {
      * @return exponential rate
      */
     public double getLambda() {
-        return lambda;
+        return 1 / tau_;
+    }
+
+    /**
+     * Return tau, e.g. the mean of the exponential part
+     *
+     * @return tau
+     */
+    public double getTau() {
+        return tau_;
     }
 
     /**
@@ -83,7 +92,7 @@ public class ExponentiallyModifiedGaussianFunc implements Func2D, Serializable {
      * @return mean of this distribution
      */
     public double getMean() {
-        return mean + 1 / lambda;
+        return mean_ + tau_;
     }
 
     /**
@@ -92,23 +101,23 @@ public class ExponentiallyModifiedGaussianFunc implements Func2D, Serializable {
      * @return variance of this distribution
      */
     public double getVariance() {
-        return sigma * sigma + 1 / (lambda * lambda);
+        return sigma_ * sigma_ + tau_ * tau_;
     }
 
     @Override
     public double f(double x) {
-        return lambda * 0.5 * Math.exp(exp1 - lambda * x) * Erfc.value(erfc2 - x / sqrt2sigma);
+        return 1 / (2 * tau_) * Math.exp(exp1 - x / tau_) * Erfc.value(erfc2 - x / sqrt2sigma);
     }
 
     @Override
     public boolean equals(Object object) {
         if (!(object instanceof ExponentiallyModifiedGaussianFunc that)) return false;
-        return Double.compare(mean, that.mean) == 0 && Double.compare(sigma, that.sigma) == 0
-                && Double.compare(lambda, that.lambda) == 0;
+        return Double.compare(mean_, that.mean_) == 0 && Double.compare(sigma_, that.sigma_) == 0
+                && Double.compare(tau_, that.tau_) == 0;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(mean, sigma, lambda);
+        return Objects.hash(mean_, sigma_, tau_);
     }
 }

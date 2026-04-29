@@ -6,7 +6,7 @@
 
     <groupId>io.github.jiaweim</groupId>
     <artifactId>pdk-util</artifactId>
-    <version>1.62.0</version>
+    <version>1.63.0</version>
 
     <name>Proteomics Utilities</name>
     <url>https://github.com/jiaweim/pdk-util</url>
@@ -43,9 +43,8 @@
         </dependency>
         <dependency>
             <groupId>org.hipparchus</groupId>
-            <artifactId>hipparchus-fitting</artifactId>
+            <artifactId>hipparchus-optim</artifactId>
             <version>4.0.3</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.jfree</groupId>

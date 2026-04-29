@@ -22,13 +22,12 @@ module pdk.util {
     requires org.apache.commons.statistics.descriptive;
     requires hipparchus.core;
     requires hipparchus.stat;
+    requires hipparchus.optim;
 
     // GUI
     requires java.desktop;
     requires org.jfree.jfreechart;
     requires org.jfree.svg;
-    requires hipparchus.optim;
-    requires hipparchus.fitting;
 
     // exports
     exports pdk.util;

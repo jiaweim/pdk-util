@@ -2,7 +2,6 @@ package pdk.util.data.func;
 
 import org.junit.jupiter.api.Test;
 import pdk.util.SerializationUtils;
-import pdk.util.data.fitting.EMGCurveFitter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -46,13 +45,5 @@ class ExponentiallyModifiedGaussianFuncTest {
         ExponentiallyModifiedGaussianFunc f1 = new ExponentiallyModifiedGaussianFunc(0, 1, 1);
         ExponentiallyModifiedGaussianFunc f2 = SerializationUtils.round(f1);
         assertEquals(f1, f2);
-    }
-
-    @Test
-    void testValue() {
-        ExponentiallyModifiedGaussianFunc emg = ExponentiallyModifiedGaussianFunc.of(5, 1, 1 / 1.0);
-        System.out.println(emg.f(1));
-        double[] parameters = new double[]{1, 5, 1, 1};
-        System.out.println(EMGCurveFitter.FUNCTION.value(1, parameters));
     }
 }

@@ -1,6 +1,8 @@
 package pdk.util.data.fitting;
 
 import org.apache.commons.rng.sampling.distribution.*;
+import org.hipparchus.optim.nonlinear.vector.leastsquares.LeastSquaresOptimizer;
+import org.hipparchus.random.RandomDataGenerator;
 import org.jfree.data.statistics.HistogramDataset;
 import org.jfree.data.statistics.HistogramType;
 import org.jfree.data.xy.XYDataset;
@@ -10,13 +12,16 @@ import pdk.util.chart.LineChart;
 import pdk.util.chart.XYChart;
 import pdk.util.chart.XYChartType;
 import pdk.util.data.Point2D;
+import pdk.util.data.WeightPoint2D;
 import pdk.util.data.func.ExponentiallyModifiedGaussianFunc;
 import pdk.util.data.func.Func2D;
 import pdk.util.math.SamplingUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -26,32 +31,62 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @version 1.0.0
  * @since 28 Apr 2026, 2:47 PM
  */
-class EMGCurveFitterTest {
+class EMGFitterTest {
 
     @Test
     void testFunction() {
         double[] parameters = new double[]{1, 0, 1, 1};
         ExponentiallyModifiedGaussianFunc emg = ExponentiallyModifiedGaussianFunc.of(0, 1, 1);
 
+        EMGFitter fitter = EMGFitter.create();
         double EPS = 1E-10;
         for (int i = 0; i < 100; i++) {
-            double f1 = EMGCurveFitter.FUNCTION.value(i, parameters);
+            double f1 = fitter.value(i, parameters);
             double f2 = emg.f(i);
             assertEquals(f1, f2, EPS);
         }
     }
 
     @Test
+    void testFunction2() {
+        // add Normalization
+        double[] parameters = new double[]{2, 0, 1, 5};
+        ExponentiallyModifiedGaussianFunc emg = ExponentiallyModifiedGaussianFunc.of(0, 1, 5);
+        EMGFitter fitter = EMGFitter.create();
+        double EPS = 1E-10;
+        for (int i = 0; i < 100; i++) {
+            double f1 = fitter.value(i, parameters);
+            double f2 = emg.f(i);
+            assertEquals(f1, f2 * 2, EPS);
+        }
+    }
+
+    @Test
     void testFit() {
-        ExponentiallyModifiedGaussianFunc emg1 = ExponentiallyModifiedGaussianFunc.of(0, 1, 1);
-        List<Point2D> sample = emg1.sample(-10, 10, 500);
-        for (Point2D point2D : sample) {
-            point2D.setY(point2D.getY() + point2D.getY() * Math.random() * 0.1);
+        double[] parameters = new double[]{33.4, -3.5, 2, 5};
+
+        EMGFitter fitter = EMGFitter.create();
+        final RandomDataGenerator dataGenerator = new RandomDataGenerator(9527);
+
+        List<WeightPoint2D> obs = new ArrayList<>();
+        for (int i = 0; i < 100; i++) {
+            double x = dataGenerator.nextUniform(-100, 100);
+            obs.add(new WeightPoint2D(x, fitter.value(x, parameters)));
         }
 
-        EMGCurveFitter fitter = new EMGCurveFitter(null, Integer.MAX_VALUE);
-        double[] parameters = fitter.fit(DataUtils.createDataset(sample).toList());
-        System.out.println(Arrays.toString(parameters));
+        // by moment
+        LeastSquaresOptimizer.Optimum optimum1 = fitter.initGuess(EMGFitter.guess(obs)).fitDetail(obs);
+        double[] parameters1 = optimum1.getPoint().toArray();
+        assertArrayEquals(parameters, parameters1, 1E-8);
+        assertEquals(13, optimum1.getIterations());
+
+        // by shape
+        LeastSquaresOptimizer.Optimum optimum2 = fitter.initGuess(EMGFitter.guessByShape(obs)).fitDetail(obs);
+        double[] parameters2 = optimum2.getPoint().toArray();
+        assertArrayEquals(parameters, parameters2, 1E-8);
+        assertEquals(34, optimum2.getIterations()); // slower
+
+        // 两种估计参数的方法都可以收敛到正确参数，但通过 momenet 估计的参数收敛更快
     }
 
     static void demo() {
@@ -85,8 +120,8 @@ class EMGCurveFitterTest {
             y[i] = dataset.getStartY(0, i).doubleValue();
         }
 
-        EMGCurveFitter fitter = EMGCurveFitter.create();
-        double[] parameters = fitter.fit(DataUtils.createDataset(x, y));
+        EMGFitter fitter = EMGFitter.create();
+        double[] parameters = fitter.fit(WeightPoint2D.convert(x, y));
         System.out.println(Arrays.toString(parameters));
 
         ExponentiallyModifiedGaussianFunc emg = ExponentiallyModifiedGaussianFunc.of(parameters[1], parameters[2], 1 / parameters[3]);
@@ -118,8 +153,8 @@ class EMGCurveFitterTest {
             point2D.setY(area * (point2D.getY() + point2D.getY() * Math.random() * 0.1));
         }
 
-        EMGCurveFitter fitter = new EMGCurveFitter(null, Integer.MAX_VALUE);
-        double[] parameters = fitter.fit(DataUtils.createDataset(sample).toList());
+        EMGFitter fitter = new EMGFitter(null, Integer.MAX_VALUE);
+        double[] parameters = fitter.fit(WeightPoint2D.convert(sample));
 
         System.out.println(Arrays.toString(parameters));
         ExponentiallyModifiedGaussianFunc emg = ExponentiallyModifiedGaussianFunc.of(parameters[1], parameters[2], 1 / parameters[3]);

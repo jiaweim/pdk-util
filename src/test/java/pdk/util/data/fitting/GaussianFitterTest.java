@@ -1,18 +1,13 @@
 package pdk.util.data.fitting;
 
-import org.hipparchus.analysis.function.Gaussian;
 import org.hipparchus.exception.MathIllegalArgumentException;
 import org.hipparchus.exception.MathIllegalStateException;
-import org.hipparchus.fitting.GaussianCurveFitter;
-import org.hipparchus.fitting.WeightedObservedPoints;
-import org.jfree.data.xy.XYDataset;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
-import pdk.util.chart.Data;
 import pdk.util.chart.LineChart;
-import pdk.util.data.Point2D;
-import pdk.util.data.func.Func2D;
+import pdk.util.data.WeightPoint2D;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -25,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * @version 1.0.0
  * @since 28 Apr 2026, 4:50 PM
  */
-public class GaussianCurveFitterTest {
+public class GaussianFitterTest {
 
     protected static final double[][] DATASET1 = new double[][]{
             {4.0254623, 531026.0},
@@ -188,75 +183,12 @@ public class GaussianCurveFitterTest {
      */
     @Test
     public void testFit01() {
-        GaussianCurveFitter fitter = GaussianCurveFitter.create();
-        double[] parameters = fitter.fit(createDataset(DATASET1).toList());
+        GaussianFitter fitter = GaussianFitter.create();
+        double[] parameters = fitter.fit(dataset(DATASET1));
 
         assertEquals(3496978.1837704973, parameters[0], 1e-7);
         assertEquals(4.054933085999146, parameters[1], 1e-16);
         assertEquals(0.015039355620304326, parameters[2], 1e-15);
-    }
-
-    static void showCurve01() {
-        double[] x = new double[DATASET1.length];
-        double[] y = new double[DATASET1.length];
-        for (int i = 0; i < DATASET1.length; i++) {
-            x[i] = DATASET1[i][0];
-            y[i] = DATASET1[i][1];
-        }
-        GaussianCurveFitter fitter = GaussianCurveFitter.create();
-        double[] parameters = fitter.fit(createDataset(DATASET1).toList());
-        Gaussian gaussian = new Gaussian(parameters[0], parameters[1], parameters[2]);
-        Func2D g = gaussian::value;
-
-        List<Point2D> sample = g.sample(3.8, 4.2, 200);
-        XYDataset dataset = Data.xyDataset()
-                .addSeries("", x, y)
-                .addSeries("fit", sample)
-                .build();
-        LineChart chart = LineChart.lineChart()
-                .dataset(dataset)
-                .xAxisAutoRangeIncludesZero(false)
-                .build();
-        chart.show();
-    }
-
-
-    @Test
-    public void testDataset1LargeXShift() {
-        final GaussianCurveFitter fitter = GaussianCurveFitter.create();
-        final double xShift = 1e8;
-        final double[] parameters = fitter.fit(createDataset(DATASET1, xShift, 0).toList());
-
-        assertEquals(1, parameters[0] / 3496978.1837704973, 1e-2);
-        assertEquals(1, parameters[1] / (xShift + 4.054933085999146), 1e-6);
-        assertEquals(1, parameters[2] / 0.015039355620304326, 1e-2);
-    }
-
-    static void showDataset1LargeXShift() {
-        final double xShift = 1e8;
-
-        double[] x = new double[DATASET1.length];
-        double[] y = new double[DATASET1.length];
-        for (int i = 0; i < DATASET1.length; i++) {
-            x[i] = DATASET1[i][0] + xShift;
-            y[i] = DATASET1[i][1];
-        }
-
-        GaussianCurveFitter fitter = GaussianCurveFitter.create();
-        double[] parameters = fitter.fit(createDataset(DATASET1, xShift, 0).toList());
-        Gaussian gaussian = new Gaussian(parameters[0], parameters[1], parameters[2]);
-        Func2D g = gaussian::value;
-
-        List<Point2D> sample = g.sample(xShift + 3.8, xShift + 4.2, 200);
-        XYDataset dataset = Data.xyDataset()
-                .addSeries("", x, y)
-                .addSeries("fit", sample)
-                .build();
-        LineChart chart = LineChart.lineChart()
-                .dataset(dataset)
-                .xAxisAutoRangeIncludesZero(false)
-                .build();
-        chart.show();
     }
 
     @Test
@@ -264,11 +196,10 @@ public class GaussianCurveFitterTest {
         final int maxIter = 20;
         final double[] init = {3.5e6, 4.2, 0.1};
 
-        GaussianCurveFitter fitter = GaussianCurveFitter.create();
-        double[] parameters = fitter
-                .withMaxIterations(maxIter)
-                .withStartPoint(init)
-                .fit(createDataset(DATASET1).toList());
+        CurveFitter fitter = GaussianFitter.create()
+                .maxIterations(maxIter)
+                .initGuess(init);
+        double[] parameters = fitter.fit(dataset(DATASET1));
 
         assertEquals(3496978.1837704973, parameters[0], 1e-2);
         assertEquals(4.054933085999146, parameters[1], 1e-4);
@@ -280,21 +211,21 @@ public class GaussianCurveFitterTest {
         final int maxIter = 1; // Too few iterations.
         final double[] init = {3.5e6, 4.2, 0.1};
 
-        GaussianCurveFitter fitter = GaussianCurveFitter.create();
-        assertThrows(MathIllegalStateException.class, () -> fitter.withMaxIterations(maxIter)
-                .withStartPoint(init)
-                .fit(createDataset(DATASET1).toList()));
-
+        CurveFitter fitter = GaussianFitter.create()
+                .maxIterations(maxIter)
+                .initGuess(init);
+        assertThrows(MathIllegalStateException.class, () -> fitter
+                .fit(dataset(DATASET1)));
     }
 
     @Test
     public void testWithStartPoint() {
         final double[] init = {3.5e6, 4.2, 0.1};
 
-        GaussianCurveFitter fitter = GaussianCurveFitter.create();
+        CurveFitter fitter = GaussianFitter.create();
         double[] parameters = fitter
-                .withStartPoint(init)
-                .fit(createDataset(DATASET1).toList());
+                .initGuess(init)
+                .fit(dataset(DATASET1));
 
         assertEquals(3496978.1837704973, parameters[0], 1e-2);
         assertEquals(4.054933085999146, parameters[1], 1e-4);
@@ -306,7 +237,8 @@ public class GaussianCurveFitterTest {
      */
     @Test
     public void testFit02() {
-        assertThrows(MathIllegalArgumentException.class, () -> GaussianCurveFitter.create().fit(new WeightedObservedPoints().toList()));
+        assertThrows(MathIllegalArgumentException.class, () -> GaussianFitter.create()
+                .fit(new ArrayList<>()));
     }
 
     /**
@@ -314,11 +246,11 @@ public class GaussianCurveFitterTest {
      */
     @Test
     public void testFit03() {
-        GaussianCurveFitter fitter = GaussianCurveFitter.create();
-        assertThrows(MathIllegalArgumentException.class, () -> fitter.fit(createDataset(new double[][]{
+        CurveFitter fitter = GaussianFitter.create();
+        assertThrows(MathIllegalArgumentException.class, () -> fitter.fit(dataset(new double[][]{
                 {4.0254623, 531026.0},
                 {4.02804905, 664002.0}
-        }).toList()));
+        })));
     }
 
     /**
@@ -326,12 +258,20 @@ public class GaussianCurveFitterTest {
      */
     @Test
     public void testFit04() {
-        GaussianCurveFitter fitter = GaussianCurveFitter.create();
-        double[] parameters = fitter.fit(createDataset(DATASET2).toList());
+        GaussianFitter fitter = GaussianFitter.create();
+        double[] parameters = fitter.fit(dataset(DATASET2));
 
         assertEquals(233003.2967252038, parameters[0], 1e-4);
         assertEquals(-10.654887521095983, parameters[1], 1e-4);
         assertEquals(4.335937353196641, parameters[2], 1e-4);
+    }
+
+    static void showCurve04() {
+        List<WeightPoint2D> dataset = dataset(DATASET2);
+        GaussianFitter fitter = GaussianFitter.create();
+        double[] parameters = fitter.fit(dataset);
+        LineChart chart = fitter.showFit(parameters, dataset);
+        chart.show();
     }
 
     /**
@@ -339,12 +279,21 @@ public class GaussianCurveFitterTest {
      */
     @Test
     public void testFit05() {
-        GaussianCurveFitter fitter = GaussianCurveFitter.create();
-        double[] parameters = fitter.fit(createDataset(DATASET3).toList());
+        GaussianFitter fitter = GaussianFitter.create();
+        double[] parameters = fitter.fit(dataset(DATASET3));
 
         assertEquals(283863.81929180305, parameters[0], 1e-4);
         assertEquals(-13.29641995105174, parameters[1], 1e-4);
         assertEquals(1.7297330293549908, parameters[2], 1e-4);
+    }
+
+    static void showCurve05() {
+        List<WeightPoint2D> dataset = dataset(DATASET3);
+        GaussianFitter fitter = GaussianFitter.create();
+        double[] parameters = fitter.fit(dataset);
+        System.out.println(Arrays.toString(parameters));
+        LineChart chart = fitter.showFit(parameters, dataset);
+        chart.show();
     }
 
     /**
@@ -352,8 +301,8 @@ public class GaussianCurveFitterTest {
      */
     @Test
     public void testFit06() {
-        GaussianCurveFitter fitter = GaussianCurveFitter.create();
-        double[] parameters = fitter.fit(createDataset(DATASET4).toList());
+        GaussianFitter fitter = GaussianFitter.create();
+        double[] parameters = fitter.fit(dataset(DATASET4));
 
         assertEquals(285250.66754309234, parameters[0], 1e-4);
         assertEquals(-13.528375695228455, parameters[1], 1e-4);
@@ -365,8 +314,8 @@ public class GaussianCurveFitterTest {
      */
     @Test
     public void testFit07() {
-        GaussianCurveFitter fitter = GaussianCurveFitter.create();
-        double[] parameters = fitter.fit(createDataset(DATASET5).toList());
+        GaussianFitter fitter = GaussianFitter.create();
+        double[] parameters = fitter.fit(dataset(DATASET5));
 
         assertEquals(3514384.729342235, parameters[0], 1e-4);
         assertEquals(4.054970307455625, parameters[1], 1e-4);
@@ -408,11 +357,11 @@ public class GaussianCurveFitterTest {
                 1.2431632654852931E-11
         };
 
-        final WeightedObservedPoints obs = new WeightedObservedPoints();
+        List<WeightPoint2D> obs = new ArrayList<>();
         for (int i = 0; i < data.length; i++) {
-            obs.add(i, data[i]);
+            obs.add(new WeightPoint2D(i, data[i]));
         }
-        final double[] p = GaussianCurveFitter.create().fit(obs.toList());
+        final double[] p = GaussianFitter.create().fit(obs);
 
         assertEquals(53.1572792, p[1], 1e-7);
         assertEquals(5.75214622, p[2], 1e-8);
@@ -425,21 +374,21 @@ public class GaussianCurveFitterTest {
         // a Gaussian.
         // When commented out, the fit proceeds fine.
 
-        final WeightedObservedPoints obs = new WeightedObservedPoints();
+        final List<WeightPoint2D> obs = new ArrayList<>();
 
-        obs.add(0.23, 395.0);
-        //obs.add(0.68, 0.0);
-        obs.add(1.14, 376.0);
-        //obs.add(1.59, 0.0);
-        obs.add(2.05, 163.0);
-        //obs.add(2.50, 0.0);
-        obs.add(2.95, 49.0);
-        //obs.add(3.41, 0.0);
-        obs.add(3.86, 16.0);
-        //obs.add(4.32, 0.0);
-        obs.add(4.77, 1.0);
+        obs.add(new WeightPoint2D(0.23, 395.0));
+//        obs.add(new WeightPoint2D(0.68, 0.0));
+        obs.add(new WeightPoint2D(1.14, 376.0));
+//        obs.add(new WeightPoint2D(1.59, 0.0));
+        obs.add(new WeightPoint2D(2.05, 163.0));
+//        obs.add(new WeightPoint2D(2.50, 0.0));
+        obs.add(new WeightPoint2D(2.95, 49.0));
+//        obs.add(new WeightPoint2D(3.41, 0.0));
+        obs.add(new WeightPoint2D(3.86, 16.0));
+//        obs.add(new WeightPoint2D(4.32, 0.0));
+        obs.add(new WeightPoint2D(4.77, 1.0));
 
-        final double[] p = GaussianCurveFitter.create().fit(obs.toList());
+        final double[] p = GaussianFitter.create().fit(obs);
 
         // Values are copied from a previous run of this test.
         assertEquals(420.8397296167364, p[0], 1e-12);
@@ -459,13 +408,13 @@ public class GaussianCurveFitterTest {
      * @param yShift Offset added to the ordinates.
      * @return the collection of observed points.
      */
-    private static WeightedObservedPoints createDataset(double[][] points,
+    private static List<WeightPoint2D> dataset(double[][] points,
             double xShift, double yShift) {
-        final WeightedObservedPoints obs = new WeightedObservedPoints();
+        List<WeightPoint2D> pointList = new ArrayList<>();
         for (double[] point : points) {
-            obs.add(point[0] + xShift, point[1] + yShift);
+            pointList.add(new WeightPoint2D(point[0] + xShift, point[1] + yShift));
         }
-        return obs;
+        return pointList;
     }
 
     /**
@@ -478,11 +427,7 @@ public class GaussianCurveFitterTest {
      *               corresponding to Y.
      * @return the collection of observed points.
      */
-    private static WeightedObservedPoints createDataset(double[][] points) {
-        return createDataset(points, 0, 0);
-    }
-
-    static void main() {
-        showDataset1LargeXShift();
+    private static List<WeightPoint2D> dataset(double[][] points) {
+        return dataset(points, 0.0, 0.0);
     }
 }

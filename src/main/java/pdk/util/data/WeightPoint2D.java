@@ -1,5 +1,8 @@
 package pdk.util.data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A {@link Point2D} with weight.
  *
@@ -8,6 +11,35 @@ package pdk.util.data;
  * @since 01 Apr 2026, 2:52 PM
  */
 public class WeightPoint2D extends Point2D {
+
+    /**
+     * Convert {@link Point2D} to {@link WeightPoint2D} with default weight 1
+     *
+     * @param points list of {@link Point2D}
+     * @return list of {@link WeightPoint2D}
+     */
+    public static List<WeightPoint2D> convert(List<Point2D> points) {
+        List<WeightPoint2D> result = new ArrayList<>();
+        for (Point2D point : points) {
+            result.add(new WeightPoint2D(point.getX(), point.getY()));
+        }
+        return result;
+    }
+
+    /**
+     * Create {@link WeightPoint2D} list with a given dataset.
+     *
+     * @param x x values
+     * @param y y values
+     * @return list of {@link WeightPoint2D}
+     */
+    public static List<WeightPoint2D> convert(double[] x, double[] y) {
+        List<WeightPoint2D> result = new ArrayList<>(x.length);
+        for (int i = 0; i < x.length; i++) {
+            result.add(new WeightPoint2D(x[i], y[i]));
+        }
+        return result;
+    }
 
     private double weight = 1;
 
