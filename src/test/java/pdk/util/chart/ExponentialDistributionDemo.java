@@ -2,6 +2,7 @@ package pdk.util.chart;
 
 import org.apache.commons.statistics.distribution.ExponentialDistribution;
 import org.jfree.data.xy.XYDataset;
+import pdk.util.chart.util.Data;
 import pdk.util.math.DistributionUtils;
 
 /**

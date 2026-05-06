@@ -1,9 +1,8 @@
 package pdk.util.data.func;
 
 import org.jfree.data.xy.XYDataset;
-import pdk.util.chart.Data;
+import pdk.util.chart.util.Data;
 import pdk.util.chart.LineChart;
-import pdk.util.chart.util.LegendTitleBuilder;
 import pdk.util.data.Point2D;
 
 import java.util.List;

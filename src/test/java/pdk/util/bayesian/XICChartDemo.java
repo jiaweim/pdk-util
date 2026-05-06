@@ -1,7 +1,7 @@
 package pdk.util.bayesian;
 
 import org.jfree.data.xy.XYDataset;
-import pdk.util.chart.Data;
+import pdk.util.chart.util.Data;
 import pdk.util.chart.LineChart;
 
 /**

@@ -2,8 +2,10 @@ package pdk.util.math;
 
 import org.apache.commons.statistics.distribution.TDistribution;
 import org.hipparchus.stat.correlation.PearsonsCorrelation;
+import org.hipparchus.stat.regression.SimpleRegression;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * Correlation utilities.
@@ -73,6 +75,26 @@ public final class CorrelationUtils {
     public static double getPearsonCorrelationCoefficient(double[] x, double[] y) {
         PearsonsCorrelation correlation = new PearsonsCorrelation();
         return correlation.correlation(x, y);
+    }
+
+    /**
+     * Computes the Pearson's correlation coefficient between two arrays.
+     *
+     * @param x              first data array
+     * @param y              second data array
+     * @param startInclusive start index in the array (inclusive)
+     * @param length         number of elements to calculate
+     * @return Pearson's correlation coefficient for the two arrays
+     * @since 2026-05-06
+     */
+    public static double getPearsonCorrelationCoefficient(double[] x, double[] y, int startInclusive, int length) {
+        Objects.checkFromIndexSize(startInclusive, length, x.length);
+
+        SimpleRegression regression = new SimpleRegression();
+        for (int i = startInclusive; i < startInclusive + length; i++) {
+            regression.addData(x[i], y[i]);
+        }
+        return regression.getR();
     }
 
     /**

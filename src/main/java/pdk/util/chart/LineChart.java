@@ -2,7 +2,9 @@ package pdk.util.chart;
 
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.annotations.XYPointerAnnotation;
+import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.event.AxisChangeEvent;
 import org.jfree.chart.labels.StandardXYToolTipGenerator;
 import org.jfree.chart.plot.Marker;
@@ -34,6 +36,16 @@ public class LineChart implements IBuilder<LineChart>, Chart {
     }
 
     /**
+     * Create a line chart with x-axis as thew timeline
+     *
+     * @return {@link LineChart}
+     */
+    public static LineChart timeLineChart() {
+        return new LineChart(true);
+    }
+
+
+    /**
      * Create line chart
      *
      * @return {@link LineChart}
@@ -53,19 +65,56 @@ public class LineChart implements IBuilder<LineChart>, Chart {
 
     private final JFreeChart chart_;
     private final XYPlot xyPlot_;
-    private final NumberAxis domainAxis_;
+    private final ValueAxis domainAxis_;
     private final NumberAxis rangeAxis_;
     private final XYLineAndShapeRenderer renderer_;
 
-    private LineChart() {
-        domainAxis_ = new NumberAxis();
+    private LineChart(boolean xTime) {
+        if (xTime) {
+            domainAxis_ = new DateAxis();
+            domainAxis_.setLowerMargin(0.02);
+            domainAxis_.setUpperMargin(0.02);
+        } else {
+            domainAxis_ = new NumberAxis();
+        }
         rangeAxis_ = new NumberAxis();
+        if (xTime) {
+            rangeAxis_.setAutoRangeIncludesZero(false);
+        }
         renderer_ = new XYLineAndShapeRenderer(true, false);
 
         xyPlot_ = new XYPlot(null, domainAxis_, rangeAxis_, renderer_);
         chart_ = new JFreeChart(null, DEFAULT_TITLE_FONT, xyPlot_, false);
         DEFAULT_THEME.apply(chart_);
     }
+
+    private LineChart() {
+        this(false);
+    }
+
+    //region Chart Properties
+
+    /**
+     * Set the chart title.
+     *
+     * @param title new title
+     * @return this
+     */
+    public LineChart title(String title) {
+        chart_.setTitle(title);
+        return this;
+    }
+
+    /**
+     * Sets the paint used to fill the chart background.
+     *
+     * @param paint the paint ({@code null} permitted).
+     */
+    public LineChart backgroundPaint(Paint paint) {
+        chart_.setBackgroundPaint(paint);
+        return this;
+    }
+    //endregion
 
     /**
      * Set true to create line chart
@@ -355,16 +404,6 @@ public class LineChart implements IBuilder<LineChart>, Chart {
         return this;
     }
 
-    /**
-     * Set the chart title.
-     *
-     * @param title new title
-     * @return this
-     */
-    public LineChart title(String title) {
-        chart_.setTitle(title);
-        return this;
-    }
 
     /**
      * Set the chart orientation.
@@ -414,7 +453,9 @@ public class LineChart implements IBuilder<LineChart>, Chart {
      * @param xAxisIncludesZero the new value of the flag.
      */
     public LineChart xAxisAutoRangeIncludesZero(boolean xAxisIncludesZero) {
-        domainAxis_.setAutoRangeIncludesZero(xAxisIncludesZero);
+        if (domainAxis_ instanceof NumberAxis na) {
+            na.setAutoRangeIncludesZero(xAxisIncludesZero);
+        }
         return this;
     }
 
@@ -455,7 +496,7 @@ public class LineChart implements IBuilder<LineChart>, Chart {
     }
 
     /**
-     * Set X Axis title
+     * Set Y Axis title
      *
      * @param yAxisTitle y axis title
      * @return this
@@ -550,7 +591,11 @@ public class LineChart implements IBuilder<LineChart>, Chart {
      */
     public LineChart addTooltips(boolean addTooltip) {
         if (addTooltip) {
-            renderer_.setDefaultToolTipGenerator(new StandardXYToolTipGenerator());
+            if (domainAxis_ instanceof NumberAxis) {
+                renderer_.setDefaultToolTipGenerator(new StandardXYToolTipGenerator());
+            } else if (domainAxis_ instanceof DateAxis) {
+                renderer_.setDefaultToolTipGenerator(StandardXYToolTipGenerator.getTimeSeriesInstance());
+            }
         }
         return this;
     }

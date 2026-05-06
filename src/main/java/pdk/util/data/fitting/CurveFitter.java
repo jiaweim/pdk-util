@@ -7,7 +7,7 @@ import org.hipparchus.optim.nonlinear.vector.leastsquares.LeastSquaresOptimizer;
 import org.hipparchus.optim.nonlinear.vector.leastsquares.LeastSquaresProblem;
 import org.hipparchus.optim.nonlinear.vector.leastsquares.LevenbergMarquardtOptimizer;
 import org.jfree.data.xy.XYDataset;
-import pdk.util.chart.Data;
+import pdk.util.chart.util.Data;
 import pdk.util.chart.LineChart;
 import pdk.util.data.Point2D;
 import pdk.util.data.WeightPoint2D;

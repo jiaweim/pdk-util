@@ -279,6 +279,42 @@ class ArrayUtilsTest {
     }
 
     @Test
+    void getMinInsertIndexDouble() {
+        double[] data = new double[]{1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0};
+
+        // left end
+        assertEquals(0, ArrayUtils.getMinInsertIndex(data, 0.5));
+
+        // equal left
+        assertEquals(0, ArrayUtils.getMinInsertIndex(data, 1.0));
+
+        // between
+        assertEquals(1, ArrayUtils.getMinInsertIndex(data, 1.1));
+        assertEquals(1, ArrayUtils.getMinInsertIndex(data, 1.2));
+        assertEquals(1, ArrayUtils.getMinInsertIndex(data, 1.45));
+        assertEquals(1, ArrayUtils.getMinInsertIndex(data, 1.5));
+
+        assertEquals(2, ArrayUtils.getMinInsertIndex(data, 1.6));
+        assertEquals(2, ArrayUtils.getMinInsertIndex(data, 2.0));
+
+        assertEquals(6, ArrayUtils.getMinInsertIndex(data, 3.6));
+        assertEquals(6, ArrayUtils.getMinInsertIndex(data, 4.0));
+        assertEquals(7, ArrayUtils.getMinInsertIndex(data, 4.1));
+
+        double[] data2 = new double[]{1.0, 1.5, 1.5, 1.5, 1.5, 2.0, 2.5, 3.0, 3.0, 3.5, 4.0};
+
+        assertEquals(1, ArrayUtils.getMinInsertIndex(data2, 1.5));
+        assertEquals(7, ArrayUtils.getMinInsertIndex(data2, 3.0));
+
+        assertEquals(0, ArrayUtils.getMinInsertIndex(data2, 0.0));
+        assertEquals(0, ArrayUtils.getMinInsertIndex(data2, 1.0));
+        assertEquals(1, ArrayUtils.getMinInsertIndex(data2, 1.2));
+        assertEquals(5, ArrayUtils.getMinInsertIndex(data2, 1.6));
+        assertEquals(5, ArrayUtils.getMinInsertIndex(data2, 2.0));
+        assertEquals(10, ArrayUtils.getMinInsertIndex(data2, 4.0));
+    }
+
+    @Test
     void getMaxInsertIndex() {
         Double[] data = new Double[]{1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0};
         Comparator<Double> comparator = Comparator.comparingDouble(o -> (double) o);
@@ -303,6 +339,32 @@ class ArrayUtilsTest {
         assertEquals(9, ArrayUtils.getMaxInsertIndex(data2, comparator, 3.1));
         assertEquals(11, ArrayUtils.getMaxInsertIndex(data2, comparator, 4.0));
         assertEquals(11, ArrayUtils.getMaxInsertIndex(data2, comparator, 4.5));
+    }
+
+    @Test
+    void getMaxInsertIndexDouble() {
+        double[] data = new double[]{1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0};
+
+        assertEquals(0, ArrayUtils.getMaxInsertIndex(data, 0.5));
+        assertEquals(1, ArrayUtils.getMaxInsertIndex(data, 1.0));
+        assertEquals(1, ArrayUtils.getMaxInsertIndex(data, 1.2));
+        assertEquals(2, ArrayUtils.getMaxInsertIndex(data, 1.5));
+        assertEquals(3, ArrayUtils.getMaxInsertIndex(data, 2.0));
+        assertEquals(3, ArrayUtils.getMaxInsertIndex(data, 2.2));
+        assertEquals(4, ArrayUtils.getMaxInsertIndex(data, 2.5));
+        assertEquals(7, ArrayUtils.getMaxInsertIndex(data, 4.0));
+        assertEquals(7, ArrayUtils.getMaxInsertIndex(data, 4.1));
+
+        double[] data2 = new double[]{1.0, 1.5, 1.5, 1.5, 1.5, 2.0, 2.5, 3.0, 3.0, 3.5, 4.0};
+        assertEquals(0, ArrayUtils.getMaxInsertIndex(data2, 0.0));
+        assertEquals(1, ArrayUtils.getMaxInsertIndex(data2, 1.0));
+        assertEquals(1, ArrayUtils.getMaxInsertIndex(data2, 1.2));
+        assertEquals(5, ArrayUtils.getMaxInsertIndex(data2, 1.5));
+        assertEquals(7, ArrayUtils.getMaxInsertIndex(data2, 2.9));
+        assertEquals(9, ArrayUtils.getMaxInsertIndex(data2, 3.0));
+        assertEquals(9, ArrayUtils.getMaxInsertIndex(data2, 3.1));
+        assertEquals(11, ArrayUtils.getMaxInsertIndex(data2, 4.0));
+        assertEquals(11, ArrayUtils.getMaxInsertIndex(data2, 4.5));
     }
 
     @Test

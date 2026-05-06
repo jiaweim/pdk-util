@@ -1,4 +1,4 @@
-package pdk.util.chart;
+package pdk.util.chart.util;
 
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
@@ -36,6 +36,10 @@ public interface Data {
 
     static HistogramDatasetBuilder histogramDataset() {
         return new HistogramDatasetBuilder();
+    }
+
+    static TimeDatasetBuilder timeDataset() {
+        return new TimeDatasetBuilder();
     }
 
     /**

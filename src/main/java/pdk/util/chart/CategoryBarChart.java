@@ -33,7 +33,6 @@ public class CategoryBarChart implements IBuilder<CategoryBarChart>, Chart {
     }
 
     private final JFreeChart chart_;
-    private PlotOrientation orientation_ = PlotOrientation.VERTICAL;
     private final CategoryAxis domainAxis_;
     private final NumberAxis rangeAxis_;
     private final BarRenderer renderer_;
@@ -77,7 +76,7 @@ public class CategoryBarChart implements IBuilder<CategoryBarChart>, Chart {
      * @return this
      */
     public CategoryBarChart orientation(PlotOrientation orientation) {
-        plot_.setOrientation(this.orientation_);
+        plot_.setOrientation(orientation);
         return this;
     }
 
@@ -201,14 +200,15 @@ public class CategoryBarChart implements IBuilder<CategoryBarChart>, Chart {
 
     @Override
     public CategoryBarChart build() {
-        if (orientation_ == PlotOrientation.HORIZONTAL) {
+        PlotOrientation orientation = plot_.getOrientation();
+        if (orientation == PlotOrientation.HORIZONTAL) {
             ItemLabelPosition position1 = new ItemLabelPosition(
                     ItemLabelAnchor.OUTSIDE3, TextAnchor.CENTER_LEFT);
             renderer_.setDefaultPositiveItemLabelPosition(position1);
             ItemLabelPosition position2 = new ItemLabelPosition(
                     ItemLabelAnchor.OUTSIDE9, TextAnchor.CENTER_RIGHT);
             renderer_.setDefaultNegativeItemLabelPosition(position2);
-        } else if (orientation_ == PlotOrientation.VERTICAL) {
+        } else if (orientation == PlotOrientation.VERTICAL) {
             ItemLabelPosition position1 = new ItemLabelPosition(
                     ItemLabelAnchor.OUTSIDE12, TextAnchor.BOTTOM_CENTER);
             renderer_.setDefaultPositiveItemLabelPosition(position1);

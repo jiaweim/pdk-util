@@ -587,6 +587,31 @@ public final class ArrayUtils {
     }
 
     /**
+     * Finds the minimum insertion index for a given value in a sorted array, considering equal
+     * elements to yield the smallest possible position.
+     *
+     * @param array a sorted array
+     * @param value an element to insert
+     * @return minimum insertion index
+     * @since 2026-03-25⭐
+     */
+    public static int getMinInsertIndex(double[] array, double value) {
+        if (value < array[0])
+            return 0;
+        if (value > array[array.length - 1])
+            return array.length;
+
+        int index = Arrays.binarySearch(array, value);
+        if (index < 0)
+            index = -(index + 1);
+
+        while (index > 0 && Double.compare(array[index - 1], value) == 0) {
+            index--;
+        }
+        return index;
+    }
+
+    /**
      * Finds the maximum insertion index for a given value in a sorted array, considering equal
      * elements to yield the largest possible position.
      *
@@ -613,12 +638,31 @@ public final class ArrayUtils {
     }
 
     /**
-     * Find range of low and high, such that <code>low</code> and <code>high</code> are in range
-     * {@code slice[left..right)}, that is:
-     * <li>{@code slice[left] >= low && slice[left-1] < low || left == 0}</li>
-     * <li>{@code slice[right] > high && slice[right-1] <= high || right=slice.length()}</li>
-     * <p>
-     * In fact, this method return the min insertion index for low {@link #getMinInsertIndex(Object[], Comparator, Object)}
+     * Finds the maximum insertion index for a given value in a sorted array, considering equal
+     * elements to yield the largest possible position.
+     *
+     * @param array a sorted array
+     * @param value an element to insert
+     * @return maximum insertion index
+     * @since 2026-03-25⭐
+     */
+    public static int getMaxInsertIndex(double[] array, double value) {
+        if (value < array[0])
+            return 0;
+        if (value > array[array.length - 1])
+            return array.length;
+        int index = Arrays.binarySearch(array, value);
+        if (index < 0)
+            index = -(index + 1);
+
+        while (index < array.length && Double.compare(array[index], value) == 0) {
+            index++;
+        }
+        return index;
+    }
+
+    /**
+     * Return the min insertion index for low {@link #getMinInsertIndex(Object[], Comparator, Object)}
      * and the maximum insertion index for high {@link #getMaxInsertIndex(Object[], Comparator, Object)}.
      *
      * @param slice      array to search, must be sorted

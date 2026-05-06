@@ -5,7 +5,7 @@ import org.hipparchus.special.Gamma;
 import org.jfree.chart.ui.TextAnchor;
 import org.jfree.data.xy.XYDataset;
 import pdk.util.ArgUtils;
-import pdk.util.chart.Data;
+import pdk.util.chart.util.Data;
 import pdk.util.chart.LineChart;
 import pdk.util.data.Point2D;
 

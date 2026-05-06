@@ -15,6 +15,7 @@ import org.jfree.data.general.DatasetUtils;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import pdk.util.chart.util.CrosshairOverlayBuilder;
+import pdk.util.chart.util.Data;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;

@@ -3,6 +3,7 @@ package pdk.util.chart;
 import org.jfree.chart.axis.CategoryLabelPositions;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.CategoryDataset;
+import pdk.util.chart.util.Data;
 
 /**
  *

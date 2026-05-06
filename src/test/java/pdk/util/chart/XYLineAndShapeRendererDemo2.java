@@ -1,6 +1,7 @@
 package pdk.util.chart;
 
 import org.jfree.data.xy.XYDataset;
+import pdk.util.chart.util.Data;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;

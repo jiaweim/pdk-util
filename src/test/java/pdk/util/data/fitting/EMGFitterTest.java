@@ -7,7 +7,7 @@ import org.jfree.data.statistics.HistogramDataset;
 import org.jfree.data.statistics.HistogramType;
 import org.jfree.data.xy.XYDataset;
 import org.junit.jupiter.api.Test;
-import pdk.util.chart.Data;
+import pdk.util.chart.util.Data;
 import pdk.util.chart.LineChart;
 import pdk.util.chart.XYChart;
 import pdk.util.chart.XYChartType;

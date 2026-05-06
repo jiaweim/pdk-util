@@ -6,7 +6,7 @@ import org.hipparchus.random.RandomDataGenerator;
 import org.jfree.data.statistics.HistogramDataset;
 import org.jfree.data.statistics.HistogramType;
 import org.jfree.data.xy.XYDataset;
-import pdk.util.chart.Data;
+import pdk.util.chart.util.Data;
 import pdk.util.chart.XYChart;
 import pdk.util.chart.XYChartType;
 import pdk.util.math.SamplingUtils;

@@ -3,6 +3,7 @@ package pdk.util.chart;
 import org.apache.commons.statistics.distribution.NormalDistribution;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
+import pdk.util.chart.util.Data;
 import pdk.util.data.Point2D;
 import pdk.util.math.DistributionUtils;
 

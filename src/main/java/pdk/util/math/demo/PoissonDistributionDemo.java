@@ -6,7 +6,7 @@ import org.jfree.chart.title.LegendTitle;
 import org.jfree.chart.ui.RectangleEdge;
 import org.jfree.data.category.CategoryDataset;
 import pdk.util.chart.CategoryBarChart;
-import pdk.util.chart.Data;
+import pdk.util.chart.util.Data;
 import pdk.util.chart.util.LegendTitleBuilder;
 
 import java.awt.*;

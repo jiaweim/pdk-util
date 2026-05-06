@@ -2,7 +2,10 @@ package pdk.util.math;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.Arrays;
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  *
@@ -131,5 +134,31 @@ class CorrelationUtilsTest {
 
         double r = CorrelationUtils.getPearsonCorrelationCoefficient(x, y);
         assertEquals(0.979, r, 1E-3);
+    }
+
+    @Test
+    void testRange() {
+        double[] x = new double[]{
+                1.80, 1.82, 1.90, 1.93, 1.98, 2.05, 2.13, 2.30, 2.37, 2.82,
+                3.13, 3.27, 3.65, 3.78, 3.83, 3.88, 4.10, 4.27, 4.30, 4.43,
+                4.47, 4.53, 4.55, 4.60, 4.63
+        };
+
+        double[] y = new double[]{
+                56, 58, 62, 56, 57, 57, 60, 57, 61, 73,
+                76, 77, 77, 79, 85, 80, 89, 90, 89, 89,
+                86, 89, 86, 92, 91
+        };
+
+        for (int startIndex = 0; startIndex < x.length - 3; startIndex++) {
+            int maxCount = x.length - startIndex;
+            for (int len = 3; len <= maxCount; len++) {
+                double p1 = CorrelationUtils.getPearsonCorrelationCoefficient(x, y, startIndex, len);
+                double[] xCopy = Arrays.copyOfRange(x, startIndex, startIndex + len);
+                double[] yCopy = Arrays.copyOfRange(y, startIndex, startIndex + len);
+                double p2 = CorrelationUtils.getPearsonCorrelationCoefficient(xCopy, yCopy);
+                assertEquals(p1, p2, 1E-5);
+            }
+        }
     }
 }
