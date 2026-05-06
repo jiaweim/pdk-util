@@ -6,7 +6,7 @@
 
     <groupId>io.github.jiaweim</groupId>
     <artifactId>pdk-util</artifactId>
-    <version>1.65.0</version>
+    <version>1.66.0</version>
 
     <name>Proteomics Utilities</name>
     <url>https://github.com/jiaweim/pdk-util</url>
@@ -21,12 +21,12 @@
         <skipTests>true</skipTests>
     </properties>
 
-    <!--2026-04-27-->
+    <!--2026-05-05-->
     <dependencies>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-rng-simple</artifactId>
-            <version>1.6</version>
+            <version>1.7</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
