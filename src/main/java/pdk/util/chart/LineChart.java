@@ -4,6 +4,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.annotations.XYPointerAnnotation;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.TickUnitSource;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.labels.StandardXYToolTipGenerator;
 import org.jfree.chart.plot.Marker;
@@ -17,6 +18,8 @@ import org.jfree.chart.ui.RectangleEdge;
 import org.jfree.chart.ui.RectangleInsets;
 import org.jfree.chart.ui.TextAnchor;
 import org.jfree.data.xy.XYDataset;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import pdk.util.IBuilder;
 
 import java.awt.*;
@@ -63,7 +66,7 @@ public class LineChart implements IBuilder<LineChart>, Chart {
     }
 
     private final JFreeChart chart_;
-    private final XYPlot xyPlot_;
+    private final XYPlot plot_;
     private final ValueAxis domainAxis_;
     private final NumberAxis rangeAxis_;
     private final XYLineAndShapeRenderer renderer_;
@@ -82,8 +85,8 @@ public class LineChart implements IBuilder<LineChart>, Chart {
         }
         renderer_ = new XYLineAndShapeRenderer(true, false);
 
-        xyPlot_ = new XYPlot(null, domainAxis_, rangeAxis_, renderer_);
-        chart_ = new JFreeChart(null, DEFAULT_TITLE_FONT, xyPlot_, false);
+        plot_ = new XYPlot(null, domainAxis_, rangeAxis_, renderer_);
+        chart_ = new JFreeChart(null, DEFAULT_TITLE_FONT, plot_, false);
         DEFAULT_THEME.apply(chart_);
     }
 
@@ -101,6 +104,23 @@ public class LineChart implements IBuilder<LineChart>, Chart {
      */
     public LineChart title(String title) {
         chart_.setTitle(title);
+        return this;
+    }
+
+    /**
+     * Whether to create and display the legend.
+     *
+     * @param createLegend true if add legend
+     * @return this
+     */
+    public LineChart addLegend(boolean createLegend) {
+        if (createLegend) {
+            LegendTitle legend = new LegendTitle(this.plot_);
+            legend.setMargin(new RectangleInsets(1.0, 1.0, 1.0, 1.0));
+            legend.setBackgroundPaint(Color.WHITE);
+            legend.setPosition(RectangleEdge.BOTTOM);
+            chart_.addSubtitle(legend);
+        }
         return this;
     }
 
@@ -156,7 +176,7 @@ public class LineChart implements IBuilder<LineChart>, Chart {
      * @param shape   the shape ({@code null} permitted).
      */
     public LineChart seriesShape(int dataset, int series, Shape shape) {
-        XYItemRenderer renderer = xyPlot_.getRenderer(dataset);
+        XYItemRenderer renderer = plot_.getRenderer(dataset);
         if (renderer == null) {
             throw new IllegalArgumentException("Dataset of index " + dataset + " not exist!");
         }
@@ -183,7 +203,7 @@ public class LineChart implements IBuilder<LineChart>, Chart {
      * @param paint   the paint ({@code null} permitted).
      */
     public LineChart seriesPaint(int dataset, int series, Paint paint) {
-        XYItemRenderer renderer = xyPlot_.getRenderer(dataset);
+        XYItemRenderer renderer = plot_.getRenderer(dataset);
         if (renderer == null) {
             throw new IllegalArgumentException("Dataset of index " + dataset + " not exist!");
         }
@@ -210,7 +230,7 @@ public class LineChart implements IBuilder<LineChart>, Chart {
      * @param paint   the paint ({@code null} permitted).
      */
     public LineChart seriesFillPaint(int dataset, int series, Paint paint) {
-        XYItemRenderer renderer = xyPlot_.getRenderer(dataset);
+        XYItemRenderer renderer = plot_.getRenderer(dataset);
         if (renderer == null) {
             throw new IllegalArgumentException("Dataset of index " + dataset + " not exist!");
         }
@@ -237,7 +257,7 @@ public class LineChart implements IBuilder<LineChart>, Chart {
      * @param paint   the paint ({@code null} permitted).
      */
     public LineChart seriesOutlinePaint(int dataset, int series, Paint paint) {
-        XYItemRenderer renderer = xyPlot_.getRenderer(dataset);
+        XYItemRenderer renderer = plot_.getRenderer(dataset);
         if (renderer == null) {
             throw new IllegalArgumentException("Dataset of index " + dataset + " not exist!");
         }
@@ -268,7 +288,7 @@ public class LineChart implements IBuilder<LineChart>, Chart {
      * @param flag    the flag.
      */
     public LineChart drawOutlines(int dataset, boolean flag) {
-        XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) xyPlot_.getRenderer(dataset);
+        XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) plot_.getRenderer(dataset);
         if (renderer == null) {
             throw new IllegalArgumentException("Dataset of index " + dataset + " not exist!");
         }
@@ -340,7 +360,7 @@ public class LineChart implements IBuilder<LineChart>, Chart {
      * @param flag    the flag.
      */
     public LineChart useFillPaint(int dataset, boolean flag) {
-        XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) xyPlot_.getRenderer(dataset);
+        XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) plot_.getRenderer(dataset);
         if (renderer == null) {
             throw new IllegalArgumentException("Dataset of index " + dataset + " not exist!");
         }
@@ -356,7 +376,7 @@ public class LineChart implements IBuilder<LineChart>, Chart {
      * @param flag    the flag
      */
     public LineChart useOutlinePaint(int dataset, boolean flag) {
-        XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) xyPlot_.getRenderer(dataset);
+        XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) plot_.getRenderer(dataset);
         if (renderer == null) {
             throw new IllegalArgumentException("Dataset of index " + dataset + " not exist!");
         }
@@ -371,7 +391,7 @@ public class LineChart implements IBuilder<LineChart>, Chart {
      * @return this
      */
     public LineChart dataset(XYDataset dataset) {
-        xyPlot_.setDataset(dataset);
+        plot_.setDataset(dataset);
         return this;
     }
 
@@ -382,7 +402,7 @@ public class LineChart implements IBuilder<LineChart>, Chart {
      * @return this
      */
     public LineChart addDataset(XYDataset dataset) {
-        int datasetCount = xyPlot_.getDatasetCount();
+        int datasetCount = plot_.getDatasetCount();
         return addDataset(datasetCount, dataset);
     }
 
@@ -394,12 +414,12 @@ public class LineChart implements IBuilder<LineChart>, Chart {
      * @return this
      */
     public LineChart addDataset(int index, XYDataset dataset) {
-        XYDataset preDataset = xyPlot_.getDataset(index);
+        XYDataset preDataset = plot_.getDataset(index);
         if (preDataset != null) {
             throw new IllegalStateException("Dataset with index " + index + " already exists!");
         }
-        xyPlot_.setDataset(index, dataset);
-        xyPlot_.setRenderer(index, new XYLineAndShapeRenderer());
+        plot_.setDataset(index, dataset);
+        plot_.setRenderer(index, new XYLineAndShapeRenderer());
         return this;
     }
 
@@ -411,7 +431,7 @@ public class LineChart implements IBuilder<LineChart>, Chart {
      * @return this
      */
     public LineChart orientation(PlotOrientation orientation) {
-        xyPlot_.setOrientation(orientation);
+        plot_.setOrientation(orientation);
         return this;
     }
 
@@ -425,7 +445,7 @@ public class LineChart implements IBuilder<LineChart>, Chart {
      * @param layer  the layer (foreground or background).
      */
     public LineChart addRangeMarker(Marker marker, Layer layer) {
-        xyPlot_.addRangeMarker(marker, layer);
+        plot_.addRangeMarker(marker, layer);
         return this;
     }
 
@@ -483,6 +503,17 @@ public class LineChart implements IBuilder<LineChart>, Chart {
         return this;
     }
 
+    /**
+     * Sets the source for obtaining standard tick units for the axis.  The axis will
+     * try to select the smallest tick unit from the source that does not cause
+     * the tick labels to overlap.
+     *
+     * @param source the source for standard tick units.
+     */
+    public LineChart rangeAxisStandardTickUnits(@Nullable TickUnitSource source) {
+        rangeAxis_.setStandardTickUnits(source);
+        return this;
+    }
 
     //endregion
 
@@ -520,7 +551,7 @@ public class LineChart implements IBuilder<LineChart>, Chart {
      * @param pannable the new flag value.
      */
     public LineChart domainPannable(boolean pannable) {
-        xyPlot_.setDomainPannable(pannable);
+        plot_.setDomainPannable(pannable);
         return this;
     }
 
@@ -530,10 +561,62 @@ public class LineChart implements IBuilder<LineChart>, Chart {
      * @param pannable the new flag value.
      */
     public LineChart rangePannable(boolean pannable) {
-        xyPlot_.setRangePannable(pannable);
+        plot_.setRangePannable(pannable);
         return this;
     }
 
+    /**
+     * Sets the background color of the plot area.
+     *
+     * @param paint the paint.
+     */
+    public LineChart plotBackgroundPaint(@Nullable Paint paint) {
+        plot_.setBackgroundPaint(paint);
+        return this;
+    }
+
+    /**
+     * Whether grid-lines are drawn against the domain axis.
+     *
+     * @param showDomainGridlines true if show grid lines
+     * @return this
+     */
+    public LineChart domainGridlinesVisible(boolean showDomainGridlines) {
+        plot_.setDomainGridlinesVisible(showDomainGridlines);
+        return this;
+    }
+
+    /**
+     * Whether grid-lines are drawn against the range axis.
+     *
+     * @param showRangeGridlines true if show grid lines
+     * @return this
+     */
+    public LineChart rangeGridlinesVisible(boolean showRangeGridlines) {
+        plot_.setRangeGridlinesVisible(showRangeGridlines);
+        return this;
+    }
+
+    /**
+     * Sets the paint used to draw the grid-lines (if any) against the domain
+     * axis.
+     *
+     * @param paint the paint.
+     */
+    public LineChart domainGridlinePaint(@NonNull Paint paint) {
+        plot_.setDomainGridlinePaint(paint);
+        return this;
+    }
+
+    /**
+     * Sets the paint used to draw the grid lines against the range axis.
+     *
+     * @param paint the paint.
+     */
+    public LineChart rangeGridlinePaint(@NonNull Paint paint) {
+        plot_.setRangeGridlinePaint(paint);
+        return this;
+    }
     //endregion
 
     /**
@@ -556,7 +639,7 @@ public class LineChart implements IBuilder<LineChart>, Chart {
      * @param visible the flag.
      */
     public LineChart domainZeroBaselineVisible(boolean visible) {
-        xyPlot_.setDomainZeroBaselineVisible(visible);
+        plot_.setDomainZeroBaselineVisible(visible);
         return this;
     }
 
@@ -567,24 +650,7 @@ public class LineChart implements IBuilder<LineChart>, Chart {
      * @param visible the flag.
      */
     public LineChart rangeZeroBaselineVisible(boolean visible) {
-        xyPlot_.setRangeZeroBaselineVisible(visible);
-        return this;
-    }
-
-    /**
-     * Whether to create and display the legend.
-     *
-     * @param createLegend true if add legend
-     * @return this
-     */
-    public LineChart addLegend(boolean createLegend) {
-        if (createLegend) {
-            LegendTitle legend = new LegendTitle(this.xyPlot_);
-            legend.setMargin(new RectangleInsets(1.0, 1.0, 1.0, 1.0));
-            legend.setBackgroundPaint(Color.WHITE);
-            legend.setPosition(RectangleEdge.BOTTOM);
-            chart_.addSubtitle(legend);
-        }
+        plot_.setRangeZeroBaselineVisible(visible);
         return this;
     }
 
@@ -602,28 +668,6 @@ public class LineChart implements IBuilder<LineChart>, Chart {
                 renderer_.setDefaultToolTipGenerator(StandardXYToolTipGenerator.getTimeSeriesInstance());
             }
         }
-        return this;
-    }
-
-    /**
-     * Whether grid-lines are drawn against the domain axis.
-     *
-     * @param showDomainGridlines true if show grid lines
-     * @return this
-     */
-    public LineChart domainGridlinesVisible(boolean showDomainGridlines) {
-        xyPlot_.setDomainGridlinesVisible(showDomainGridlines);
-        return this;
-    }
-
-    /**
-     * Whether grid-lines are drawn against the range axis.
-     *
-     * @param showRangeGridlines true if show grid lines
-     * @return this
-     */
-    public LineChart showRangeGridlines(boolean showRangeGridlines) {
-        xyPlot_.setRangeGridlinesVisible(showRangeGridlines);
         return this;
     }
 
@@ -646,7 +690,7 @@ public class LineChart implements IBuilder<LineChart>, Chart {
         annotation.setLabelOffset(labelOffset);
         annotation.setTextAnchor(textAnchor);
         annotation.setBackgroundPaint(backgroundColor);
-        xyPlot_.addAnnotation(annotation);
+        plot_.addAnnotation(annotation);
         return this;
     }
 

@@ -16,16 +16,10 @@ import org.jfree.data.general.DatasetUtils;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-import org.jfree.svg.SVGGraphics2D;
-import org.jfree.svg.SVGUtils;
-import org.jspecify.annotations.NonNull;
 import pdk.util.data.Point2D;
 import pdk.util.math.DistributionUtils;
 
 import java.awt.*;
-import java.awt.geom.Rectangle2D;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 
@@ -38,34 +32,7 @@ import java.util.ArrayList;
  */
 public final class ChartUtils {
 
-    public static final PDKChartTheme DEFAULT_THEME = new PDKChartTheme("pdk");
-
-    /**
-     * The default font for titles.
-     */
-    public static final Font DEFAULT_TITLE_FONT = new Font("SansSerif", Font.BOLD, 18);
-
     private ChartUtils() {}
-
-    /**
-     * Writes the current content to the specified file in SVG format.
-     *
-     * @param chart  the {@link JFreeChart}
-     * @param width  the chart width.
-     * @param height the chart height.
-     * @param file   the output file ({@code null} not permitted).
-     */
-    public static void writeToSVG(@NonNull JFreeChart chart, int width, int height, @NonNull File file) {
-        SVGGraphics2D graphics2D = new SVGGraphics2D(width, height);
-        Rectangle2D drawArea = new Rectangle2D.Double(0, 0, width, height);
-        chart.draw(graphics2D, drawArea);
-        String element = graphics2D.getSVGElement();
-        try {
-            SVGUtils.writeToSVG(file, element);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     /**
      * Display a {@link JFreeChart}
