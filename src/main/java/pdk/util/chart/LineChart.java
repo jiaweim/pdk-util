@@ -5,7 +5,6 @@ import org.jfree.chart.annotations.XYPointerAnnotation;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
-import org.jfree.chart.event.AxisChangeEvent;
 import org.jfree.chart.labels.StandardXYToolTipGenerator;
 import org.jfree.chart.plot.Marker;
 import org.jfree.chart.plot.PlotOrientation;
@@ -430,6 +429,8 @@ public class LineChart implements IBuilder<LineChart>, Chart {
         return this;
     }
 
+    //region Axis Properties
+
     /**
      * Set X Axis title
      *
@@ -442,13 +443,22 @@ public class LineChart implements IBuilder<LineChart>, Chart {
     }
 
     /**
+     * Set Y Axis title
+     *
+     * @param yAxisTitle y axis title
+     * @return this
+     */
+    public LineChart yAxisName(String yAxisTitle) {
+        rangeAxis_.setLabel(yAxisTitle);
+        return this;
+    }
+
+    /**
      * Sets the flag that indicates whether the axis range, if
      * automatically calculated, is forced to include zero.
      * <p>
      * If the flag is changed to {@code true}, the axis range is
      * recalculated.
-     * <p>
-     * Any change to the flag will trigger an {@link AxisChangeEvent}.
      *
      * @param xAxisIncludesZero the new value of the flag.
      */
@@ -458,6 +468,23 @@ public class LineChart implements IBuilder<LineChart>, Chart {
         }
         return this;
     }
+
+    /**
+     * Sets the flag that indicates whether the axis range, if
+     * automatically calculated, is forced to include zero.
+     * <p>
+     * If the flag is changed to {@code true}, the axis range is
+     * recalculated.
+     *
+     * @param yAxisIncludesZero the new value of the flag.
+     */
+    public LineChart yAxisAutoRangeIncludesZero(boolean yAxisIncludesZero) {
+        rangeAxis_.setAutoRangeIncludesZero(yAxisIncludesZero);
+        return this;
+    }
+
+
+    //endregion
 
     /**
      * Sets the range for the axis and sends a change event to all registered
@@ -485,6 +512,8 @@ public class LineChart implements IBuilder<LineChart>, Chart {
         return this;
     }
 
+    //region Plot Properties
+
     /**
      * Enables or disables panning of the plot along the domain axes.
      *
@@ -496,31 +525,16 @@ public class LineChart implements IBuilder<LineChart>, Chart {
     }
 
     /**
-     * Set Y Axis title
+     * Enables or disables panning of the plot along the range axis/axes.
      *
-     * @param yAxisTitle y axis title
-     * @return this
+     * @param pannable the new flag value.
      */
-    public LineChart yAxisName(String yAxisTitle) {
-        rangeAxis_.setLabel(yAxisTitle);
+    public LineChart rangePannable(boolean pannable) {
+        xyPlot_.setRangePannable(pannable);
         return this;
     }
 
-    /**
-     * Sets the flag that indicates whether the axis range, if
-     * automatically calculated, is forced to include zero.
-     * <p>
-     * If the flag is changed to {@code true}, the axis range is
-     * recalculated.
-     * <p>
-     * Any change to the flag will trigger an {@link AxisChangeEvent}.
-     *
-     * @param yAxisIncludesZero the new value of the flag.
-     */
-    public LineChart yAxisAutoRangeIncludesZero(boolean yAxisIncludesZero) {
-        rangeAxis_.setAutoRangeIncludesZero(yAxisIncludesZero);
-        return this;
-    }
+    //endregion
 
     /**
      * Sets the auto range minimum size.
@@ -534,15 +548,6 @@ public class LineChart implements IBuilder<LineChart>, Chart {
         return this;
     }
 
-    /**
-     * Enables or disables panning of the plot along the range axis/axes.
-     *
-     * @param pannable the new flag value.
-     */
-    public LineChart rangePannable(boolean pannable) {
-        xyPlot_.setRangePannable(pannable);
-        return this;
-    }
 
     /**
      * Sets the flag that controls whether the zero baseline is
