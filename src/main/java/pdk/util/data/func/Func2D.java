@@ -1,8 +1,9 @@
 package pdk.util.data.func;
 
 import org.jfree.data.xy.XYDataset;
-import pdk.util.chart.util.Data;
 import pdk.util.chart.LineChart;
+import pdk.util.chart.util.Data;
+import pdk.util.data.Point;
 import pdk.util.data.Point2D;
 
 import java.util.ArrayList;
@@ -42,7 +43,7 @@ public interface Func2D {
         for (int i = 0; i < samples; i++) {
             double x = start + (step * i);
             double y = f(x);
-            list.add(new Point2D(x, y));
+            list.add(Point.create(x, y));
         }
         return list;
     }

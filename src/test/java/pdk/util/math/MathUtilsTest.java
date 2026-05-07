@@ -2,6 +2,7 @@ package pdk.util.math;
 
 import org.apache.commons.numbers.combinatorics.Combinations;
 import org.junit.jupiter.api.Test;
+import pdk.util.data.Point;
 import pdk.util.data.Point2D;
 
 import java.util.Arrays;
@@ -18,18 +19,17 @@ class MathUtilsTest {
 
     private static final double EPS = 1E-15;
 
-
     @Test
     void linearInterpolateX() {
-        Point2D p1 = new Point2D(1, 1);
-        Point2D p2 = new Point2D(2, 2);
+        Point2D p1 = Point.create(1, 1);
+        Point2D p2 = Point.create(2, 2);
         assertEquals(3.0, MathUtils.linearInterpolateX(p1, p2, 3));
     }
 
     @Test
     void linearInterpolateY() {
-        Point2D p1 = new Point2D(1, 1);
-        Point2D p2 = new Point2D(2, 2);
+        Point2D p1 = Point.create(1, 1);
+        Point2D p2 = Point.create(2, 2);
         assertEquals(3.0, MathUtils.linearInterpolateY(p1, p2, 3));
     }
 

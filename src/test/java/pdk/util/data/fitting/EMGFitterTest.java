@@ -7,10 +7,11 @@ import org.jfree.data.statistics.HistogramDataset;
 import org.jfree.data.statistics.HistogramType;
 import org.jfree.data.xy.XYDataset;
 import org.junit.jupiter.api.Test;
-import pdk.util.chart.util.Data;
 import pdk.util.chart.LineChart;
 import pdk.util.chart.XYChart;
 import pdk.util.chart.XYChartType;
+import pdk.util.chart.util.Data;
+import pdk.util.data.Point;
 import pdk.util.data.Point2D;
 import pdk.util.data.WeightPoint2D;
 import pdk.util.data.func.ExponentiallyModifiedGaussianFunc;
@@ -149,12 +150,13 @@ class EMGFitterTest {
         double area = 2;
         ExponentiallyModifiedGaussianFunc emg1 = ExponentiallyModifiedGaussianFunc.of(0, 2, 1 / 5.0);
         List<Point2D> sample = emg1.sample(start, end, 500);
+        List<Point2D> realSample = new ArrayList<>(sample.size());
         for (Point2D point2D : sample) {
-            point2D.setY(area * (point2D.getY() + point2D.getY() * Math.random() * 0.1));
+            realSample.add(Point.create(point2D.getX(), area * (point2D.getY() + point2D.getY() * Math.random() * 0.1)));
         }
 
         EMGFitter fitter = new EMGFitter(null, Integer.MAX_VALUE);
-        double[] parameters = fitter.fit(WeightPoint2D.convert(sample));
+        double[] parameters = fitter.fit(WeightPoint2D.convert(realSample));
 
         System.out.println(Arrays.toString(parameters));
         ExponentiallyModifiedGaussianFunc emg = ExponentiallyModifiedGaussianFunc.of(parameters[1], parameters[2], 1 / parameters[3]);
@@ -162,7 +164,7 @@ class EMGFitterTest {
         List<Point2D> fitSample = func2D.sample(start, end, 100);
 
         XYDataset dataset = Data.xyDataset()
-                .addSeries("μ=0, σ=1, λ=1", sample)
+                .addSeries("μ=0, σ=1, λ=1", realSample)
                 .addSeries("fit", fitSample)
                 .build();
         LineChart chart = LineChart.lineChart()

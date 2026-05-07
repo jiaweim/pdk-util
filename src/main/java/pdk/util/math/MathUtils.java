@@ -292,6 +292,21 @@ public final class MathUtils {
     }
 
     /**
+     * Based on the line determined by two points, determine the y value of the third point
+     *
+     * @param x1 x value of the first point
+     * @param y1 y value of the first point
+     * @param x2 x value of the second point
+     * @param y2 y value of the second point
+     * @param x3 the x value of the third point
+     * @return y value of the third point
+     */
+    public static double linearInterpolateY(double x1, double y1, double x2, double y2, double x3) {
+        double k = (y2 - y1) / (x2 - x1);
+        return k * (x3 - x1) + y1;
+    }
+
+    /**
      * Based on the line determined by two points, determine the x value of the third point
      *
      * @param point1 a {@link Point2D}
