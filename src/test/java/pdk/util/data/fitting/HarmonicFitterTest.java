@@ -2,7 +2,6 @@ package pdk.util.data.fitting;
 
 import org.hipparchus.analysis.function.HarmonicOscillator;
 import org.hipparchus.exception.MathIllegalArgumentException;
-import org.hipparchus.util.FastMath;
 import org.hipparchus.util.MathUtils;
 import org.junit.jupiter.api.Test;
 import pdk.util.chart.LineChart;
@@ -51,7 +50,7 @@ class HarmonicFitterTest {
 
         final HarmonicOscillator ff = new HarmonicOscillator(fitted[0], fitted[1], fitted[2]);
         for (double x = -1.0; x < 1.0; x += 0.01) {
-            assertTrue(FastMath.abs(f.value(x) - ff.value(x)) < 1e-13);
+            assertTrue(Math.abs(f.value(x) - ff.value(x)) < 1e-13);
         }
     }
 

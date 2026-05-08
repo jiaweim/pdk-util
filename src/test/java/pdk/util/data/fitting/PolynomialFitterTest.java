@@ -56,7 +56,7 @@ class PolynomialFitterTest {
             final PolynomialFunction fitted = new PolynomialFunction(fitter.fit(obs));
 
             for (double x = -1.0; x < 1.0; x += 0.01) {
-                final double error = FastMath.abs(p.value(x) - fitted.value(x)) / (1.0 + FastMath.abs(p.value(x)));
+                final double error = Math.abs(p.value(x) - fitted.value(x)) / (1.0 + FastMath.abs(p.value(x)));
                 assertEquals(0.0, error, 1.0e-6);
             }
         }
@@ -77,10 +77,10 @@ class PolynomialFitterTest {
 
             final PolynomialFunction fitted = new PolynomialFunction(fitter.fit(obs));
             for (double x = -1.0; x < 1.0; x += 0.01) {
-                final double error = FastMath.abs(p.value(x) - fitted.value(x)) /
-                        (1.0 + FastMath.abs(p.value(x)));
-                maxError = FastMath.max(maxError, error);
-                assertTrue(FastMath.abs(error) < 0.1);
+                final double error = Math.abs(p.value(x) - fitted.value(x)) /
+                        (1.0 + Math.abs(p.value(x)));
+                maxError = Math.max(maxError, error);
+                assertTrue(Math.abs(error) < 0.1);
             }
         }
         assertTrue(maxError > 0.01);
@@ -103,10 +103,10 @@ class PolynomialFitterTest {
 
             final PolynomialFunction fitted = new PolynomialFunction(fitter.fit(obs));
             for (double x = -1.0; x < 1.0; x += 0.01) {
-                final double error = FastMath.abs(p.value(x) - fitted.value(x)) /
-                        (1.0 + FastMath.abs(p.value(x)));
-                maxError = FastMath.max(maxError, error);
-                assertTrue(FastMath.abs(error) < 0.01);
+                final double error = Math.abs(p.value(x) - fitted.value(x)) /
+                        (1.0 + Math.abs(p.value(x)));
+                maxError = Math.max(maxError, error);
+                assertTrue(Math.abs(error) < 0.01);
             }
         }
         assertTrue(maxError > 0.001);

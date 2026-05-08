@@ -28,7 +28,7 @@ public final class MathUtils {
 
     private MathUtils() {}
 
-    private static final double LN2 = Math.log(2.0);
+    public static final double LN2 = Math.log(2.0);
 
     /**
      * Returns the base 2 logarithm of a double value.

@@ -388,8 +388,8 @@ public class HarmonicFitter extends CurveFitter {
                     throw new MathIllegalStateException(LocalizedCoreFormats.ZERO_DENOMINATOR);
                 }
 
-                aOmega[0] = FastMath.sqrt(c1 / c2);
-                aOmega[1] = FastMath.sqrt(c2 / c3);
+                aOmega[0] = Math.sqrt(c1 / c2);
+                aOmega[1] = Math.sqrt(c2 / c3);
             }
 
             return aOmega;

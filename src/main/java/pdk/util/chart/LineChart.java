@@ -238,16 +238,19 @@ public class LineChart implements IBuilder<LineChart>, Chart {
         return this;
     }
 
+    //region Renderer properties
+
     /**
      * Sets the paint used for a series outline.
      *
      * @param series the series index (zero-based).
-     * @param paint  the paint ({@code null} permitted).
+     * @param paint  the paint.
      */
-    public LineChart seriesOutlinePaint(int series, Paint paint) {
+    public LineChart seriesOutlinePaint(int series, @Nullable Paint paint) {
         renderer_.setSeriesOutlinePaint(series, paint, false);
         return this;
     }
+    //endregion
 
     /**
      * Sets the paint used for a series outline.

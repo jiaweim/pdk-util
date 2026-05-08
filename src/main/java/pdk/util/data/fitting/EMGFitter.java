@@ -6,7 +6,6 @@ import org.apache.commons.statistics.descriptive.Statistic;
 import org.hipparchus.linear.DiagonalMatrix;
 import org.hipparchus.optim.nonlinear.vector.leastsquares.LeastSquaresBuilder;
 import org.hipparchus.optim.nonlinear.vector.leastsquares.LeastSquaresProblem;
-import org.hipparchus.util.FastMath;
 import pdk.util.data.WeightPoint2D;
 
 import java.util.Arrays;
@@ -45,8 +44,8 @@ import java.util.Objects;
  */
 public class EMGFitter extends CurveFitter {
 
-    private static final double SQRT2 = FastMath.sqrt(2.0);
-    private static final double SQRT2PI = FastMath.sqrt(2.0 * FastMath.PI);
+    private static final double SQRT2 = Math.sqrt(2.0);
+    private static final double SQRT2PI = Math.sqrt(2.0 * Math.PI);
 
     /**
      * Creates a default curve fitter. The initial guess for the paramters will be {@link #guess(Collection)} computed
@@ -76,7 +75,7 @@ public class EMGFitter extends CurveFitter {
 
         // 这里 h 代表总面积
         // 如果 h 代表高斯分量高度，两者相差 $\sigma \sqrt{2\pi}$ 倍，除以该因子得到面积
-        return h / (2.0 * tau) * FastMath.exp(argExp) * Erfc.value(argErfc);
+        return h / (2.0 * tau) * Math.exp(argExp) * Erfc.value(argErfc);
     }
 
     @Override
@@ -94,7 +93,7 @@ public class EMGFitter extends CurveFitter {
 
         // 计算标准归一化高斯概率密度 G_norm(x)
         double gaussianNormalized = (1.0 / (sigma * SQRT2PI))
-                * FastMath.exp(-dX * dX / (2.0 * sigma2));
+                * Math.exp(-dX * dX / (2.0 * sigma2));
 
         double[] grad = new double[4];
 
@@ -165,15 +164,15 @@ public class EMGFitter extends CurveFitter {
 
         // 1. 估算 Tau (基于偏度)
         // 偏度公式需注意样本量，这里做一个鲁棒性处理
-        double tau = FastMath.pow(FastMath.max(0, skewness) * FastMath.pow(variance, 1.5) / 2.0, 1.0 / 3.0);
+        double tau = Math.pow(Math.max(0, skewness) * Math.pow(variance, 1.5) / 2.0, 1.0 / 3.0);
         if (Double.isNaN(tau) || tau < 0.01)
-            tau = FastMath.sqrt(variance) * 0.5;
+            tau = Math.sqrt(variance) * 0.5;
 
         // 2. 估算 Mu
         double mu = mean - tau;
 
         // 3. 估算 Sigma
-        double sigma = FastMath.sqrt(FastMath.max(0.01, variance - tau * tau));
+        double sigma = Math.sqrt(Math.max(0.01, variance - tau * tau));
 
         // 4. 估算 Area (h)
         // 假设 x 是均匀采样的，deltaX 为平均间距

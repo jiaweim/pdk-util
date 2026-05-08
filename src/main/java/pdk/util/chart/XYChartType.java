@@ -1,5 +1,9 @@
 package pdk.util.chart;
 
+import org.jfree.chart.renderer.xy.XYBarRenderer;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+
 /**
  * XYChart types.
  *
@@ -11,5 +15,17 @@ public enum XYChartType {
     SCATTER,
     LINE,
     AREA,
-    HISTOGRAM,
+    BAR,
+    HISTOGRAM;
+
+    public XYItemRenderer getRenderer() {
+        switch (this) {
+            case LINE:
+                return new XYLineAndShapeRenderer(true, false);
+            case BAR:
+                return new XYBarRenderer();
+            default:
+                return null;
+        }
+    }
 }

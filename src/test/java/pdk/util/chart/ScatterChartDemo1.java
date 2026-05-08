@@ -1,5 +1,7 @@
 package pdk.util.chart;
 
+import org.jfree.chart.plot.DefaultDrawingSupplier;
+import org.jfree.chart.util.ShapeUtils;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
@@ -11,9 +13,9 @@ import java.awt.*;
  *
  * @author Jiawei Mao
  * @version 1.0.0
- * @since 23 Apr 2026, 12:52 PM
+ * @since 08 May 2026, 11:28 AM
  */
-public class ScatterPlotDemo1 {
+public class ScatterChartDemo1 {
 
     private static final double DEFAULT_RANGE = 200;
 
@@ -55,21 +57,27 @@ public class ScatterPlotDemo1 {
         return dataset;
     }
 
+
     static void main() {
-        LineChart lineChart = LineChart.chart()
+        Shape[] shapeSequence = DefaultDrawingSupplier.DEFAULT_SHAPE_SEQUENCE;
+        ScatterChart scatterChart = ScatterChart.create()
+                .xAxisName("X")
+                .yAxisName("Y")
                 .dataset(create(4, 40))
-                .showLine(false)
-                .showShape(true)
                 .seriesOutlinePaint(0, Color.BLACK)
+                .seriesShape(0, shapeSequence[0])
+                .seriesShape(1, shapeSequence[1])
+                .seriesShape(2, shapeSequence[2])
+                .seriesShape(3, shapeSequence[3])
                 .useOutlinePaint(true)
+                .drawOutlines(true)
                 .xAxisAutoRangeIncludesZero(false)
                 .domainZeroBaselineVisible(true)
                 .rangeZeroBaselineVisible(true)
                 .addLegend(true)
-                .rangeGridlinesVisible(false)
                 .domainGridlinesVisible(false)
+                .rangeGridlinesVisible(false)
                 .build();
-        lineChart.show();
-
+        scatterChart.show();
     }
 }

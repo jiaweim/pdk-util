@@ -6,7 +6,6 @@ import org.hipparchus.exception.MathIllegalArgumentException;
 import org.hipparchus.linear.DiagonalMatrix;
 import org.hipparchus.optim.nonlinear.vector.leastsquares.LeastSquaresBuilder;
 import org.hipparchus.optim.nonlinear.vector.leastsquares.LeastSquaresProblem;
-import org.hipparchus.util.FastMath;
 import pdk.util.data.WeightPoint2D;
 
 import java.util.ArrayList;
@@ -209,7 +208,7 @@ public class GaussianFitter extends CurveFitter {
                 // TODO: Exceptions should not be used for flow control.
                 fwhmApprox = points[points.length - 1].getX() - points[0].getX();
             }
-            final double s = fwhmApprox / (2 * FastMath.sqrt(2 * FastMath.log(2)));
+            final double s = fwhmApprox / (2 * Math.sqrt(2 * Math.log(2)));
 
             return new double[]{n, m, s};
         }

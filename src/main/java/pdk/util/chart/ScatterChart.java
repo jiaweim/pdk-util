@@ -7,6 +7,7 @@ import org.jfree.chart.axis.TickUnitSource;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.LookupPaintScale;
 import org.jfree.chart.renderer.xy.XYShapeRenderer;
+import org.jfree.chart.title.LegendTitle;
 import org.jfree.chart.title.PaintScaleLegend;
 import org.jfree.chart.ui.RectangleEdge;
 import org.jfree.chart.ui.RectangleInsets;
@@ -33,7 +34,7 @@ public class ScatterChart implements IBuilder<ScatterChart>, Chart {
     }
 
     private final JFreeChart chart_;
-    private final XYPlot xyPlot_;
+    private final XYPlot plot_;
     private final NumberAxis domainAxis_;
     private final NumberAxis rangeAxis_;
     private NumberAxis zAxis_;
@@ -46,8 +47,8 @@ public class ScatterChart implements IBuilder<ScatterChart>, Chart {
         rangeAxis_ = new NumberAxis();
 
         renderer_ = new XYShapeRenderer();
-        xyPlot_ = new XYPlot(null, domainAxis_, rangeAxis_, renderer_);
-        chart_ = new JFreeChart(null, DEFAULT_TITLE_FONT, xyPlot_, false);
+        plot_ = new XYPlot(null, domainAxis_, rangeAxis_, renderer_);
+        chart_ = new JFreeChart(null, DEFAULT_TITLE_FONT, plot_, false);
         DEFAULT_THEME.apply(chart_);
     }
 
@@ -61,6 +62,23 @@ public class ScatterChart implements IBuilder<ScatterChart>, Chart {
      */
     public ScatterChart title(String title) {
         chart_.setTitle(title);
+        return this;
+    }
+
+    /**
+     * Whether to create and display the legend.
+     *
+     * @param createLegend true if add legend
+     * @return this
+     */
+    public ScatterChart addLegend(boolean createLegend) {
+        if (createLegend) {
+            LegendTitle legend = new LegendTitle(this.plot_);
+            legend.setMargin(new RectangleInsets(1.0, 1.0, 1.0, 1.0));
+            legend.setBackgroundPaint(Color.WHITE);
+            legend.setPosition(RectangleEdge.BOTTOM);
+            chart_.addSubtitle(legend);
+        }
         return this;
     }
 
@@ -84,7 +102,12 @@ public class ScatterChart implements IBuilder<ScatterChart>, Chart {
      * @return this
      */
     public ScatterChart dataset(XYZDataset dataset) {
-        xyPlot_.setDataset(dataset);
+        plot_.setDataset(dataset);
+        return this;
+    }
+
+    public ScatterChart dataset(XYDataset dataset) {
+        plot_.setDataset(dataset);
         return this;
     }
 
@@ -94,7 +117,7 @@ public class ScatterChart implements IBuilder<ScatterChart>, Chart {
      * @param pannable the new flag value.
      */
     public ScatterChart domainPannable(boolean pannable) {
-        xyPlot_.setDomainPannable(pannable);
+        plot_.setDomainPannable(pannable);
         return this;
     }
 
@@ -104,7 +127,7 @@ public class ScatterChart implements IBuilder<ScatterChart>, Chart {
      * @param pannable the new flag value.
      */
     public ScatterChart rangePannable(boolean pannable) {
-        xyPlot_.setRangePannable(pannable);
+        plot_.setRangePannable(pannable);
         return this;
     }
 
@@ -114,7 +137,7 @@ public class ScatterChart implements IBuilder<ScatterChart>, Chart {
      * @param visible the new value of the flag.
      */
     public ScatterChart domainCrosshairVisible(boolean visible) {
-        xyPlot_.setDomainCrosshairVisible(visible);
+        plot_.setDomainCrosshairVisible(visible);
         return this;
     }
 
@@ -124,7 +147,7 @@ public class ScatterChart implements IBuilder<ScatterChart>, Chart {
      * @param visible the new value of the flag.
      */
     public ScatterChart rangeCrosshairVisible(boolean visible) {
-        xyPlot_.setRangeCrosshairVisible(visible);
+        plot_.setRangeCrosshairVisible(visible);
         return this;
     }
 
@@ -135,7 +158,7 @@ public class ScatterChart implements IBuilder<ScatterChart>, Chart {
      * @param flag the flag.
      */
     public ScatterChart domainCrosshairLockedOnData(boolean flag) {
-        xyPlot_.setDomainCrosshairLockedOnData(flag);
+        plot_.setDomainCrosshairLockedOnData(flag);
         return this;
     }
 
@@ -146,13 +169,93 @@ public class ScatterChart implements IBuilder<ScatterChart>, Chart {
      * @param flag the flag.
      */
     public ScatterChart rangeCrosshairLockedOnData(boolean flag) {
-        xyPlot_.setRangeCrosshairLockedOnData(flag);
+        plot_.setRangeCrosshairLockedOnData(flag);
+        return this;
+    }
+
+    /**
+     * Sets the flag that controls whether the zero baseline is
+     * displayed for the domain axis.
+     *
+     * @param visible the flag.
+     */
+    public ScatterChart domainZeroBaselineVisible(boolean visible) {
+        plot_.setDomainZeroBaselineVisible(visible);
+        return this;
+    }
+
+    /**
+     * Sets the flag that controls whether the zero baseline is
+     * displayed for the range axis.
+     *
+     * @param visible the flag.
+     */
+    public ScatterChart rangeZeroBaselineVisible(boolean visible) {
+        plot_.setRangeZeroBaselineVisible(visible);
+        return this;
+    }
+
+    /**
+     * Whether grid-lines are drawn against the domain axis.
+     *
+     * @param showDomainGridlines true if show grid lines
+     * @return this
+     */
+    public ScatterChart domainGridlinesVisible(boolean showDomainGridlines) {
+        plot_.setDomainGridlinesVisible(showDomainGridlines);
+        return this;
+    }
+
+    /**
+     * Whether grid-lines are drawn against the range axis.
+     *
+     * @param showRangeGridlines true if show grid lines
+     * @return this
+     */
+    public ScatterChart rangeGridlinesVisible(boolean showRangeGridlines) {
+        plot_.setRangeGridlinesVisible(showRangeGridlines);
         return this;
     }
 
     //endregion
 
     //region Render Properties
+
+    /**
+     * Sets the paint used for a series outline.
+     *
+     * @param series the series index (zero-based).
+     * @param paint  the paint.
+     */
+    public ScatterChart seriesOutlinePaint(int series, @Nullable Paint paint) {
+        renderer_.setSeriesOutlinePaint(series, paint, false);
+        useOutlinePaint(true);
+        return this;
+    }
+
+    /**
+     * Sets the flag that controls whether the outline paint is used to draw
+     * shape outlines.
+     *
+     * @param flag the flag.
+     */
+    public ScatterChart useOutlinePaint(boolean flag) {
+        renderer_.setUseOutlinePaint(flag);
+        return this;
+    }
+
+    /**
+     * Sets the flag that controls whether outlines are drawn for shapes.
+     * <p>
+     * In some cases, shapes look better if they do NOT have an outline, but
+     * this flag allows you to set your own preference.
+     *
+     * @param flag the flag.
+     */
+    public ScatterChart drawOutlines(boolean flag) {
+        renderer_.setDrawOutlines(flag);
+        return this;
+    }
 
     /**
      * Set the {@link LookupPaintScale}
@@ -236,6 +339,17 @@ public class ScatterChart implements IBuilder<ScatterChart>, Chart {
      */
     public ScatterChart paintScaleAxisLocation(@NonNull AxisLocation axisLocation) {
         paintScaleLegend_.setAxisLocation(axisLocation);
+        return this;
+    }
+
+    /**
+     * Sets the shape for a series.
+     *
+     * @param series the series index (zero based).
+     * @param shape  the shape.
+     */
+    public ScatterChart seriesShape(int series, @Nullable Shape shape) {
+        renderer_.setSeriesShape(series, shape, false);
         return this;
     }
 
