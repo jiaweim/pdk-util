@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -45,6 +46,43 @@ class SortUtilsTest {
         assertEquals(7, SortUtils.getLowerBound(data, comparator, 4.1));
 
         Double[] data2 = new Double[]{1.0, 1.5, 1.5, 1.5, 1.5, 2.0, 2.5, 3.0, 3.0, 3.5, 4.0};
+
+        assertEquals(1, SortUtils.getLowerBound(data2, comparator, 1.5));
+        assertEquals(7, SortUtils.getLowerBound(data2, comparator, 3.0));
+
+        assertEquals(0, SortUtils.getLowerBound(data2, comparator, 0.0));
+        assertEquals(0, SortUtils.getLowerBound(data2, comparator, 1.0));
+        assertEquals(1, SortUtils.getLowerBound(data2, comparator, 1.2));
+        assertEquals(5, SortUtils.getLowerBound(data2, comparator, 1.6));
+        assertEquals(5, SortUtils.getLowerBound(data2, comparator, 2.0));
+        assertEquals(10, SortUtils.getLowerBound(data2, comparator, 4.0));
+    }
+
+    @Test
+    void getLowerBound_List() {
+        List<Double> data = Arrays.asList(1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0);
+        Comparator<Double> comparator = Comparator.naturalOrder();
+
+        // left end
+        assertEquals(0, SortUtils.getLowerBound(data, comparator, 0.5));
+
+        // equal left
+        assertEquals(0, SortUtils.getLowerBound(data, comparator, 1.0));
+
+        // between
+        assertEquals(1, SortUtils.getLowerBound(data, comparator, 1.1));
+        assertEquals(1, SortUtils.getLowerBound(data, comparator, 1.2));
+        assertEquals(1, SortUtils.getLowerBound(data, comparator, 1.45));
+        assertEquals(1, SortUtils.getLowerBound(data, comparator, 1.5));
+
+        assertEquals(2, SortUtils.getLowerBound(data, comparator, 1.6));
+        assertEquals(2, SortUtils.getLowerBound(data, comparator, 2.0));
+
+        assertEquals(6, SortUtils.getLowerBound(data, comparator, 3.6));
+        assertEquals(6, SortUtils.getLowerBound(data, comparator, 4.0));
+        assertEquals(7, SortUtils.getLowerBound(data, comparator, 4.1));
+
+        List<Double> data2 = Arrays.asList(1.0, 1.5, 1.5, 1.5, 1.5, 2.0, 2.5, 3.0, 3.0, 3.5, 4.0);
 
         assertEquals(1, SortUtils.getLowerBound(data2, comparator, 1.5));
         assertEquals(7, SortUtils.getLowerBound(data2, comparator, 3.0));
@@ -380,6 +418,33 @@ class SortUtilsTest {
         assertEquals(7, SortUtils.getUpperBound(data, comparator, 4.1));
 
         Double[] data2 = new Double[]{1.0, 1.5, 1.5, 1.5, 1.5, 2.0, 2.5, 3.0, 3.0, 3.5, 4.0};
+        assertEquals(0, SortUtils.getUpperBound(data2, comparator, 0.0));
+        assertEquals(1, SortUtils.getUpperBound(data2, comparator, 1.0));
+        assertEquals(1, SortUtils.getUpperBound(data2, comparator, 1.2));
+        assertEquals(5, SortUtils.getUpperBound(data2, comparator, 1.5));
+        assertEquals(7, SortUtils.getUpperBound(data2, comparator, 2.9));
+        assertEquals(9, SortUtils.getUpperBound(data2, comparator, 3.0));
+        assertEquals(9, SortUtils.getUpperBound(data2, comparator, 3.1));
+        assertEquals(11, SortUtils.getUpperBound(data2, comparator, 4.0));
+        assertEquals(11, SortUtils.getUpperBound(data2, comparator, 4.5));
+    }
+
+    @Test
+    void getUpperBound_List() {
+        List<Double> data = Arrays.asList(1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0);
+        Comparator<Double> comparator = Comparator.comparingDouble(o -> (double) o);
+
+        assertEquals(0, SortUtils.getUpperBound(data, comparator, 0.5));
+        assertEquals(1, SortUtils.getUpperBound(data, comparator, 1.0));
+        assertEquals(1, SortUtils.getUpperBound(data, comparator, 1.2));
+        assertEquals(2, SortUtils.getUpperBound(data, comparator, 1.5));
+        assertEquals(3, SortUtils.getUpperBound(data, comparator, 2.0));
+        assertEquals(3, SortUtils.getUpperBound(data, comparator, 2.2));
+        assertEquals(4, SortUtils.getUpperBound(data, comparator, 2.5));
+        assertEquals(7, SortUtils.getUpperBound(data, comparator, 4.0));
+        assertEquals(7, SortUtils.getUpperBound(data, comparator, 4.1));
+
+        List<Double> data2 = Arrays.asList(1.0, 1.5, 1.5, 1.5, 1.5, 2.0, 2.5, 3.0, 3.0, 3.5, 4.0);
         assertEquals(0, SortUtils.getUpperBound(data2, comparator, 0.0));
         assertEquals(1, SortUtils.getUpperBound(data2, comparator, 1.0));
         assertEquals(1, SortUtils.getUpperBound(data2, comparator, 1.2));

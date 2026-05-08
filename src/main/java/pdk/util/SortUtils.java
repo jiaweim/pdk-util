@@ -3,6 +3,7 @@ package pdk.util;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 
 import static java.util.Objects.requireNonNull;
@@ -49,6 +50,45 @@ public final class SortUtils {
         while (lo < hi) {
             int mid = (lo + hi) >>> 1;
             if (comparator.compare(array[mid], value) < 0) {
+                lo = mid + 1;
+            } else {
+                hi = mid;
+            }
+        }
+        return lo;
+    }
+
+    /**
+     * Returns index of the first element not less than the key (&ge;).
+     * <p>
+     * Considering equal elements to yield the smallest possible position.
+     *
+     * <ul>
+     *     <li>If the list contains the value, return the index of its first occurrence.</li>
+     *     <li>If the list does not contain the value, return the index of the first element that is larger than the target value.</li>
+     *     <li>If all elements are smaller than the target value, return the size of the list.</li>
+     *     <li>If all elements are greater than the target value, return 0, e.g. the index of the first element larger than the target value</li>
+     *     <li>if the list is empty, return -1</li>
+     * </ul>
+     *
+     * @param list       a sorted list
+     * @param comparator {@link Comparator} to compare elements
+     * @param value      an element to insert
+     * @param <C>        element type
+     * @return index of the lower bound
+     */
+    public static <C> int getLowerBound(List<C> list, @NonNull Comparator<C> comparator, C value) {
+        requireNonNull(list, "array is null");
+        requireNonNull(comparator, "comparator is null");
+        if (list.isEmpty()) {
+            return -1;
+        }
+
+        int lo = 0;
+        int hi = list.size();
+        while (lo < hi) {
+            int mid = (lo + hi) >>> 1;
+            if (comparator.compare(list.get(mid), value) < 0) {
                 lo = mid + 1;
             } else {
                 hi = mid;
@@ -163,6 +203,45 @@ public final class SortUtils {
         while (lo < hi) {
             int mid = (lo + hi) >>> 1;
             if (comparator.compare(array[mid], value) <= 0) {
+                lo = mid + 1;
+            } else {
+                hi = mid;
+            }
+        }
+        return lo;
+    }
+
+    /**
+     * Returns index of the first element greater than the key (&gt;).
+     * <p>
+     * Considering equal elements to yield the largest possible position.
+     *
+     * <ul>
+     *     <li>If the list contains the value, return the index of its last occurrence + 1.</li>
+     *     <li>If the list does not contain the value, return the index of the first element that is larger than the target value.</li>
+     *     <li>If all elements are smaller than the target value, return the size of the list.</li>
+     *     <li>If all elements are greater than the target value, return 0, e.g. the index of the first element larger than the target value</li>
+     *     <li>if the list is empty, return -1</li>
+     * </ul>
+     *
+     * @param list       a sorted array
+     * @param comparator {@link Comparator} to compare elements
+     * @param value      an element to insert
+     * @param <C>        element type
+     * @return index of the lower bound
+     */
+    public static <C> int getUpperBound(List<C> list, @NonNull Comparator<C> comparator, C value) {
+        requireNonNull(list, "array is null");
+        requireNonNull(comparator, "comparator is null");
+        if (list.isEmpty()) {
+            return -1;
+        }
+
+        int lo = 0;
+        int hi = list.size();
+        while (lo < hi) {
+            int mid = (lo + hi) >>> 1;
+            if (comparator.compare(list.get(mid), value) <= 0) {
                 lo = mid + 1;
             } else {
                 hi = mid;
