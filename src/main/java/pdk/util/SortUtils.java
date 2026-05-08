@@ -77,7 +77,7 @@ public final class SortUtils {
      * @param <C>        element type
      * @return index of the lower bound
      */
-    public static <C> int getLowerBound(List<C> list, @NonNull Comparator<C> comparator, C value) {
+    public static <C> int getLowerBound(List<? extends C> list, @NonNull Comparator<? super C> comparator, C value) {
         requireNonNull(list, "array is null");
         requireNonNull(comparator, "comparator is null");
         if (list.isEmpty()) {
@@ -230,7 +230,7 @@ public final class SortUtils {
      * @param <C>        element type
      * @return index of the lower bound
      */
-    public static <C> int getUpperBound(List<C> list, @NonNull Comparator<C> comparator, C value) {
+    public static <C> int getUpperBound(List<? extends C> list, @NonNull Comparator<? super C> comparator, C value) {
         requireNonNull(list, "array is null");
         requireNonNull(comparator, "comparator is null");
         if (list.isEmpty()) {
@@ -373,7 +373,7 @@ public final class SortUtils {
      * @param <C>        element type
      * @return index array of size 2, where [0]=low, and [1]=high
      */
-    public static <C> int[] getBound(@NonNull C[] array, @NonNull Comparator<C> comparator, C low, C high) {
+    public static <C> int[] getBound(@NonNull C[] array, @NonNull Comparator<? super C> comparator, C low, C high) {
         Objects.requireNonNull(array);
         Objects.requireNonNull(comparator);
         if (array.length == 0) {
