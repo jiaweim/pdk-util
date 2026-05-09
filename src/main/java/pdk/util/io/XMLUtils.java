@@ -7,6 +7,8 @@ import javax.xml.stream.*;
 import javax.xml.stream.events.XMLEvent;
 import java.io.*;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -84,6 +86,19 @@ public class XMLUtils {
         factory.setProperty(XMLInputFactory.IS_COALESCING, Boolean.TRUE);
 
         return factory.createXMLStreamReader(new BufferedReader(new FileReader(file)));
+    }
+
+    /**
+     * Create a {@link XMLStreamReader} of given file
+     *
+     * @param file file path
+     * @return {@link XMLStreamReader}
+     */
+    public static XMLStreamReader createReader(Path file) throws IOException, XMLStreamException {
+        XMLInputFactory factory = XMLInputFactory.newFactory();
+        factory.setProperty(XMLInputFactory.IS_COALESCING, Boolean.TRUE);
+
+        return factory.createXMLStreamReader(Files.newBufferedReader(file));
     }
 
     /**
