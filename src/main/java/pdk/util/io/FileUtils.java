@@ -5,6 +5,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
+import java.util.Objects;
 
 /**
  * File related methods not available in commons-io.
@@ -243,6 +244,28 @@ public final class FileUtils {
     public static File newExtension(File file, String newExt) {
         String newName = removeExtension(file.getAbsolutePath()) + newExt;
         return new File(newName);
+    }
+
+    /**
+     * Replace the file name extension.
+     *
+     * @param file   {@link Path} to replace extension.
+     * @param newExt new file extension, without leading {@code .}.
+     * @return {@link Path} with new file extension.
+     */
+    public static Path newExtension(Path file, String newExt) {
+        Objects.requireNonNull(file);
+        Objects.requireNonNull(newExt);
+
+        String fileName = file.getFileName().toString();
+        int extIdx = indexOfExtension(fileName);
+        String newFileName;
+        if (extIdx == 0 || extIdx == NOT_FOUND) { // .gitignore
+            newFileName = fileName + EXTENSION_SEPARATOR + newExt;
+        } else {
+            newFileName = fileName.substring(0, extIdx + 1) + newExt;
+        }
+        return file.resolveSibling(newFileName);
     }
 
     /**

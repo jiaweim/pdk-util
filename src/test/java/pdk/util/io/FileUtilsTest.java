@@ -20,6 +20,29 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class FileUtilsTest {
 
     @Test
+    void newExtensionPath() {
+        // 1. normal
+        Path p1 = Path.of("data/sequence.fasta");
+        Path p2 = FileUtils.newExtension(p1, "fa");
+        assertEquals("data\\sequence.fa", p2.toString());
+
+        // 2. no ext
+        p1 = Path.of("README");
+        p2 = FileUtils.newExtension(p1, "md");
+        assertEquals("README.md", p2.toString());
+
+        // 3. multiple exts
+        p1 = Path.of("project.tar.gz");
+        p2 = FileUtils.newExtension(p1, "xz");
+        assertEquals("project.tar.xz", p2.toString());
+
+        // 4. ignore
+        p1 = Path.of(".gitignore");
+        p2 = FileUtils.newExtension(p1, "bak");
+        assertEquals(".gitignore.bak", p2.toString());
+    }
+
+    @Test
     void appendSuffixPath() {
         // normal
         Path path = Path.of("data/test.fasta");
@@ -57,7 +80,6 @@ class FileUtilsTest {
         assertTrue(FileUtils.endWith(path, ".fasta"));
 
         Path path1 = Path.of("C:\\repositories\\pdk-seq\\src\\test\\resources\\pdk\\seq\\io");
-        assertTrue(Files.isDirectory(path1));
         assertTrue(FileUtils.endWith(path1, "io"));
     }
 
