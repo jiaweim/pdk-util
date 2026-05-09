@@ -193,6 +193,26 @@ public final class FileUtils {
     }
 
     /**
+     * Append a suffix to generate a new file path.
+     *
+     * @param file   {@link Path}
+     * @param suffix suffix to add
+     * @return {@link Path} with suffix
+     * @since 2026-05-09⭐
+     */
+    public static Path appendSuffix(Path file, String suffix) {
+        String fileName = file.getFileName().toString();
+        String newFileName;
+        int extIdx = indexOfExtension(fileName);
+        if (extIdx == NOT_FOUND) {
+            newFileName = fileName + suffix;
+        } else {
+            newFileName = fileName.substring(0, extIdx) + suffix + fileName.substring(extIdx);
+        }
+        return file.resolveSibling(newFileName);
+    }
+
+    /**
      * Remove illegal characters from the path, and replace it with the "_.
      *
      * @param path a file path

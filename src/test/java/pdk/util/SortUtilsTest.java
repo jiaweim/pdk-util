@@ -707,6 +707,7 @@ class SortUtilsTest {
         assertArrayEquals(new int[]{7, 11}, SortUtils.getBound(data, 3.0, 4.0));
         assertArrayEquals(new int[]{7, 11}, SortUtils.getBound(data, 3.0, 4.1));
         assertArrayEquals(new int[]{10, 11}, SortUtils.getBound(data, 4.0, 4.0));
+        System.out.println(Arrays.toString(SortUtils.getBound(data, 1.6, 1.8)));
     }
 
     @Test

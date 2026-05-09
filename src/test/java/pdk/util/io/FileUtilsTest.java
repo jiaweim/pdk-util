@@ -20,6 +20,24 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class FileUtilsTest {
 
     @Test
+    void appendSuffixPath() {
+        // normal
+        Path path = Path.of("data/test.fasta");
+        Path processed = FileUtils.appendSuffix(path, "_processed");
+        assertEquals("data\\test_processed.fasta", processed.toString());
+
+        // without ext
+        Path p1 = Path.of("README");
+        Path p2 = FileUtils.appendSuffix(p1, ".bak");
+        assertEquals("README.bak", p2.toString());
+
+        // multiple exts
+        p1 = Path.of("archive.tar.gz");
+        p2 = FileUtils.appendSuffix(p1, "_temp");
+        assertEquals("archive.tar_temp.gz", p2.toString());
+    }
+
+    @Test
     void appendSuffix() {
         String path = "G:\\dataset\\a.fasta";
         String s = FileUtils.appendSuffix(path, ".decoy");
