@@ -2,6 +2,7 @@ package pdk.util.io;
 
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -88,5 +89,11 @@ class FileUtilsTest {
         URL fileUrl = new URL("file:///C:/Users/example/file.txt");
         Path path = FileUtils.toPath(fileUrl);
         assertEquals(Path.of("C:/Users/example/file.txt"), path);
+    }
+
+    @Test
+    void createDirectory() throws IOException {
+        Path abc = FileUtils.createDirectory(Path.of("G:\\dataset\\_test"), "abc");
+        System.out.println(abc);
     }
 }

@@ -1,9 +1,11 @@
 package pdk.util.io;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 
@@ -252,6 +254,7 @@ public final class FileUtils {
      * @param file   {@link Path} to replace extension.
      * @param newExt new file extension, without leading {@code .}.
      * @return {@link Path} with new file extension.
+     * @since 2026-05-09
      */
     public static Path newExtension(Path file, String newExt) {
         Objects.requireNonNull(file);
@@ -367,6 +370,20 @@ public final class FileUtils {
         } catch (URISyntaxException e) {
             return null;
         }
+    }
+
+    /**
+     * Create a directory under a parent directory {@link Path}
+     *
+     * @param parent parent directory
+     * @param subDir name of the subdirectory
+     * @return {@link Path} of the subdirectory
+     * @throws IOException if {@code parent} is not a directory
+     */
+    public static Path createDirectory(Path parent, String subDir) throws IOException {
+        Path sub = parent.resolve(subDir);
+        Files.createDirectories(sub);
+        return sub;
     }
 
 }
