@@ -10,7 +10,7 @@ import java.beans.PropertyChangeSupport;
  * @version 2.0.0
  * @since 21 Jun 2024, 5:01 PM
  */
-public abstract class InfoTask<V> {
+public class InfoTask<V> {
 
     //<editor-fold desc="Property names">
     private static final String TITLE = "title";

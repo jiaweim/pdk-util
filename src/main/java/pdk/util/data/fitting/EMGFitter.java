@@ -17,7 +17,7 @@ import java.util.Objects;
  * <p>
  * Parametric function where the input array contains the parameters of the Exponential Modified Gaussian, ordered as
  * <ul>
- *  <li>Norm of the Area</li>
+ *  <li>Norm</li>
  *  <li>Mean</li>
  *  <li>Standard deviation</li>
  *  <li>tau: Exponential decay constant=1\lambda</li>
