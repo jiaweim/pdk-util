@@ -23,7 +23,7 @@ public class XYLineAndShapeRendererDemo2 {
 
         Shape shape = new Ellipse2D.Double(-4.0, -4.0, 8.0, 8.0);
 
-        LineChart chart = LineChart.chart()
+        LineChart chart = LineChart.create()
                 .title("XYLineAndShapeRendererDemo2")
                 .dataset(dataset1)
                 .addDataset(dataset2)

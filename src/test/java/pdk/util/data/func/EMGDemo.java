@@ -1,8 +1,8 @@
 package pdk.util.data.func;
 
 import org.jfree.data.xy.XYDataset;
-import pdk.util.chart.util.Data;
 import pdk.util.chart.LineChart;
+import pdk.util.chart.util.Data;
 import pdk.util.data.Point2D;
 
 import java.util.List;
@@ -32,7 +32,7 @@ public class EMGDemo {
                 .addSeries("μ=0, σ=3, τ=1", sample3)
                 .addSeries("μ=-3, σ=1, τ=0.25", sample4)
                 .build();
-        LineChart chart = LineChart.lineChart()
+        LineChart chart = LineChart.create()
                 .addLegend(true)
                 .xAxisName("X")
                 .yAxisName("f(x)")

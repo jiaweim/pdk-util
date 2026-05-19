@@ -56,7 +56,7 @@ public class ScatterPlotDemo1 {
     }
 
     static void main() {
-        LineChart lineChart = LineChart.chart()
+        LineChart lineChart = LineChart.create()
                 .dataset(create(4, 40))
                 .showLine(false)
                 .showShape(true)

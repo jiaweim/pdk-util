@@ -16,7 +16,7 @@ public class XYLineAndShapeRendererDemo1 {
                 .addSeries("Series 1", new double[]{1, 2, 3}, new double[]{3.3, 4.4, 1.7})
                 .addSeries("Series 2", new double[]{1, 2, 3, 4}, new double[]{7.3, 6.8, 9.6, 5.6})
                 .build();
-        LineChart chart = LineChart.chart()
+        LineChart chart = LineChart.create()
                 .dataset(dataset)
                 .xAxisName("X")
                 .yAxisName("Y")

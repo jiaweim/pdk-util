@@ -135,8 +135,7 @@ public final class DistributionUtils {
                 .addSeries("3", sample(t3, -6, 6, 500))
                 .addSeries("4", sample(n1, -6, 6, 500))
                 .build();
-        LineChart chart = LineChart
-                .lineChart()
+        LineChart chart = LineChart.create()
                 .dataset(dataset)
                 .seriesLinesWidth(0, 4F)
                 .seriesLinesWidth(1, 4F)

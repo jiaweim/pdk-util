@@ -9,7 +9,7 @@ package pdk.util.chart;
  */
 public class ScatterPlotDemo3 {
     static void main() {
-        LineChart chart = LineChart.chart()
+        LineChart chart = LineChart.create()
                 .dataset(ScatterPlotDemo1.create(4, 40))
                 .title("Scatter Plot Demo 3")
                 .addLegend(true)

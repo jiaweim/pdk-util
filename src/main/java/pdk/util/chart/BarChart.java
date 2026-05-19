@@ -44,6 +44,7 @@ public class BarChart implements IBuilder<BarChart>, Chart {
 
         xyPlot_ = new XYPlot(null, domainAxis_, rangeAxis_, renderer_);
         chart_ = new JFreeChart(null, DEFAULT_TITLE_FONT, xyPlot_, false);
+        DEFAULT_THEME.apply(chart_);
     }
 
 
@@ -178,7 +179,6 @@ public class BarChart implements IBuilder<BarChart>, Chart {
 
     @Override
     public BarChart build() {
-        DEFAULT_THEME.apply(chart_);
         return this;
     }
 

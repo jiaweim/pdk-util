@@ -17,7 +17,7 @@ public class XYSeriesDemo2 {
                 new double[]{100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0}
         );
 
-        LineChart chart = LineChart.chart()
+        LineChart chart = LineChart.create()
                 .dataset(dataset)
                 .title("XY Series Demo 2")
                 .xAxisName("X")

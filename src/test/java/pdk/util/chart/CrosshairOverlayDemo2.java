@@ -40,7 +40,7 @@ public class CrosshairOverlayDemo2 {
         }
         XYDataset dataset = datasetBuilder.build();
 
-        LineChart chart = LineChart.lineChart()
+        LineChart chart = LineChart.create()
                 .title("CrosshairOverlayDemo2")
                 .xAxisName("X")
                 .yAxisName("Y")

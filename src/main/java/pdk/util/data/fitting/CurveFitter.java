@@ -7,8 +7,8 @@ import org.hipparchus.optim.nonlinear.vector.leastsquares.LeastSquaresOptimizer;
 import org.hipparchus.optim.nonlinear.vector.leastsquares.LeastSquaresProblem;
 import org.hipparchus.optim.nonlinear.vector.leastsquares.LevenbergMarquardtOptimizer;
 import org.jfree.data.xy.XYDataset;
-import pdk.util.chart.util.Data;
 import pdk.util.chart.LineChart;
+import pdk.util.chart.util.Data;
 import pdk.util.data.Point2D;
 import pdk.util.data.WeightPoint2D;
 import pdk.util.data.func.Func2D;
@@ -229,7 +229,7 @@ public abstract class CurveFitter implements ParametricUnivariateFunction {
                 .addSeries("Actual", new ArrayList<>(dataset))
                 .addSeries("Fitting", fitSample)
                 .build();
-        return LineChart.lineChart()
+        return LineChart.create()
                 .dataset(data)
                 .addLegend(true)
                 .xAxisAutoRangeIncludesZero(false)

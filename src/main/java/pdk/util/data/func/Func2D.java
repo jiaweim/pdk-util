@@ -59,7 +59,7 @@ public interface Func2D {
     default LineChart show(double start, double end, int numberOfSamples) {
         List<Point2D> sample = sample(start, end, numberOfSamples);
         XYDataset dataset = Data.xyDataset().addSeries("", sample).build();
-        LineChart chart = LineChart.lineChart()
+        LineChart chart = LineChart.create()
                 .dataset(dataset)
                 .xAxisName("X")
                 .yAxisName("Y")

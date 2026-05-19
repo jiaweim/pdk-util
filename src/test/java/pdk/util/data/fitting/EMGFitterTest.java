@@ -167,7 +167,7 @@ class EMGFitterTest {
                 .addSeries("μ=0, σ=1, λ=1", realSample)
                 .addSeries("fit", fitSample)
                 .build();
-        LineChart chart = LineChart.lineChart()
+        LineChart chart = LineChart.create()
                 .addLegend(true)
                 .xAxisName("X")
                 .yAxisName("f(x)")

@@ -21,7 +21,7 @@ public class ExponentialDistributionDemo {
                 .addSeries("λ=0.5", DistributionUtils.sample(d1, 0.0, 4.0, 500))
                 .addSeries("λ=1.0", DistributionUtils.sample(d2, 0.0, 4.0, 500))
                 .build();
-        LineChart chart = LineChart.lineChart()
+        LineChart chart = LineChart.create()
                 .dataset(dataset)
                 .xAxisName("X")
                 .yAxisName("Probability density")

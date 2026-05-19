@@ -12,6 +12,7 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.renderer.xy.XYSplineRenderer;
 import org.jfree.chart.title.LegendTitle;
 import org.jfree.chart.ui.Layer;
 import org.jfree.chart.ui.RectangleEdge;
@@ -33,35 +34,19 @@ import java.awt.*;
  */
 public class LineChart implements IBuilder<LineChart>, Chart {
 
-    public static LineChart chart() {
-        return new LineChart();
+    public static LineChart create() {
+        return new LineChart(false, false);
     }
 
     /**
-     * Create a line chart with x-axis as thew timeline
+     * Create a {@link LineChart}
      *
+     * @param xTime  Whether the X-axis is a time axis
+     * @param smooth Whether to smooth the data
      * @return {@link LineChart}
      */
-    public static LineChart timeLineChart() {
-        return new LineChart(true);
-    }
-
-    /**
-     * Create line chart
-     *
-     * @return {@link LineChart}
-     */
-    public static LineChart lineChart() {
-        return new LineChart().showLine(true).showShape(false);
-    }
-
-    /**
-     * Create scatter chart
-     *
-     * @return {@link LineChart}
-     */
-    public static LineChart scatterChart() {
-        return new LineChart().showLine(false).showShape(true);
+    public static LineChart create(boolean xTime, boolean smooth) {
+        return new LineChart(xTime, smooth);
     }
 
     private final JFreeChart chart_;
@@ -70,27 +55,28 @@ public class LineChart implements IBuilder<LineChart>, Chart {
     private final NumberAxis rangeAxis_;
     private final XYLineAndShapeRenderer renderer_;
 
-    private LineChart(boolean xTime) {
+    private LineChart(boolean xTime, boolean smooth) {
         if (xTime) {
             domainAxis_ = new DateAxis();
             domainAxis_.setLowerMargin(0.02);
             domainAxis_.setUpperMargin(0.02);
         } else {
             domainAxis_ = new NumberAxis();
+            ((NumberAxis) domainAxis_).setAutoRangeIncludesZero(false);
         }
         rangeAxis_ = new NumberAxis();
         if (xTime) {
             rangeAxis_.setAutoRangeIncludesZero(false);
         }
-        renderer_ = new XYLineAndShapeRenderer(true, false);
+        if (smooth) {
+            renderer_ = new XYSplineRenderer();
+        } else {
+            renderer_ = new XYLineAndShapeRenderer(true, false);
+        }
 
         plot_ = new XYPlot(null, domainAxis_, rangeAxis_, renderer_);
         chart_ = new JFreeChart(null, DEFAULT_TITLE_FONT, plot_, false);
         DEFAULT_THEME.apply(chart_);
-    }
-
-    private LineChart() {
-        this(false);
     }
 
     //region Chart Properties
