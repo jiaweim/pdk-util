@@ -33,7 +33,7 @@ public class LineChartDemo1 {
                 .add("Classes", "JDK 14", 4569.0)
                 .build();
 
-        CategoryLineChart lineChart = CategoryLineChart.chart()
+        CategoryLineChart lineChart = CategoryLineChart.create()
                 .dataset(dataset)
                 .title("Java Standard Class Library")
                 .xAxisName(null)

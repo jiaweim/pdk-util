@@ -11,6 +11,7 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jspecify.annotations.NonNull;
+import pdk.util.ArgUtils;
 import pdk.util.IBuilder;
 import pdk.util.data.Point2D;
 
@@ -205,6 +206,22 @@ public interface Data {
         private final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
         private CategoryDatasetBuilder() {}
+
+        /**
+         * Add a value
+         *
+         * @param series     row (series) key
+         * @param categories categories
+         * @param values     values
+         * @return this
+         */
+        public CategoryDatasetBuilder addSeries(String series, String[] categories, double[] values) {
+            ArgUtils.checkArgument(categories.length == values.length);
+            for (int i = 0; i < categories.length; i++) {
+                dataset.addValue(values[i], series, categories[i]);
+            }
+            return this;
+        }
 
         /**
          * Add a value

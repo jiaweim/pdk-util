@@ -46,7 +46,6 @@ public class LineChart implements IBuilder<LineChart>, Chart {
         return new LineChart(true);
     }
 
-
     /**
      * Create line chart
      *

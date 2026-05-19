@@ -13,6 +13,7 @@ import org.jfree.chart.ui.RectangleEdge;
 import org.jfree.chart.ui.RectangleInsets;
 import org.jfree.data.category.CategoryDataset;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import pdk.util.IBuilder;
 
 import java.awt.*;
@@ -26,7 +27,7 @@ import java.awt.*;
  */
 public class CategoryLineChart implements IBuilder<CategoryLineChart>, Chart {
 
-    public static CategoryLineChart chart() {
+    public static CategoryLineChart create() {
         return new CategoryLineChart();
     }
 
@@ -40,9 +41,9 @@ public class CategoryLineChart implements IBuilder<CategoryLineChart>, Chart {
         domainAxis_ = new CategoryAxis();
         rangeAxis_ = new NumberAxis();
         renderer_ = new LineAndShapeRenderer();
-
         plot_ = new CategoryPlot(null, domainAxis_, rangeAxis_, renderer_);
         chart_ = new JFreeChart(null, DEFAULT_TITLE_FONT, plot_, false);
+        DEFAULT_THEME.apply(chart_);
     }
 
 
@@ -68,6 +69,8 @@ public class CategoryLineChart implements IBuilder<CategoryLineChart>, Chart {
         return this;
     }
 
+    //region Renderer properties
+
     /**
      * configure chart to generate tool tips
      *
@@ -80,6 +83,66 @@ public class CategoryLineChart implements IBuilder<CategoryLineChart>, Chart {
         }
         return this;
     }
+
+    /**
+     * Sets the default shape.
+     *
+     * @param shape the shape.
+     */
+    public CategoryLineChart defaultShape(@NonNull Shape shape) {
+        renderer_.setDefaultShape(shape, false);
+        return this;
+    }
+
+    /**
+     * Sets the shape of a given series.
+     *
+     * @param shape the shape.
+     */
+    public CategoryLineChart seriesShape(int series, @NonNull Shape shape) {
+        renderer_.setSeriesShape(series, shape, false);
+        return this;
+    }
+
+    /**
+     * Sets the outline stroke used for a series.
+     * <p>
+     * For example, it can be used to set the border width of each data point.
+     *
+     * @param series the series index (zero-based).
+     * @param stroke the stroke ({@code null} permitted).
+     */
+    public CategoryLineChart seriesOutlineStroke(int series, @Nullable Stroke stroke) {
+        renderer_.setSeriesOutlineStroke(series, stroke);
+        return this;
+    }
+
+
+    /**
+     * Sets the 'shapes filled' flag for a series.
+     *
+     * @param series the series index (zero-based).
+     * @param filled the flag.
+     */
+    public CategoryLineChart seriesShapesFilled(int series, boolean filled) {
+        renderer_.setSeriesShapesFilled(series, filled);
+        return this;
+    }
+
+
+    /**
+     * Set the line width of a given series
+     *
+     * @param series series index
+     * @param width  line width
+     * @return this
+     */
+    public CategoryLineChart seriesLinesWidth(int series, float width) {
+        renderer_.setSeriesStroke(series, new BasicStroke(width));
+        return this;
+    }
+
+    //endregion
 
     /**
      * Whether to create and display the legend.
@@ -143,7 +206,6 @@ public class CategoryLineChart implements IBuilder<CategoryLineChart>, Chart {
 
     @Override
     public CategoryLineChart build() {
-        DEFAULT_THEME.apply(chart_);
         return this;
     }
 
