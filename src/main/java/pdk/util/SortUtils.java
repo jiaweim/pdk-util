@@ -173,6 +173,67 @@ public final class SortUtils {
     }
 
     /**
+     * Returns index of the first element not less than the key (&ge;).
+     * <p>
+     * <ul>
+     *     <li>If the array contains the value, return the index of its first occurrence.</li>
+     *     <li>If the array does not contain the value, return the index of the first element that is larger than the target value.</li>
+     *     <li>If all elements are smaller than the target value, return the length of the array.</li>
+     *     <li>If all elements are greater than the target value, return 0, e.g. the index of the first element larger than the target value</li>
+     *     <li>if the array is empty, return -1</li>
+     * </ul>
+     *
+     * @param array a sorted array
+     * @param value an element to insert
+     * @return index of the lower bound
+     */
+    public static int getLowerBound(int[] array, int value) {
+        requireNonNull(array, "array is null");
+        if (array.length == 0) {
+            return -1;
+        }
+
+        int lo = 0;
+        int hi = array.length;
+        while (lo < hi) {
+            int mid = (lo + hi) >>> 1;
+            if (array[mid] < value) {
+                lo = mid + 1;
+            } else {
+                hi = mid;
+            }
+        }
+        return lo;
+    }
+
+    /**
+     * Returns index of the first element not less than the key (&ge;).
+     *
+     * @param array a sorted array
+     * @param value an element to search
+     * @param range Search only within the subarray [0, range)
+     * @return index of the lower bound
+     */
+    public static int getLowerBound(int[] array, int value, int range) {
+        requireNonNull(array, "array is null");
+        if (range == 0) {
+            return -1;
+        }
+
+        int lo = 0;
+        int hi = Math.min(range, array.length);
+        while (lo < hi) {
+            int mid = (lo + hi) >>> 1;
+            if (array[mid] < value) {
+                lo = mid + 1;
+            } else {
+                hi = mid;
+            }
+        }
+        return lo;
+    }
+
+    /**
      * Returns index of the first element greater than the key (&gt;).
      * <p>
      * Considering equal elements to yield the largest possible position.

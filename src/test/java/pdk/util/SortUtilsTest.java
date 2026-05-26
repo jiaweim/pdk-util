@@ -1,13 +1,14 @@
 package pdk.util;
 
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
@@ -20,6 +21,277 @@ class SortUtilsTest {
 
     private static final Comparator<Integer> INT_COMPARATOR = Comparator.naturalOrder();
     private static final Comparator<String> STR_COMPARATOR = Comparator.naturalOrder();
+
+
+    @Nested
+    class LowerBoundInt {
+        @Test
+        void lowerBound_existingValueUnique() {
+            int[] array = {1, 3, 5, 7, 9};
+            assertEquals(2, SortUtils.getLowerBound(array, 5));  // 5 在索引2
+            assertEquals(0, SortUtils.getLowerBound(array, 1));  // 最小值
+            assertEquals(4, SortUtils.getLowerBound(array, 9));  // 最大值
+        }
+
+        @Test
+        @DisplayName("存在重复元素，应返回第一次出现的索引")
+        void lowerBound_existingValueDuplicate() {
+            int[] array = {2, 4, 4, 4, 6, 8};
+            assertEquals(1, SortUtils.getLowerBound(array, 4));  // 第一个4在索引1
+            assertNotEquals(3, SortUtils.getLowerBound(array, 4));  // 不能是3，这里只验证第一次
+            // 更严谨：验证返回值确实是第一个4
+            assertEquals(1, SortUtils.getLowerBound(array, 4));
+        }
+
+        @Test
+        @DisplayName("值不存在于数组中，应返回第一个大于目标值的索引")
+        void lowerBound_valueNotExist_insertPosition() {
+            int[] array = {10, 20, 30, 40, 50};
+            assertEquals(2, SortUtils.getLowerBound(array, 25)); // 25 应插入索引2 (30)
+            assertEquals(0, SortUtils.getLowerBound(array, 5));  // 5 < 所有元素 → 0
+            assertEquals(5, SortUtils.getLowerBound(array, 55)); // 55 > 所有元素 → length
+        }
+
+        // ---------- 边界情况 ----------
+        @Test
+        @DisplayName("空数组应返回 -1")
+        void lowerBound_emptyArray() {
+            int[] empty = {};
+            assertEquals(-1, SortUtils.getLowerBound(empty, 100));
+        }
+
+
+        @Test
+        @DisplayName("数组只有一个元素，且目标小于该元素")
+        void lowerBound_singleElement_targetSmaller() {
+            int[] array = {42};
+            assertEquals(0, SortUtils.getLowerBound(array, 10));
+        }
+
+        @Test
+        @DisplayName("数组只有一个元素，且目标等于该元素")
+        void lowerBound_singleElement_targetEqual() {
+            int[] array = {42};
+            assertEquals(0, SortUtils.getLowerBound(array, 42));
+        }
+
+        @Test
+        @DisplayName("数组只有一个元素，且目标大于该元素")
+        void lowerBound_singleElement_targetLarger() {
+            int[] array = {42};
+            assertEquals(1, SortUtils.getLowerBound(array, 100));
+        }
+
+        @Test
+        @DisplayName("所有元素都小于目标，应返回数组长度")
+        void lowerBound_allSmaller() {
+            int[] array = {5, 10, 15};
+            assertEquals(3, SortUtils.getLowerBound(array, 20));
+        }
+
+        @Test
+        @DisplayName("所有元素都大于目标，应返回 0")
+        void lowerBound_allGreater() {
+            int[] array = {100, 200, 300};
+            assertEquals(0, SortUtils.getLowerBound(array, 50));
+        }
+
+        @Test
+        @DisplayName("包含负数且目标在负数范围内")
+        void lowerBound_negativeNumbers() {
+            int[] array = {-50, -30, -10, 0, 10};
+            assertEquals(2, SortUtils.getLowerBound(array, -15)); // -15 应插在 -10 前（索引2）
+            assertEquals(1, SortUtils.getLowerBound(array, -30)); // -30存在
+            assertEquals(0, SortUtils.getLowerBound(array, -100));
+            assertEquals(5, SortUtils.getLowerBound(array, 20));
+        }
+
+        // ---------- 参数校验 ----------
+        @Test
+        @DisplayName("传入 null 数组应抛出 NullPointerException")
+        void lowerBound_nullArray_throwsNPE() {
+            assertThrows(NullPointerException.class, () -> SortUtils.getLowerBound((int[]) null, 5));
+        }
+
+        // ---------- 随机性/大规模数据（可选） ----------
+        @Test
+        @DisplayName("大规模随机有序数组，验证一致性")
+        void lowerBound_largeRandomArray() {
+            int size = 10_000;
+            int[] array = new int[size];
+            for (int i = 0; i < size; i++) {
+                array[i] = i * 2;  // 偶数序列
+            }
+            // 测试存在值
+            for (int i = 0; i < size; i++) {
+                assertEquals(i, SortUtils.getLowerBound(array, i * 2));
+            }
+            // 测试不存在值（奇数）
+            for (int i = 0; i < size - 1; i++) {
+                int target = i * 2 + 1; // 奇数
+                int expected = i + 1;   // 应插入到下一个偶数位置
+                assertEquals(expected, SortUtils.getLowerBound(array, target));
+            }
+            // 边界
+            assertEquals(0, SortUtils.getLowerBound(array, -10));
+            assertEquals(size, SortUtils.getLowerBound(array, size * 2 + 1));
+        }
+    }
+
+    @Nested
+    class LowerBoundIntRange {
+        @Test
+        @DisplayName("range 等于数组长度，等同于完整数组搜索")
+        void rangeEqualsArrayLength() {
+            int[] array = {10, 20, 30, 40, 50};
+            // 完整范围搜索
+            assertEquals(2, SortUtils.getLowerBound(array, 30, 5));
+            assertEquals(5, SortUtils.getLowerBound(array, 60, 5));
+            assertEquals(0, SortUtils.getLowerBound(array, 5, 5));
+        }
+
+        @Test
+        @DisplayName("range 小于数组长度，仅在前 range 个元素内搜索")
+        void rangeSmallerThanLength() {
+            int[] array = {10, 20, 30, 40, 50, 60, 70};
+            // 只在前 3 个元素 [10,20,30] 中搜索
+            assertEquals(2, SortUtils.getLowerBound(array, 30, 3));  // 30 存在
+            assertEquals(3, SortUtils.getLowerBound(array, 35, 3));  // 35 大于所有，返回 range=3
+            assertEquals(0, SortUtils.getLowerBound(array, 5, 3));   // 5 小于所有，返回 0
+
+            // 目标值在后半部分，但 range 限制在前 3 个，应只在前 3 个中比较
+            assertEquals(3, SortUtils.getLowerBound(array, 40, 3));  // 40 大于前 3 个所有，返回 3
+        }
+
+        @Test
+        @DisplayName("range 等于 1，只有一个元素的搜索范围")
+        void rangeEqualsOne() {
+            int[] array = {100, 200, 300};
+            // 范围只包含第一个元素 100
+            assertEquals(0, SortUtils.getLowerBound(array, 100, 1));
+            assertEquals(1, SortUtils.getLowerBound(array, 150, 1)); // 150 > 100，返回 1
+            assertEquals(0, SortUtils.getLowerBound(array, 50, 1));  // 50 < 100，返回 0
+        }
+
+        // ---------- range = 0 的特殊情况 ----------
+        @Test
+        @DisplayName("range = 0，应返回 -1（空范围）")
+        void rangeZero() {
+            int[] array = {1, 2, 3};
+            assertEquals(-1, SortUtils.getLowerBound(array, 10, 0));
+        }
+
+        // ---------- 数组中包含重复元素 ----------
+        @Test
+        @DisplayName("范围内有重复元素，返回第一次出现的位置")
+        void duplicateWithinRange() {
+            int[] array = {5, 5, 5, 10, 15};
+            // 范围包含前 3 个重复元素
+            assertEquals(0, SortUtils.getLowerBound(array, 5, 3));
+            // 范围仅包含前 2 个重复元素
+            assertEquals(0, SortUtils.getLowerBound(array, 5, 2));
+            // 范围包含前 4 个元素 (5,5,5,10)
+            assertEquals(0, SortUtils.getLowerBound(array, 5, 4));
+            assertEquals(3, SortUtils.getLowerBound(array, 10, 4)); // 10 在索引3
+        }
+
+        // ---------- 边界值测试 ----------
+        @Test
+        @DisplayName("range 为 1 且目标等于该元素")
+        void rangeOne_equal() {
+            int[] array = {42};
+            assertEquals(0, SortUtils.getLowerBound(array, 42, 1));
+        }
+
+        @Test
+        @DisplayName("range 为 1 且目标小于该元素")
+        void rangeOne_targetSmaller() {
+            int[] array = {42};
+            assertEquals(0, SortUtils.getLowerBound(array, 10, 1));
+        }
+
+        @Test
+        @DisplayName("range 为 1 且目标大于该元素")
+        void rangeOne_targetLarger() {
+            int[] array = {42};
+            assertEquals(1, SortUtils.getLowerBound(array, 100, 1));
+        }
+
+        @Test
+        @DisplayName("范围内所有元素都小于目标，返回 range")
+        void allWithinRangeSmallerThanTarget() {
+            int[] array = {10, 20, 30, 40};
+            assertEquals(3, SortUtils.getLowerBound(array, 35, 3)); // 前3个:10,20,30 < 35
+            assertEquals(2, SortUtils.getLowerBound(array, 25, 2)); // 前2个:10,20 < 25
+        }
+
+        @Test
+        @DisplayName("范围内所有元素都大于目标，返回 0")
+        void allWithinRangeGreaterThanTarget() {
+            int[] array = {100, 200, 300, 400};
+            assertEquals(0, SortUtils.getLowerBound(array, 50, 3)); // 前3个都 > 50
+            assertEquals(1, SortUtils.getLowerBound(array, 150, 2)); // 前2个(100,200) 都 >150? 200>150 但100<150，不满足全部大于。我们换一个场景：
+            // 修正：确保范围内所有元素都大于目标
+            assertEquals(0, SortUtils.getLowerBound(array, 90, 1)); // 只考虑100>90
+            assertEquals(2, SortUtils.getLowerBound(array, 250, 3)); // 前3个(100,200,300) 中 100和200小于250，所以不是都大于。正确场景：
+            // 选择更小的目标，比如目标=50，所有元素>50
+            assertEquals(0, SortUtils.getLowerBound(array, 50, 4));
+            assertEquals(0, SortUtils.getLowerBound(array, 50, 3));
+        }
+
+        // ---------- 负数测试 ----------
+        @Test
+        @DisplayName("包含负数的数组，range 限制范围")
+        void negativeNumbers() {
+            int[] array = {-50, -30, -10, 0, 10, 20};
+            // 只搜索前 4 个：-50, -30, -10, 0
+            assertEquals(1, SortUtils.getLowerBound(array, -30, 4)); // -30 存在
+            assertEquals(2, SortUtils.getLowerBound(array, -20, 4)); // -20 应插入到 -10 前（索引2）
+            assertEquals(4, SortUtils.getLowerBound(array, 5, 4));   // 5 > 0, 返回 range=4
+            assertEquals(0, SortUtils.getLowerBound(array, -60, 4));
+        }
+
+        // ---------- 参数校验 ----------
+        @Test
+        @DisplayName("传入 null 数组应抛出 NullPointerException")
+        void nullArrayThrowsNPE() {
+            assertThrows(NullPointerException.class, () -> SortUtils.getLowerBound(null, 5, 3));
+        }
+
+        // 注意：未测试 range > array.length 的情况，因为方法不保证处理这种越界。
+        // 如果实际调用时 range 超过数组长度，会导致 ArrayIndexOutOfBoundsException。
+        // 这属于调用者错误，不在单元测试范围内。
+
+        // ---------- 随机/大规模验证（可选） ----------
+        @Test
+        @DisplayName("大规模随机有序数组，验证范围搜索正确性")
+        void largeArrayRandomTest() {
+            int size = 5000;
+            int[] array = new int[size];
+            for (int i = 0; i < size; i++) {
+                array[i] = i * 2; // 偶数序列
+            }
+
+            // 测试不同的 range 值
+            for (int range : new int[]{1, size / 3, size / 2, size - 1, size}) {
+                for (int target = -10; target <= size * 2 + 10; target++) {
+                    int expected;
+                    if (range == 0) {
+                        expected = -1;
+                    } else {
+                        // 手动计算 lower bound 在 [0, range)
+                        int idx = 0;
+                        while (idx < range && array[idx] < target) {
+                            idx++;
+                        }
+                        expected = idx;
+                    }
+                    assertEquals(expected, SortUtils.getLowerBound(array, target, range),
+                            String.format("Failed for range=%d, target=%d", range, target));
+                }
+            }
+        }
+    }
 
     @Test
     void getMinInsertIndex() {
