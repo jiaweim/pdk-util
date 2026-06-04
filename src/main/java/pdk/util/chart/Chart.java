@@ -4,14 +4,9 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.ui.ApplicationFrame;
 import org.jfree.chart.ui.UIUtils;
-import org.jfree.svg.SVGGraphics2D;
-import org.jfree.svg.SVGUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.Rectangle2D;
-import java.io.IOException;
-import java.nio.file.Path;
 
 /**
  * This interface is used to represent any chart.
@@ -48,24 +43,5 @@ public interface Chart {
             UIUtils.centerFrameOnScreen(frame);
             frame.setVisible(true);
         });
-    }
-
-    /**
-     * Write this chart to the specified file in SVG format.
-     *
-     * @param file   {@link Path}
-     * @param width  chart width
-     * @param height chart height
-     */
-    default void writeToSVG(Path file, int width, int height) {
-        SVGGraphics2D svg = new SVGGraphics2D(width, height);
-        Rectangle2D drawArea = new Rectangle2D.Double(0, 0, width, height);
-        getChart().draw(svg, drawArea);
-        String element = svg.getSVGElement();
-        try {
-            SVGUtils.writeToSVG(file.toFile(), element);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

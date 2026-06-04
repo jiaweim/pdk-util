@@ -3,7 +3,6 @@ package pdk.util.data.fitting;
 import org.hipparchus.exception.MathIllegalArgumentException;
 import org.hipparchus.exception.MathIllegalStateException;
 import org.junit.jupiter.api.Test;
-import pdk.util.chart.LineChart;
 import pdk.util.data.WeightPoint2D;
 
 import java.util.ArrayList;
@@ -270,8 +269,12 @@ public class GaussianFitterTest {
         List<WeightPoint2D> dataset = dataset(DATASET2);
         GaussianFitter fitter = GaussianFitter.create();
         double[] parameters = fitter.fit(dataset);
-        LineChart chart = fitter.showFit(parameters, dataset);
+        pdk.chart.LineChart chart = fitter.showFit(parameters, dataset);
         chart.show();
+    }
+
+    static void main() {
+        showCurve05();
     }
 
     /**
@@ -292,8 +295,7 @@ public class GaussianFitterTest {
         GaussianFitter fitter = GaussianFitter.create();
         double[] parameters = fitter.fit(dataset);
         System.out.println(Arrays.toString(parameters));
-        LineChart chart = fitter.showFit(parameters, dataset);
-        chart.show();
+        fitter.showFit(parameters, dataset).show();
     }
 
     /**

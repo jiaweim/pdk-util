@@ -28,21 +28,21 @@ module pdk.util {
     requires java.desktop;
     requires org.jfree.jfreechart;
     requires org.jfree.svg;
+    requires org.jfree.chart;
 
     // exports
     exports pdk.util;
+    exports pdk.util.bayesian;
     exports pdk.util.chart;
     exports pdk.util.chart.util;
     exports pdk.util.collect;
-    exports pdk.util.color;
     exports pdk.util.data;
-    exports pdk.util.data.func;
     exports pdk.util.data.fitting;
+    exports pdk.util.data.func;
     exports pdk.util.exception;
     exports pdk.util.graph;
     exports pdk.util.graph.util;
     exports pdk.util.io;
     exports pdk.util.math;
     exports pdk.util.tuple;
-    exports pdk.util.bayesian;
 }

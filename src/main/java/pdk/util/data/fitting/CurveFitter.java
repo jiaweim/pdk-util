@@ -6,14 +6,13 @@ import org.hipparchus.analysis.ParametricUnivariateFunction;
 import org.hipparchus.optim.nonlinear.vector.leastsquares.LeastSquaresOptimizer;
 import org.hipparchus.optim.nonlinear.vector.leastsquares.LeastSquaresProblem;
 import org.hipparchus.optim.nonlinear.vector.leastsquares.LevenbergMarquardtOptimizer;
-import org.jfree.data.xy.XYDataset;
-import pdk.util.chart.LineChart;
-import pdk.util.chart.util.Data;
+import pdk.chart.LineChart;
+import pdk.chart.data.xy.XYSeries;
+import pdk.chart.data.xy.XYSeriesCollection;
 import pdk.util.data.Point2D;
 import pdk.util.data.WeightPoint2D;
 import pdk.util.data.func.Func2D;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -220,22 +219,31 @@ public abstract class CurveFitter implements ParametricUnivariateFunction {
      * @param sampleSize Number of data points sampled from the fitting function
      * @return {@link LineChart}
      */
-    public LineChart showFit(double[] parameters, Collection<WeightPoint2D> dataset,
+    public pdk.chart.LineChart showFit(double[] parameters, Collection<WeightPoint2D> dataset,
             double start, double end, int sampleSize) {
         Func2D func2D = x -> CurveFitter.this.value(x, parameters);
         List<Point2D> fitSample = func2D.sample(start, end, sampleSize);
 
-        XYDataset data = Data.xyDataset()
-                .addSeries("Actual", new ArrayList<>(dataset))
-                .addSeries("Fitting", fitSample)
-                .build();
-        return LineChart.create()
-                .dataset(data)
-                .addLegend(true)
-                .xAxisAutoRangeIncludesZero(false)
-                .seriesLinesWidth(0, 4F)
-                .seriesLinesWidth(1, 4F)
-                .build();
+        XYSeries<String> actualSeries = new XYSeries<>("Actual");
+        for (WeightPoint2D point2D : dataset) {
+            actualSeries.add(point2D.getX(), point2D.getY());
+        }
+        XYSeries<String> fitSeries = new XYSeries<>("Fitting");
+        for (Point2D point2D : fitSample) {
+            fitSeries.add(point2D.getX(), point2D.getY());
+        }
+
+        XYSeriesCollection<String> data = new XYSeriesCollection<>();
+        data.addSeries(actualSeries);
+        data.addSeries(fitSeries);
+
+        pdk.chart.LineChart chart = new pdk.chart.LineChart();
+        chart.dataset(data)
+                .showLegend(true)
+                .seriesLineWidth(0, 4f)
+                .seriesLineWidth(1, 4f);
+
+        return chart;
     }
 
     /**

@@ -6,7 +6,7 @@
 
     <groupId>io.github.jiaweim</groupId>
     <artifactId>pdk-util</artifactId>
-    <version>1.83.0</version>
+    <version>1.84.0</version>
 
     <name>Proteomics Utilities</name>
     <url>https://github.com/jiaweim/pdk-util</url>
@@ -39,7 +39,6 @@
             <groupId>org.hipparchus</groupId>
             <artifactId>hipparchus-stat</artifactId>
             <version>4.0.3</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.hipparchus</groupId>
@@ -52,9 +51,9 @@
             <version>1.5.6</version>
         </dependency>
         <dependency>
-            <groupId>org.jfree</groupId>
-            <artifactId>org.jfree.svg</artifactId>
-            <version>5.0.7</version>
+            <groupId>io.github.jiaweim</groupId>
+            <artifactId>jfreechart</artifactId>
+            <version>2.5.0</version>
         </dependency>
         <dependency>
             <groupId>it.unimi.dsi</groupId>

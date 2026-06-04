@@ -1,8 +1,7 @@
 package pdk.util.data.func;
 
-import org.jfree.data.xy.XYDataset;
-import pdk.util.chart.LineChart;
-import pdk.util.chart.util.Data;
+import pdk.chart.data.xy.XYSeries;
+import pdk.chart.data.xy.XYSeriesCollection;
 import pdk.util.data.Point2D;
 
 import java.util.List;
@@ -15,6 +14,15 @@ import java.util.List;
  * @since 28 Apr 2026, 12:27 PM
  */
 public class EMGDemo {
+
+    private static XYSeries<String> toSeries(String name, List<Point2D> points) {
+        XYSeries<String> series = new XYSeries<>(name);
+        for (Point2D point : points) {
+            series.add(point.getX(), point.getY());
+        }
+        return series;
+    }
+
     static void main() {
 
         ExponentiallyModifiedGaussianFunc emg1 = ExponentiallyModifiedGaussianFunc.of(0, 1, 1);
@@ -26,21 +34,21 @@ public class EMGDemo {
         List<Point2D> sample3 = emg3.sample(-10, 10, 500);
         List<Point2D> sample4 = emg4.sample(-10, 10, 500);
 
-        XYDataset dataset = Data.xyDataset()
-                .addSeries("μ=0, σ=1, τ=1", sample1)
-                .addSeries("μ=-2, σ=1, τ=1", sample2)
-                .addSeries("μ=0, σ=3, τ=1", sample3)
-                .addSeries("μ=-3, σ=1, τ=0.25", sample4)
-                .build();
-        LineChart chart = LineChart.create()
-                .addLegend(true)
-                .xAxisName("X")
-                .yAxisName("f(x)")
-                .seriesLinesWidth(0, 4F)
-                .seriesLinesWidth(1, 4F)
-                .seriesLinesWidth(2, 4F)
-                .seriesLinesWidth(3, 4F)
-                .dataset(dataset).build();
-        chart.show();
+        XYSeriesCollection<String> dataset = new XYSeriesCollection<>();
+        dataset.addSeries(toSeries("μ=0, σ=1, τ=1", sample1));
+        dataset.addSeries(toSeries("μ=-2, σ=1, τ=1", sample2));
+        dataset.addSeries(toSeries("μ=0, σ=3, τ=1", sample3));
+        dataset.addSeries(toSeries("μ=-3, σ=1, τ=0.25", sample4));
+
+        pdk.chart.LineChart lineChart = new pdk.chart.LineChart();
+        lineChart.dataset(dataset)
+                .showLegend(true)
+                .domainAxisName("X")
+                .rangeAxisName("Y")
+                .seriesLineWidth(0, 4F)
+                .seriesLineWidth(1, 4F)
+                .seriesLineWidth(2, 4F)
+                .seriesLineWidth(3, 4F);
+        lineChart.show();
     }
 }

@@ -1,8 +1,8 @@
 package pdk.util.data.func;
 
-import org.jfree.data.xy.XYDataset;
-import pdk.util.chart.LineChart;
-import pdk.util.chart.util.Data;
+import pdk.chart.LineChart;
+import pdk.chart.data.xy.XYSeries;
+import pdk.chart.data.xy.XYSeriesCollection;
 import pdk.util.data.Point;
 import pdk.util.data.Point2D;
 
@@ -58,13 +58,16 @@ public interface Func2D {
      */
     default LineChart show(double start, double end, int numberOfSamples) {
         List<Point2D> sample = sample(start, end, numberOfSamples);
-        XYDataset dataset = Data.xyDataset().addSeries("", sample).build();
-        LineChart chart = LineChart.create()
-                .dataset(dataset)
-                .xAxisName("X")
-                .yAxisName("Y")
-                .build();
+        XYSeries<String> s1 = new XYSeries<>("");
+        for (Point2D point2D : sample) {
+            s1.add(point2D.getX(), point2D.getY());
+        }
+        XYSeriesCollection<String> dataset = new XYSeriesCollection<>(s1);
+
+        LineChart chart = new LineChart();
+        chart.dataset(dataset)
+                .domainAxisName("X")
+                .rangeAxisName("Y");
         return chart;
     }
-
 }

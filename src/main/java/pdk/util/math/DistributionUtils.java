@@ -2,11 +2,9 @@ package pdk.util.math;
 
 import org.apache.commons.statistics.distribution.*;
 import org.hipparchus.special.Gamma;
-import org.jfree.chart.ui.TextAnchor;
-import org.jfree.data.xy.XYDataset;
+import pdk.chart.data.xy.XYSeries;
+import pdk.chart.data.xy.XYSeriesCollection;
 import pdk.util.ArgUtils;
-import pdk.util.chart.LineChart;
-import pdk.util.chart.util.Data;
 import pdk.util.data.Point;
 import pdk.util.data.Point2D;
 
@@ -123,28 +121,35 @@ public final class DistributionUtils {
         return list;
     }
 
+    private static XYSeries<String> createSeries(String name, ArrayList<Point2D> points) {
+        XYSeries<String> series = new XYSeries<>(name);
+        for (Point2D point : points) {
+            series.add(point.getX(), point.getY());
+        }
+        return series;
+    }
+
     static void main() {
         TDistribution t1 = TDistribution.of(1);
         TDistribution t2 = TDistribution.of(2);
         TDistribution t3 = TDistribution.of(5);
         NormalDistribution n1 = NormalDistribution.of(0, 1);
 
-        XYDataset dataset = Data.xyDataset()
-                .addSeries("1", sample(t1, -6, 6, 500))
-                .addSeries("2", sample(t2, -6, 6, 500))
-                .addSeries("3", sample(t3, -6, 6, 500))
-                .addSeries("4", sample(n1, -6, 6, 500))
-                .build();
-        LineChart chart = LineChart.create()
-                .dataset(dataset)
-                .seriesLinesWidth(0, 4F)
-                .seriesLinesWidth(1, 4F)
-                .seriesLinesWidth(2, 4F)
-                .seriesLinesWidth(3, 4F)
-                .addPointerAnnotation("normal", 0, 0.4, Math.toRadians(0), 0, TextAnchor.CENTER_LEFT, Color.YELLOW)
+        XYSeriesCollection<String> dataset = new XYSeriesCollection<>();
+        dataset.addSeries(createSeries("1", sample(t1, -6, 6, 500)));
+        dataset.addSeries(createSeries("2", sample(t2, -6, 6, 500)));
+        dataset.addSeries(createSeries("3", sample(t3, -6, 6, 500)));
+        dataset.addSeries(createSeries("4", sample(n1, -6, 6, 500)));
+
+        pdk.chart.LineChart lineChart = new pdk.chart.LineChart();
+        lineChart.dataset(dataset)
+                .seriesLineWidth(0, 4F)
+                .seriesLineWidth(1, 4F)
+                .seriesLineWidth(2, 4F)
+                .seriesLineWidth(3, 4F)
+                .addPointerAnnotation("normal", 0, 0.4, Math.toRadians(0), 0, pdk.chart.text.TextAnchor.CENTER_LEFT, Color.YELLOW)
                 .domainGridlinesVisible(false)
-                .rangeGridlinesVisible(false)
-                .build();
-        chart.show();
+                .rangeGridlinesVisible(false);
+        lineChart.show();
     }
 }

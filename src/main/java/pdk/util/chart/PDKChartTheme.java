@@ -19,7 +19,7 @@ import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.title.*;
 import org.jfree.chart.ui.RectangleInsets;
 import org.jfree.chart.util.*;
-import pdk.util.color.JColorQualitative;
+import pdk.chart.color.JColorQualitative;
 
 import java.awt.*;
 import java.io.IOException;

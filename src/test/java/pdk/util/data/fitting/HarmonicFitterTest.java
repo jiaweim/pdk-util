@@ -4,7 +4,6 @@ import org.hipparchus.analysis.function.HarmonicOscillator;
 import org.hipparchus.exception.MathIllegalArgumentException;
 import org.hipparchus.util.MathUtils;
 import org.junit.jupiter.api.Test;
-import pdk.util.chart.LineChart;
 import pdk.util.data.WeightPoint2D;
 
 import java.util.ArrayList;
@@ -152,7 +151,6 @@ class HarmonicFitterTest {
         final HarmonicFitter fitter = HarmonicFitter.create();
         final double[] fitted = fitter.fit(points);
 
-        LineChart chart = fitter.showFit(fitted, points);
-        chart.show();
+        fitter.showFit(fitted, points).show();
     }
 }

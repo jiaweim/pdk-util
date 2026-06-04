@@ -7,7 +7,8 @@ import org.jfree.data.statistics.HistogramDataset;
 import org.jfree.data.statistics.HistogramType;
 import org.jfree.data.xy.XYDataset;
 import org.junit.jupiter.api.Test;
-import pdk.util.chart.LineChart;
+import pdk.chart.data.xy.XYSeries;
+import pdk.chart.data.xy.XYSeriesCollection;
 import pdk.util.chart.XYChart;
 import pdk.util.chart.XYChartType;
 import pdk.util.chart.util.Data;
@@ -163,21 +164,31 @@ class EMGFitterTest {
         Func2D func2D = x -> emg.f(x) * parameters[0];
         List<Point2D> fitSample = func2D.sample(start, end, 100);
 
-        XYDataset dataset = Data.xyDataset()
-                .addSeries("μ=0, σ=1, λ=1", realSample)
-                .addSeries("fit", fitSample)
-                .build();
-        LineChart chart = LineChart.create()
-                .addLegend(true)
-                .xAxisName("X")
-                .yAxisName("f(x)")
-                .seriesLinesWidth(0, 3F)
-                .seriesLinesWidth(1, 3F)
-                .dataset(dataset).build();
-        chart.show();
+        XYSeriesCollection<String> dataset = new XYSeriesCollection<>();
+        XYSeries<String> s1 = new XYSeries<>("μ=0, σ=1, λ=1");
+        for (Point2D point2D : realSample) {
+            s1.add(point2D.getX(), point2D.getY());
+        }
+        XYSeries<String> s2 = new XYSeries<>("fit");
+        for (Point2D point2D : fitSample) {
+            s2.add(point2D.getX(), point2D.getY());
+        }
+        dataset.addSeries(s1);
+        dataset.addSeries(s2);
+
+
+        pdk.chart.LineChart lineChart = new pdk.chart.LineChart();
+        lineChart.dataset(dataset)
+                .showLegend(true)
+                .domainAxisName("X")
+                .rangeAxisName("f(x)")
+                .seriesLineWidth(0, 3f)
+                .seriesLineWidth(1, 3f);
+        lineChart.show();
     }
 
     static void main() {
-        demo();
+//        demo();
+        demo2();
     }
 }
