@@ -1,13 +1,9 @@
 package pdk.util.math.demo;
 
 import org.apache.commons.statistics.distribution.PoissonDistribution;
-import org.jfree.chart.block.BlockBorder;
-import org.jfree.chart.title.LegendTitle;
-import org.jfree.chart.ui.RectangleEdge;
-import org.jfree.data.category.CategoryDataset;
-import pdk.util.chart.CategoryBarChart;
-import pdk.util.chart.util.Data;
-import pdk.util.chart.util.LegendTitleBuilder;
+import pdk.chart.BarChartCategory;
+import pdk.chart.block.BlockBorder;
+import pdk.chart.data.category.DefaultCategoryDataset;
 
 import java.awt.*;
 import java.util.stream.IntStream;
@@ -35,32 +31,28 @@ public class PoissonDistributionDemo {
         PoissonDistribution p0 = PoissonDistribution.of(lambdas[0]);
         PoissonDistribution p1 = PoissonDistribution.of(lambdas[1]);
 
-        Data.CategoryDatasetBuilder datasetBuilder = Data.categoryDataset();
-
+        DefaultCategoryDataset<String, String> dataset = new DefaultCategoryDataset<>();
         for (int i = 0; i < a.length; i++) {
             double probability0 = p0.probability(i);
             double probability1 = p1.probability(i);
-            datasetBuilder.add(series1, String.valueOf(i), probability0)
-                    .add(series2, String.valueOf(i), probability1);
+            dataset.addValue(probability0, series1, String.valueOf(i));
+            dataset.addValue(probability1, series2, String.valueOf(i));
         }
 
-        CategoryDataset dataset1 = datasetBuilder.build();
-
-        CategoryBarChart chart1 = CategoryBarChart.create()
-                .dataset(dataset1)
-                .xAxisName("k")
-                .yAxisName("probability of k")
+        BarChartCategory chart = new BarChartCategory();
+        chart.dataset(dataset)
+                .axisName("k", "probability of k")
                 .seriesPaint(0, colors[0])
-                .seriesPaint(1, colors[1])
-                .build();
+                .seriesPaint(1, colors[1]);
 
-        LegendTitle legend = LegendTitleBuilder.create(chart1)
-                .position(RectangleEdge.RIGHT)
-                .backgroundPaint(new Color(255, 255, 224, 200)) // 半透明背景，避免遮挡
-                .frame(new BlockBorder(Color.LIGHT_GRAY)) // 添加边框
-                .itemFont(new Font("宋体", Font.PLAIN, 12)) // 设置字体
-                .build();
-        chart1.legend(legend);
-        chart1.show();
+        pdk.chart.legend.LegendTitle legendTitle = new pdk.chart.legend.LegendTitle(chart.getPlot());
+        legendTitle.setPosition(pdk.chart.api.RectangleEdge.RIGHT);
+        legendTitle.setBackgroundPaint(new Color(255, 255, 224, 200));// 半透明背景，避免遮挡
+        legendTitle.setFrame(new BlockBorder(Color.LIGHT_GRAY)); // 添加边框
+        legendTitle.setItemFont(new Font("宋体", Font.PLAIN, 12)); // 设置字体
+        chart.addSubtitle(0, legendTitle);
+        chart.show();
+
+
     }
 }

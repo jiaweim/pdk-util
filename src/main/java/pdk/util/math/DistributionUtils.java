@@ -2,13 +2,14 @@ package pdk.util.math;
 
 import org.apache.commons.statistics.distribution.*;
 import org.hipparchus.special.Gamma;
+import pdk.chart.LineChart;
+import pdk.chart.XYChartType;
 import pdk.chart.data.xy.XYSeries;
 import pdk.chart.data.xy.XYSeriesCollection;
 import pdk.util.ArgUtils;
 import pdk.util.data.Point;
 import pdk.util.data.Point2D;
 
-import java.awt.*;
 import java.util.ArrayList;
 
 /**
@@ -121,6 +122,65 @@ public final class DistributionUtils {
         return list;
     }
 
+    /**
+     * Create a {@link LineChart} to show the probability density for a {@link ContinuousDistribution}.
+     *
+     * @param distribution {@link ContinuousDistribution}
+     * @param start        start x
+     * @param end          end x
+     * @param samples      number of data points
+     * @return {@link LineChart}
+     */
+    public static LineChart pdfChart(ContinuousDistribution distribution, double start, double end, int samples) {
+        ArrayList<Point2D> sample = sample(distribution, start, end, samples);
+        XYSeries<String> series = createSeries("", sample);
+        XYSeriesCollection<String> dataset = new XYSeriesCollection<>(series);
+
+        LineChart lineChart = new LineChart();
+        lineChart.dataset(dataset)
+                .axisNames("X", "Probability Density");
+        return lineChart;
+    }
+
+    /**
+     * Create a {@link LineChart} for a {@link ContinuousDistribution}.
+     * </p>
+     *
+     * @param distribution {@link ContinuousDistribution}
+     * @param start        start x
+     * @param end          end x
+     * @param areaStart    start x of shaded area
+     * @param areaEnd      end x of shaded area
+     * @param samples      number of data points
+     * @return {@link LineChart}
+     */
+    public static LineChart pdfChart(ContinuousDistribution distribution, double start, double end,
+            double areaStart, double areaEnd, int samples) {
+
+        double shadowStart = Math.max(start, areaStart);
+        double shadowEnd = Math.min(end, areaEnd);
+
+        ArrayList<Point2D> sample = sample(distribution, start, end, samples);
+        XYSeries<String> lineSeries = new XYSeries<>("Line");
+        XYSeries<String> areaSeries = new XYSeries<>("Area");
+        for (Point2D point : sample) {
+            double x = point.getX();
+            lineSeries.add(x, point.getY());
+            if (x >= shadowStart && x <= shadowEnd) {
+                areaSeries.add(x, point.getY());
+            }
+        }
+        XYSeriesCollection<String> dataset1 = new XYSeriesCollection<>(lineSeries);
+        XYSeriesCollection<String> dataset2 = new XYSeriesCollection<>(areaSeries);
+
+        LineChart chart = new LineChart();
+        chart.addDataset(0, dataset1, XYChartType.LINE)
+                .addDataset(1, dataset2, XYChartType.AREA)
+                .axisNames("X", "Probability Density");
+
+        return chart;
+    }
+
     private static XYSeries<String> createSeries(String name, ArrayList<Point2D> points) {
         XYSeries<String> series = new XYSeries<>(name);
         for (Point2D point : points) {
@@ -141,15 +201,25 @@ public final class DistributionUtils {
         dataset.addSeries(createSeries("3", sample(t3, -6, 6, 500)));
         dataset.addSeries(createSeries("4", sample(n1, -6, 6, 500)));
 
-        pdk.chart.LineChart lineChart = new pdk.chart.LineChart();
-        lineChart.dataset(dataset)
-                .seriesLineWidth(0, 4F)
-                .seriesLineWidth(1, 4F)
-                .seriesLineWidth(2, 4F)
-                .seriesLineWidth(3, 4F)
-                .addPointerAnnotation("normal", 0, 0.4, Math.toRadians(0), 0, pdk.chart.text.TextAnchor.CENTER_LEFT, Color.YELLOW)
-                .domainGridlinesVisible(false)
-                .rangeGridlinesVisible(false);
-        lineChart.show();
+//        pdk.chart.LineChart lineChart = new pdk.chart.LineChart();
+//        lineChart.dataset(dataset)
+//                .seriesLineWidth(0, 4F)
+//                .seriesLineWidth(1, 4F)
+//                .seriesLineWidth(2, 4F)
+//                .seriesLineWidth(3, 4F)
+//                .addPointerAnnotation("normal", 0, 0.4, Math.toRadians(0), 0, pdk.chart.text.TextAnchor.CENTER_LEFT, Color.YELLOW)
+//                .domainGridlinesVisible(false)
+//                .rangeGridlinesVisible(false);
+//        lineChart.show();
+
+        ExponentialDistribution exponentialDistribution = ExponentialDistribution.of(29);
+
+//        NormalDistribution distribution = NormalDistribution.of(mean, 1.62);
+//        System.out.println(distribution.probability(mean - 6 * sigma, mean + 6 * sigma));
+
+//        pdfChart(exponentialDistribution, 1, 200, 10, 20, 500).show();
+
+        LineChart chart = pdfChart(exponentialDistribution, 1, 200, 500);
+        chart.show();
     }
 }

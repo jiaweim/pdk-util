@@ -219,7 +219,7 @@ public abstract class CurveFitter implements ParametricUnivariateFunction {
      * @param sampleSize Number of data points sampled from the fitting function
      * @return {@link LineChart}
      */
-    public pdk.chart.LineChart showFit(double[] parameters, Collection<WeightPoint2D> dataset,
+    public LineChart showFit(double[] parameters, Collection<WeightPoint2D> dataset,
             double start, double end, int sampleSize) {
         Func2D func2D = x -> CurveFitter.this.value(x, parameters);
         List<Point2D> fitSample = func2D.sample(start, end, sampleSize);
@@ -237,7 +237,7 @@ public abstract class CurveFitter implements ParametricUnivariateFunction {
         data.addSeries(actualSeries);
         data.addSeries(fitSeries);
 
-        pdk.chart.LineChart chart = new pdk.chart.LineChart();
+        LineChart chart = new pdk.chart.LineChart();
         chart.dataset(data)
                 .showLegend(true)
                 .seriesLineWidth(0, 4f)

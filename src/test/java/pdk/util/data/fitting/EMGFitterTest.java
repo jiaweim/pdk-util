@@ -3,15 +3,10 @@ package pdk.util.data.fitting;
 import org.apache.commons.rng.sampling.distribution.*;
 import org.hipparchus.optim.nonlinear.vector.leastsquares.LeastSquaresOptimizer;
 import org.hipparchus.random.RandomDataGenerator;
-import org.jfree.data.statistics.HistogramDataset;
-import org.jfree.data.statistics.HistogramType;
-import org.jfree.data.xy.XYDataset;
 import org.junit.jupiter.api.Test;
+import pdk.chart.LineChart;
 import pdk.chart.data.xy.XYSeries;
 import pdk.chart.data.xy.XYSeriesCollection;
-import pdk.util.chart.XYChart;
-import pdk.util.chart.XYChartType;
-import pdk.util.chart.util.Data;
 import pdk.util.data.Point;
 import pdk.util.data.Point2D;
 import pdk.util.data.WeightPoint2D;
@@ -111,9 +106,10 @@ class EMGFitterTest {
             sample[i] = array1[i] + array2[i];
         }
 
-        HistogramDataset dataset = Data.histogramDataset().addSeries("", sample, 100)
-                .type(HistogramType.SCALE_AREA_TO_1)
-                .build();
+        pdk.chart.data.statistics.HistogramDataset dataset = new pdk.chart.data.statistics.HistogramDataset();
+        dataset.addSeries("", sample, 100);
+        dataset.setType(pdk.chart.data.statistics.HistogramType.SCALE_AREA_TO_1);
+
         double[] x = new double[dataset.getItemCount(0)];
         double[] y = new double[dataset.getItemCount(0)];
 
@@ -127,21 +123,18 @@ class EMGFitterTest {
         System.out.println(Arrays.toString(parameters));
 
         ExponentiallyModifiedGaussianFunc emg = ExponentiallyModifiedGaussianFunc.of(parameters[1], parameters[2], 1 / parameters[3]);
-        Func2D func2D = new Func2D() {
-            @Override
-            public double f(double x) {
-                return emg.f(x) * parameters[0];
-            }
-        };
+        Func2D func2D = x1 -> emg.f(x1) * parameters[0];
         List<Point2D> fitSample = func2D.sample(-10, 10, 100);
+        XYSeries<String> series = new XYSeries<>("fitSample");
+        for (Point2D point2D : fitSample) {
+            series.add(point2D.getX(), point2D.getY());
+        }
+        XYSeriesCollection<String> dataset2 = new XYSeriesCollection<>(series);
 
-        XYDataset dataset2 = Data.xyDataset().addSeries("fitSample", fitSample).build();
-
-        XYChart chart = XYChart.chart()
-                .addDataset(0, dataset, XYChartType.HISTOGRAM)
-                .addDataset(1, dataset2, XYChartType.LINE)
-                .addLegend(true)
-                .build();
+        LineChart chart = new LineChart();
+        chart.addDataset(0, dataset, pdk.chart.XYChartType.HISTOGRAM)
+                .addDataset(1, dataset2, pdk.chart.XYChartType.LINE)
+                .showLegend(true);
         chart.show();
     }
 
@@ -176,7 +169,6 @@ class EMGFitterTest {
         dataset.addSeries(s1);
         dataset.addSeries(s2);
 
-
         pdk.chart.LineChart lineChart = new pdk.chart.LineChart();
         lineChart.dataset(dataset)
                 .showLegend(true)
@@ -188,7 +180,7 @@ class EMGFitterTest {
     }
 
     static void main() {
-//        demo();
-        demo2();
+        demo();
+//        demo2();
     }
 }

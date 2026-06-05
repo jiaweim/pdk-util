@@ -3,12 +3,9 @@ package pdk.util.math.demo;
 import org.apache.commons.rng.UniformRandomProvider;
 import org.apache.commons.statistics.distribution.NormalDistribution;
 import org.hipparchus.random.RandomDataGenerator;
-import org.jfree.data.statistics.HistogramDataset;
-import org.jfree.data.statistics.HistogramType;
-import org.jfree.data.xy.XYDataset;
-import pdk.util.chart.util.Data;
-import pdk.util.chart.XYChart;
-import pdk.util.chart.XYChartType;
+import pdk.chart.LineChart;
+import pdk.chart.data.xy.XYSeries;
+import pdk.chart.data.xy.XYSeriesCollection;
 import pdk.util.math.SamplingUtils;
 
 /**
@@ -45,24 +42,22 @@ public class MHSamplerDemo {
             }
         }
 
-        HistogramDataset dataset1 = Data.histogramDataset()
-                .addSeries("", pi, 50)
-                .type(HistogramType.SCALE_AREA_TO_1)
-                .build();
+        pdk.chart.data.statistics.HistogramDataset dataset1 = new pdk.chart.data.statistics.HistogramDataset();
+        dataset1.addSeries("", pi, 50);
+        dataset1.setType(pdk.chart.data.statistics.HistogramType.SCALE_AREA_TO_1);
 
         double[] yValues = new double[T];
         for (int i = 0; i < T; i++) {
             yValues[i] = gaussian.density(pi[i]);
         }
 
-        XYDataset dataset2 = Data.xyDataset()
-                .addSeries("Target", pi, yValues).build();
+        XYSeries<String> taget = new XYSeries<>("Target", pi, yValues);
+        XYSeriesCollection<String> dataset2 = new XYSeriesCollection<>(taget);
 
-        XYChart chart = XYChart.chart()
-                .addDataset(1, dataset1, XYChartType.HISTOGRAM)
-                .addDataset(0, dataset2, XYChartType.SCATTER)
-                .addLegend(true)
-                .build();
+        LineChart chart = new LineChart();
+        chart.addDataset(1, dataset1, pdk.chart.XYChartType.HISTOGRAM)
+                .addDataset(0, dataset2, pdk.chart.XYChartType.SCATTER)
+                .showLegend(true);
         chart.show();
     }
 }

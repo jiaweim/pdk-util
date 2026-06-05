@@ -4,14 +4,11 @@ import org.apache.commons.rng.UniformRandomProvider;
 import org.apache.commons.rng.simple.RandomSource;
 import org.apache.commons.statistics.distribution.ContinuousDistribution;
 import org.apache.commons.statistics.distribution.NormalDistribution;
-import org.jfree.data.statistics.HistogramDataset;
-import org.jfree.data.statistics.HistogramType;
-import org.jfree.data.xy.XYDataset;
+import pdk.chart.LineChart;
+import pdk.chart.data.xy.XYSeries;
+import pdk.chart.data.xy.XYSeriesCollection;
 import pdk.util.ArgUtils;
 import pdk.util.ArrayUtils;
-import pdk.util.chart.XYChart;
-import pdk.util.chart.XYChartType;
-import pdk.util.chart.util.Data;
 import pdk.util.math.StatUtils;
 
 import java.util.Arrays;
@@ -149,23 +146,22 @@ public class KernelDensityEstimator implements ContinuousDistribution {
         double[] dataset = sampler.samples(1000).toArray();
         KernelDensityEstimator kde = new KernelDensityEstimator(dataset);
 
-        HistogramDataset dataset1 = Data.histogramDataset()
-                .addSeries("Histogram", dataset, 30)
-                .type(HistogramType.SCALE_AREA_TO_1).build();
+        pdk.chart.data.statistics.HistogramDataset dataset1 = new pdk.chart.data.statistics.HistogramDataset();
+        dataset1.addSeries("Histogram", dataset, 30);
+        dataset1.setType(pdk.chart.data.statistics.HistogramType.SCALE_AREA_TO_1);
 
         double[] x = ArrayUtils.linspace(-5, 5, 1000);
         double[] y = new double[x.length];
         for (int i = 0; i < x.length; i++) {
             y[i] = kde.density(x[i]);
         }
-        XYDataset dataset2 = Data.xyDataset()
-                .addSeries("KDE", x, y).build();
 
+        XYSeries<String> series = new XYSeries<>("KDE", x, y);
+        XYSeriesCollection<String> dataset2 = new XYSeriesCollection<>(series);
 
-        XYChart chart = XYChart.chart()
-                .addDataset(1, dataset1, XYChartType.HISTOGRAM)
-                .addDataset(0, dataset2, XYChartType.LINE)
-                .build();
+        LineChart chart = new LineChart();
+        chart.addDataset(1, dataset1, pdk.chart.XYChartType.HISTOGRAM)
+                .addDataset(0, dataset2, pdk.chart.XYChartType.LINE);
         chart.show();
     }
 }
