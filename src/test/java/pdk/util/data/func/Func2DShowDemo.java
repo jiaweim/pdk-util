@@ -1,6 +1,6 @@
 package pdk.util.data.func;
 
-import pdk.chart.LineChart;
+import pdk.chart.fluent.XYChart;
 
 /**
  *
@@ -13,11 +13,12 @@ public class Func2DShowDemo {
     static void main() {
         Func2D func2D = x -> x * x + 2;
 
-        LineChart chart = func2D.show(-40, 40, 400);
-
-        chart.domainAxisRange(-2, 2)
-                .rangeAxisRange(0, 5)
-                .seriesLineWidth(0, 2f);
-        chart.show();
+        XYChart chart = func2D.show(-40, 40, 400);
+        chart.domainAxis()
+                .range(-40, 40).done()
+                .lineAndShapeRenderer(0)
+                .seriesLineWidth(0, 2f)
+                .done()
+                .show();
     }
 }

@@ -3,9 +3,10 @@ package pdk.util.math.demo;
 import org.apache.commons.rng.UniformRandomProvider;
 import org.apache.commons.statistics.distribution.NormalDistribution;
 import org.hipparchus.random.RandomDataGenerator;
-import pdk.chart.LineChart;
 import pdk.chart.data.xy.XYSeries;
 import pdk.chart.data.xy.XYSeriesCollection;
+import pdk.chart.fluent.XYChart;
+import pdk.chart.fluent.XYChartType;
 import pdk.util.math.SamplingUtils;
 
 /**
@@ -54,10 +55,9 @@ public class MHSamplerDemo {
         XYSeries<String> taget = new XYSeries<>("Target", pi, yValues);
         XYSeriesCollection<String> dataset2 = new XYSeriesCollection<>(taget);
 
-        LineChart chart = new LineChart();
-        chart.addDataset(1, dataset1, pdk.chart.XYChartType.HISTOGRAM)
-                .addDataset(0, dataset2, pdk.chart.XYChartType.SCATTER)
-                .showLegend(true);
-        chart.show();
+        XYChart.create()
+                .dataset(dataset2, XYChartType.SCATTER)
+                .addDataset(dataset1, XYChartType.HISTOGRAM)
+                .showLegend(true).show();
     }
 }

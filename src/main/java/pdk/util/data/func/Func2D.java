@@ -1,8 +1,9 @@
 package pdk.util.data.func;
 
-import pdk.chart.LineChart;
 import pdk.chart.data.xy.XYSeries;
 import pdk.chart.data.xy.XYSeriesCollection;
+import pdk.chart.fluent.XYChart;
+import pdk.chart.fluent.XYChartType;
 import pdk.util.data.Point;
 import pdk.util.data.Point2D;
 
@@ -54,9 +55,9 @@ public interface Func2D {
      * @param start           start x
      * @param end             end x
      * @param numberOfSamples number of data points
-     * @return {@link LineChart}
+     * @return {@link XYChart}
      */
-    default LineChart show(double start, double end, int numberOfSamples) {
+    default XYChart show(double start, double end, int numberOfSamples) {
         List<Point2D> sample = sample(start, end, numberOfSamples);
         XYSeries<String> s1 = new XYSeries<>("");
         for (Point2D point2D : sample) {
@@ -64,10 +65,9 @@ public interface Func2D {
         }
         XYSeriesCollection<String> dataset = new XYSeriesCollection<>(s1);
 
-        LineChart chart = new LineChart();
-        chart.dataset(dataset)
-                .domainAxisName("X")
-                .rangeAxisName("Y");
-        return chart;
+        XYChart xyChart = XYChart.create()
+                .dataset(dataset, XYChartType.LINE)
+                .axisNames("X", "Y");
+        return xyChart;
     }
 }

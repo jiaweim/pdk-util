@@ -269,12 +269,11 @@ public class GaussianFitterTest {
         List<WeightPoint2D> dataset = dataset(DATASET2);
         GaussianFitter fitter = GaussianFitter.create();
         double[] parameters = fitter.fit(dataset);
-        pdk.chart.LineChart chart = fitter.showFit(parameters, dataset);
-        chart.show();
+        fitter.showFit(parameters, dataset).show();
     }
 
     static void main() {
-        showCurve05();
+        showCurve04();
     }
 
     /**

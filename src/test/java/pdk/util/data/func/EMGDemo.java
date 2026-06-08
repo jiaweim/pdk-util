@@ -2,6 +2,8 @@ package pdk.util.data.func;
 
 import pdk.chart.data.xy.XYSeries;
 import pdk.chart.data.xy.XYSeriesCollection;
+import pdk.chart.fluent.XYChart;
+import pdk.chart.fluent.XYChartType;
 import pdk.util.data.Point2D;
 
 import java.util.List;
@@ -40,15 +42,18 @@ public class EMGDemo {
         dataset.addSeries(toSeries("μ=0, σ=3, τ=1", sample3));
         dataset.addSeries(toSeries("μ=-3, σ=1, τ=0.25", sample4));
 
-        pdk.chart.LineChart lineChart = new pdk.chart.LineChart();
-        lineChart.dataset(dataset)
+
+        XYChart.create()
+                .dataset(dataset, XYChartType.LINE)
                 .showLegend(true)
-                .domainAxisName("X")
-                .rangeAxisName("Y")
-                .seriesLineWidth(0, 4F)
-                .seriesLineWidth(1, 4F)
-                .seriesLineWidth(2, 4F)
-                .seriesLineWidth(3, 4F);
-        lineChart.show();
+                .axisNames("X", "Y")
+                .lineAndShapeRenderer(0)
+                .seriesLineWidth(0, 4f)
+                .seriesLineWidth(1, 4f)
+                .seriesLineWidth(2, 4f)
+                .seriesLineWidth(3, 4f)
+                .done()
+                .show();
+
     }
 }

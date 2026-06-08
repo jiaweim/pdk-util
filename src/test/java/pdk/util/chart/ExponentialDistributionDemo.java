@@ -2,6 +2,8 @@ package pdk.util.chart;
 
 import org.apache.commons.statistics.distribution.ExponentialDistribution;
 import pdk.chart.data.xy.XYSeriesCollection;
+import pdk.chart.fluent.XYChart;
+import pdk.chart.fluent.XYChartType;
 import pdk.util.data.Point2D;
 import pdk.util.math.DistributionUtils;
 
@@ -35,11 +37,10 @@ public class ExponentialDistributionDemo {
         dataset1.addSeries(series1);
         dataset1.addSeries(series2);
 
-        pdk.chart.LineChart lineChart = new pdk.chart.LineChart();
-        lineChart.dataset(dataset1)
+        XYChart.create()
+                .dataset(dataset1, XYChartType.LINE)
                 .showLegend(true)
-                .domainAxisName("X")
-                .rangeAxisName("Probability density");
-        lineChart.show();
+                .axisNames("X", "Probability density")
+                .show();
     }
 }

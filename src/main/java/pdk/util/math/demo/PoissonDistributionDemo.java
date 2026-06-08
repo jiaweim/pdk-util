@@ -1,9 +1,10 @@
 package pdk.util.math.demo;
 
 import org.apache.commons.statistics.distribution.PoissonDistribution;
-import pdk.chart.BarChartCategory;
 import pdk.chart.block.BlockBorder;
 import pdk.chart.data.category.DefaultCategoryDataset;
+import pdk.chart.fluent.CategoryXYChart;
+import pdk.chart.fluent.CategoryXYChartType;
 
 import java.awt.*;
 import java.util.stream.IntStream;
@@ -39,11 +40,13 @@ public class PoissonDistributionDemo {
             dataset.addValue(probability1, series2, String.valueOf(i));
         }
 
-        BarChartCategory chart = new BarChartCategory();
-        chart.dataset(dataset)
-                .axisName("k", "probability of k")
+        CategoryXYChart chart = CategoryXYChart.create()
+                .dataset(dataset, CategoryXYChartType.BAR)
+                .axisNames("k", "probability of k")
+                .barRenderer(0)
                 .seriesPaint(0, colors[0])
-                .seriesPaint(1, colors[1]);
+                .seriesPaint(1, colors[1])
+                .done();
 
         pdk.chart.legend.LegendTitle legendTitle = new pdk.chart.legend.LegendTitle(chart.getPlot());
         legendTitle.setPosition(pdk.chart.api.RectangleEdge.RIGHT);
@@ -52,7 +55,6 @@ public class PoissonDistributionDemo {
         legendTitle.setItemFont(new Font("宋体", Font.PLAIN, 12)); // 设置字体
         chart.addSubtitle(0, legendTitle);
         chart.show();
-
 
     }
 }

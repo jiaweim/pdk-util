@@ -6,9 +6,10 @@ import org.hipparchus.analysis.ParametricUnivariateFunction;
 import org.hipparchus.optim.nonlinear.vector.leastsquares.LeastSquaresOptimizer;
 import org.hipparchus.optim.nonlinear.vector.leastsquares.LeastSquaresProblem;
 import org.hipparchus.optim.nonlinear.vector.leastsquares.LevenbergMarquardtOptimizer;
-import pdk.chart.LineChart;
 import pdk.chart.data.xy.XYSeries;
 import pdk.chart.data.xy.XYSeriesCollection;
+import pdk.chart.fluent.XYChart;
+import pdk.chart.fluent.XYChartType;
 import pdk.util.data.Point2D;
 import pdk.util.data.WeightPoint2D;
 import pdk.util.data.func.Func2D;
@@ -191,11 +192,11 @@ public abstract class CurveFitter implements ParametricUnivariateFunction {
     /**
      * Create a line chart to display the measured points and fitted points.
      *
-     * @param parameters estimated parameters
-     * @param dataset    measured points
-     * @return {@link LineChart}
+     * @param parameters estimated parameters.
+     * @param dataset    measured points.
+     * @return {@link XYChart}.
      */
-    public LineChart showFit(double[] parameters, Collection<WeightPoint2D> dataset) {
+    public XYChart showFit(double[] parameters, Collection<WeightPoint2D> dataset) {
         double minX = Double.MAX_VALUE;
         double maxX = -Double.MAX_VALUE;
 
@@ -217,9 +218,9 @@ public abstract class CurveFitter implements ParametricUnivariateFunction {
      * @param start      the start sampling point
      * @param end        the end sampling point
      * @param sampleSize Number of data points sampled from the fitting function
-     * @return {@link LineChart}
+     * @return {@link XYChart}
      */
-    public LineChart showFit(double[] parameters, Collection<WeightPoint2D> dataset,
+    public XYChart showFit(double[] parameters, Collection<WeightPoint2D> dataset,
             double start, double end, int sampleSize) {
         Func2D func2D = x -> CurveFitter.this.value(x, parameters);
         List<Point2D> fitSample = func2D.sample(start, end, sampleSize);
@@ -237,13 +238,13 @@ public abstract class CurveFitter implements ParametricUnivariateFunction {
         data.addSeries(actualSeries);
         data.addSeries(fitSeries);
 
-        LineChart chart = new pdk.chart.LineChart();
-        chart.dataset(data)
+        return XYChart.create()
+                .dataset(data, XYChartType.LINE)
                 .showLegend(true)
+                .lineAndShapeRenderer(0)
                 .seriesLineWidth(0, 4f)
-                .seriesLineWidth(1, 4f);
-
-        return chart;
+                .seriesLineWidth(1, 4f)
+                .done();
     }
 
     /**
