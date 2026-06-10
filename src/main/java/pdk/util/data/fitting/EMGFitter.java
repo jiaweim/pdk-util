@@ -26,16 +26,10 @@ import java.util.Objects;
  * Application scenarios:
  *
  * <ol>
- *     <li>standard tailing peak (τ > σ): The most common scenarios for proteomics chromatographic data.
- *     Compared with Gaussian fitting, the EMG model can perfectly fit the entire tailing region from
+ *     <li>standard tailing peak (τ > σ): The most common scenarios for proteomics chromatographic data. Compared with Gaussian fitting, the EMG model can perfectly fit the entire tailing region from
  *     the peak apex to the baseline, thereby providing more accurate peak areas,
  *     namely the quantitative values of proteins and peptides.</li>
- *     <li>Near-Symmetrical Peak (τ << σ): When chromatographic conditions are ideal or the physicochemical
- *     properties of peptides are stable, peak shapes tend to be symmetric.
- *     The EMG function degenerates into a standard Gaussian function.
- *     In algorithm implementation, if the initial estimated value of the parameter τ is too small,
- *     the fitted curve will exhibit perfect symmetry.</li>
- *
+ *     <li>Near-Symmetrical Peak (τ << σ): When chromatographic conditions are ideal or the physicochemical properties of peptides are stable, peak shapes tend to be symmetric. The EMG function degenerates into a standard Gaussian function. In algorithm implementation, if the initial estimated value of the parameter τ is too small, the fitted curve will exhibit perfect symmetry.</li>
  * </ol>
  *
  * @author Jiawei Mao
