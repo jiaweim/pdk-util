@@ -127,6 +127,31 @@ public final class StatUtils {
     }
 
     /**
+     * Returns the minimum and maximum value present in {@code array}.
+     *
+     * @param array a <i>nonempty</i> array of {@code double} values
+     * @return the min and the max value present in {@code array}.
+     * @throws IllegalArgumentException if {@code array} is empty
+     */
+    public static Tuple2<Double, Double> minMax(double... array) {
+        requireNonNull(array);
+        checkArgument(array.length > 0);
+
+        double min = -Double.MAX_VALUE;
+        double max = Double.MIN_VALUE;
+        for (double value : array) {
+            if (value > max) {
+                max = value;
+            }
+            if (value < min) {
+                min = value;
+            }
+        }
+        return Tuple.of(min, max);
+    }
+
+
+    /**
      * Finds and returns the index of the maximum value in the array.
      * If the array contains multiple occurrences of the maximum value,
      * the index of the first occurrence is returned.
