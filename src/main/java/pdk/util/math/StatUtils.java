@@ -137,8 +137,8 @@ public final class StatUtils {
         requireNonNull(array);
         checkArgument(array.length > 0);
 
-        double min = -Double.MAX_VALUE;
-        double max = Double.MIN_VALUE;
+        double min = Double.MAX_VALUE;
+        double max = -Double.MAX_VALUE;
         for (double value : array) {
             if (value > max) {
                 max = value;

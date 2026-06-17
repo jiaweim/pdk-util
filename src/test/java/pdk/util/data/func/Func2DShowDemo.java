@@ -15,7 +15,8 @@ public class Func2DShowDemo {
 
         XYChart chart = func2D.show(-40, 40, 400);
         chart.domainAxis()
-                .range(-40, 40).done()
+                .range(-40, 40)
+                .doneXY()
                 .lineAndShapeRenderer(0)
                 .seriesLineWidth(0, 2f)
                 .done()
