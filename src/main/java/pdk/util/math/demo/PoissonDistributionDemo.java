@@ -1,10 +1,11 @@
 package pdk.util.math.demo;
 
 import org.apache.commons.statistics.distribution.PoissonDistribution;
+import pdk.chart.Chart;
+import pdk.chart.JChart;
 import pdk.chart.block.BlockBorder;
 import pdk.chart.data.category.DefaultCategoryDataset;
-import pdk.chart.fluent.CategoryXYChart;
-import pdk.chart.fluent.CategoryXYChartType;
+import pdk.chart.legend.LegendTitle;
 
 import java.awt.*;
 import java.util.stream.IntStream;
@@ -40,20 +41,17 @@ public class PoissonDistributionDemo {
             dataset.addValue(probability1, series2, String.valueOf(i));
         }
 
-        CategoryXYChart chart = CategoryXYChart.create()
-                .dataset(dataset, CategoryXYChartType.BAR)
-                .axisNames("k", "probability of k")
-                .barRenderer(0)
+        Chart chart = JChart.bar(null, "k", "probability of k", dataset);
+        chart.getCategoryPlot()
+                .getBarRenderer(0)
                 .seriesPaint(0, colors[0])
-                .seriesPaint(1, colors[1])
-                .done();
+                .seriesPaint(1, colors[1]);
+        LegendTitle legend = chart.getLegend();
 
-        pdk.chart.legend.LegendTitle legendTitle = new pdk.chart.legend.LegendTitle(chart.getPlot());
-        legendTitle.setPosition(pdk.chart.api.RectangleEdge.RIGHT);
-        legendTitle.setBackgroundPaint(new Color(255, 255, 224, 200));// 半透明背景，避免遮挡
-        legendTitle.setFrame(new BlockBorder(Color.LIGHT_GRAY)); // 添加边框
-        legendTitle.setItemFont(new Font("宋体", Font.PLAIN, 12)); // 设置字体
-        chart.addSubtitle(0, legendTitle);
+        legend.setPosition(pdk.chart.api.RectangleEdge.RIGHT);
+        legend.setBackgroundPaint(new Color(255, 255, 224, 200));// 半透明背景，避免遮挡
+        legend.setFrame(new BlockBorder(Color.LIGHT_GRAY)); // 添加边框
+        legend.setItemFont(new Font("宋体", Font.PLAIN, 12)); // 设置字体
         chart.show();
 
     }

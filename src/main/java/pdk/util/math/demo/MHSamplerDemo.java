@@ -3,10 +3,11 @@ package pdk.util.math.demo;
 import org.apache.commons.rng.UniformRandomProvider;
 import org.apache.commons.statistics.distribution.NormalDistribution;
 import org.hipparchus.random.RandomDataGenerator;
+import pdk.chart.Chart;
+import pdk.chart.JChart;
+import pdk.chart.XYChartType;
 import pdk.chart.data.xy.XYSeries;
 import pdk.chart.data.xy.XYSeriesCollection;
-import pdk.chart.fluent.XYChart;
-import pdk.chart.fluent.XYChartType;
 import pdk.util.math.SamplingUtils;
 
 /**
@@ -18,7 +19,6 @@ import pdk.util.math.SamplingUtils;
  */
 public class MHSamplerDemo {
     static void main() {
-
         // 目标分布
         NormalDistribution gaussian = NormalDistribution.of(3, 2);
 
@@ -55,9 +55,9 @@ public class MHSamplerDemo {
         XYSeries<String> taget = new XYSeries<>("Target", pi, yValues);
         XYSeriesCollection<String> dataset2 = new XYSeriesCollection<>(taget);
 
-        XYChart.create()
-                .dataset(dataset2, XYChartType.SCATTER)
-                .addDataset(dataset1, XYChartType.HISTOGRAM)
-                .showLegend(true).show();
+        Chart chart = JChart.line(null, null, null, dataset2);
+        chart.getXYPlot()
+                .addDataset(dataset1, XYChartType.HISTOGRAM);
+        chart.show();
     }
 }

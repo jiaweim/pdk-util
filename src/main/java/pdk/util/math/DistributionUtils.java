@@ -2,10 +2,11 @@ package pdk.util.math;
 
 import org.apache.commons.statistics.distribution.*;
 import org.hipparchus.special.Gamma;
+import pdk.chart.Chart;
+import pdk.chart.JChart;
+import pdk.chart.XYChartType;
 import pdk.chart.data.xy.XYSeries;
 import pdk.chart.data.xy.XYSeriesCollection;
-import pdk.chart.fluent.XYChart;
-import pdk.chart.fluent.XYChartType;
 import pdk.util.ArgUtils;
 import pdk.util.data.Point;
 import pdk.util.data.Point2D;
@@ -123,27 +124,24 @@ public final class DistributionUtils {
     }
 
     /**
-     * Create a {@link XYChart} to show the probability density for a {@link ContinuousDistribution}.
+     * Create a {@link Chart} to show the probability density for a {@link ContinuousDistribution}.
      *
      * @param distribution {@link ContinuousDistribution}
      * @param start        start x
      * @param end          end x
      * @param samples      number of data points
-     * @return {@link XYChart}
+     * @return {@link Chart}
      */
-    public static XYChart pdfChart(ContinuousDistribution distribution, double start, double end, int samples) {
+    public static Chart pdfChart(ContinuousDistribution distribution, double start, double end, int samples) {
         ArrayList<Point2D> sample = sample(distribution, start, end, samples);
         XYSeries<String> series = createSeries("", sample);
         XYSeriesCollection<String> dataset = new XYSeriesCollection<>(series);
 
-        XYChart xyChart = XYChart.create()
-                .dataset(dataset, XYChartType.LINE)
-                .axisNames("X", "Probability Density");
-        return xyChart;
+        return JChart.line(null, "X", "Probability Density", dataset);
     }
 
     /**
-     * Create a {@link XYChart} for a {@link ContinuousDistribution}.
+     * Create a {@link Chart} for a {@link ContinuousDistribution}.
      * </p>
      *
      * @param distribution {@link ContinuousDistribution}
@@ -152,9 +150,9 @@ public final class DistributionUtils {
      * @param areaStart    start x of shaded area
      * @param areaEnd      end x of shaded area
      * @param samples      number of data points
-     * @return {@link XYChart}
+     * @return {@link Chart}
      */
-    public static XYChart pdfChart(ContinuousDistribution distribution, double start, double end,
+    public static Chart pdfChart(ContinuousDistribution distribution, double start, double end,
             double areaStart, double areaEnd, int samples) {
 
         double shadowStart = Math.max(start, areaStart);
@@ -173,12 +171,11 @@ public final class DistributionUtils {
         XYSeriesCollection<String> dataset1 = new XYSeriesCollection<>(lineSeries);
         XYSeriesCollection<String> dataset2 = new XYSeriesCollection<>(areaSeries);
 
-        XYChart xyChart = XYChart.create()
-                .dataset(dataset1, XYChartType.LINE)
-                .addDataset(dataset2, XYChartType.AREA)
-                .axisNames("X", "Probability Density");
+        Chart chart = JChart.line(null, "X", "Probability Density", dataset1);
+        chart.getXYPlot()
+                .addDataset(dataset2, XYChartType.AREA);
 
-        return xyChart;
+        return chart;
     }
 
     private static XYSeries<String> createSeries(String name, ArrayList<Point2D> points) {
