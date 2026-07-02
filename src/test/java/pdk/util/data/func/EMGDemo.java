@@ -43,7 +43,7 @@ public class EMGDemo {
         dataset.addSeries(toSeries("μ=0, σ=3, τ=1", sample3));
         dataset.addSeries(toSeries("μ=-3, σ=1, τ=0.25", sample4));
 
-        Chart chart = JChart.line(null, "X", "Y", dataset);
+        Chart chart = JChart.line(dataset, "X", "Y");
         chart.getXYPlot()
                 .getLineAndShapeRenderer()
                 .seriesLineWidth(0, 4f)

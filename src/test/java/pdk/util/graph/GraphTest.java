@@ -26,7 +26,8 @@ class GraphTest {
         graph.addEdge(2, 5);
         graph.addEdge(3, 4);
         graph.addEdge(4, 5);
-        System.out.println(graph);
+        assertEquals(5, graph.getNodeCount());
+        assertEquals(7, graph.getEdgeCount());
     }
 
     @Test
@@ -39,7 +40,8 @@ class GraphTest {
         graph.addEdge(3, 6);
         graph.addEdge(4, 2);
         graph.addEdge(5, 4);
-        System.out.println(graph);
+        assertEquals(6, graph.getNodeCount());
+        assertEquals(7, graph.getEdgeCount());
     }
 
     @Test

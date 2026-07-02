@@ -170,7 +170,7 @@ class EMGFitterTest {
         dataset.addSeries(s1);
         dataset.addSeries(s2);
 
-        Chart chart = JChart.line(null, "X", "f(x)", dataset);
+        Chart chart = JChart.line(dataset, "X", "f(x)");
         chart.getXYPlot()
                 .getLineAndShapeRenderer()
                 .seriesLineWidth(0, 3f)

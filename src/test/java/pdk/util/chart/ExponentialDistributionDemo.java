@@ -37,7 +37,7 @@ public class ExponentialDistributionDemo {
         dataset1.addSeries(series1);
         dataset1.addSeries(series2);
 
-        Chart chart = JChart.line(null, "X", "Probability density", dataset1);
+        Chart chart = JChart.line(dataset1, "X", "Probability density");
         chart.show();
     }
 }
