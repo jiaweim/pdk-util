@@ -161,7 +161,7 @@ public class KernelDensityEstimator implements ContinuousDistribution {
         XYSeries<String> series = new XYSeries<>("KDE", x, y);
         XYSeriesCollection<String> dataset2 = new XYSeriesCollection<>(series);
 
-        Chart chart = JChart.line(null, null, null, dataset2);
+        Chart chart = JChart.line(dataset2);
         chart.getXYPlot()
                 .addDataset(dataset1, XYChartType.HISTOGRAM);
         chart.show();

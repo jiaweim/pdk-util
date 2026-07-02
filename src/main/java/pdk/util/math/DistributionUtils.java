@@ -137,7 +137,7 @@ public final class DistributionUtils {
         XYSeries<String> series = createSeries("", sample);
         XYSeriesCollection<String> dataset = new XYSeriesCollection<>(series);
 
-        return JChart.line(null, "X", "Probability Density", dataset);
+        return JChart.line(dataset, "X", "Probability Density");
     }
 
     /**
@@ -171,7 +171,7 @@ public final class DistributionUtils {
         XYSeriesCollection<String> dataset1 = new XYSeriesCollection<>(lineSeries);
         XYSeriesCollection<String> dataset2 = new XYSeriesCollection<>(areaSeries);
 
-        Chart chart = JChart.line(null, "X", "Probability Density", dataset1);
+        Chart chart = JChart.line(dataset1, "X", "Probability Density");
         chart.getXYPlot()
                 .addDataset(dataset2, XYChartType.AREA);
 

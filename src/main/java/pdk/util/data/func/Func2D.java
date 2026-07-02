@@ -1,6 +1,7 @@
 package pdk.util.data.func;
 
 import pdk.chart.Chart;
+import pdk.chart.Data;
 import pdk.chart.JChart;
 import pdk.chart.data.xy.XYSeries;
 import pdk.chart.data.xy.XYSeriesCollection;
@@ -8,6 +9,7 @@ import pdk.util.data.Point;
 import pdk.util.data.Point2D;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static pdk.util.ArgUtils.checkArgument;
@@ -64,7 +66,6 @@ public interface Func2D {
             s1.add(point2D.getX(), point2D.getY());
         }
         XYSeriesCollection<String> dataset = new XYSeriesCollection<>(s1);
-
-        return JChart.line(null, "X", "Y", dataset);
+        return JChart.line(dataset, "X", "Y");
     }
 }

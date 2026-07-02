@@ -233,7 +233,7 @@ public class Digraph<V> extends AbstractGraph<V> {
         distTo.put(startNode, 0.0);
 
         Double2ObjectRBTreeMap<V> heap = new Double2ObjectRBTreeMap<>();
-        heap.put(distTo.get(startNode), startNode);
+        heap.put(distTo.get(startNode).doubleValue(), startNode);
         while (!heap.isEmpty()) {
             double currentMin = heap.firstDoubleKey();
             V v = heap.remove(currentMin);
@@ -249,7 +249,7 @@ public class Digraph<V> extends AbstractGraph<V> {
                     distTo.put(w, distTo.get(v) + edge.getWeight());
                     edgeTo.put(w, edge);
                 }
-                heap.put(distTo.get(w), w);
+                heap.put(distTo.get(w).doubleValue(), w);
             }
             visited.add(v);
         }

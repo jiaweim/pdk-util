@@ -6,8 +6,8 @@ import org.hipparchus.random.RandomDataGenerator;
 import pdk.chart.Chart;
 import pdk.chart.JChart;
 import pdk.chart.XYChartType;
-import pdk.chart.data.xy.XYSeries;
-import pdk.chart.data.xy.XYSeriesCollection;
+import pdk.chart.data.statistics.HistogramDataset;
+import pdk.chart.data.statistics.HistogramType;
 import pdk.util.math.SamplingUtils;
 
 /**
@@ -43,19 +43,16 @@ public class MHSamplerDemo {
             }
         }
 
-        pdk.chart.data.statistics.HistogramDataset dataset1 = new pdk.chart.data.statistics.HistogramDataset();
+        HistogramDataset dataset1 = new HistogramDataset();
         dataset1.addSeries("", pi, 50);
-        dataset1.setType(pdk.chart.data.statistics.HistogramType.SCALE_AREA_TO_1);
+        dataset1.setType(HistogramType.SCALE_AREA_TO_1);
 
         double[] yValues = new double[T];
         for (int i = 0; i < T; i++) {
             yValues[i] = gaussian.density(pi[i]);
         }
 
-        XYSeries<String> taget = new XYSeries<>("Target", pi, yValues);
-        XYSeriesCollection<String> dataset2 = new XYSeriesCollection<>(taget);
-
-        Chart chart = JChart.line(null, null, null, dataset2);
+        Chart chart = JChart.line(pi, yValues);
         chart.getXYPlot()
                 .addDataset(dataset1, XYChartType.HISTOGRAM);
         chart.show();

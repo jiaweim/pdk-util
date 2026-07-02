@@ -10,7 +10,6 @@ import pdk.chart.Chart;
 import pdk.chart.JChart;
 import pdk.chart.data.xy.XYSeries;
 import pdk.chart.data.xy.XYSeriesCollection;
-import pdk.chart.plot.PlotOrientation;
 import pdk.util.data.Point2D;
 import pdk.util.data.WeightPoint2D;
 import pdk.util.data.func.Func2D;
@@ -241,8 +240,7 @@ public abstract class CurveFitter implements ParametricUnivariateFunction {
         data.addSeries(actualSeries);
         data.addSeries(fitSeries);
 
-        Chart chart = JChart.line(null, null, null, data,
-                PlotOrientation.VERTICAL, true, true, false);
+        Chart chart = JChart.line(data);
         chart.getXYPlot()
                 .getLineAndShapeRenderer()
                 .seriesLineWidth(0, 4f)

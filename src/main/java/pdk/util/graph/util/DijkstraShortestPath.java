@@ -1,7 +1,6 @@
 package pdk.util.graph.util;
 
 import it.unimi.dsi.fastutil.doubles.Double2ObjectRBTreeMap;
-import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
 import pdk.util.graph.Digraph;
 import pdk.util.graph.Edge;
 import pdk.util.graph.GraphPath;
@@ -25,8 +24,7 @@ public class DijkstraShortestPath<V> implements PathFinder<V> {
 
     private final Digraph<V> graph_;
     private final V startNode_;
-    //    private final HashMap<V, Double> distTo_;
-    private final Object2DoubleOpenHashMap<V> distTo_;
+    private final HashMap<V, Double> distTo_;
     private final HashMap<V, Edge<V>> edgeTo_;
 
     /**
@@ -46,7 +44,7 @@ public class DijkstraShortestPath<V> implements PathFinder<V> {
         }
 
         int V = graph.getNodeCount();
-        distTo_ = new Object2DoubleOpenHashMap<>(V);
+        distTo_ = new HashMap<>(V);
         edgeTo_ = new HashMap<>(V);
         HashMap<V, Boolean> visited = new HashMap<>(V);
         for (V v : graph.getNodeSet()) {
@@ -56,7 +54,7 @@ public class DijkstraShortestPath<V> implements PathFinder<V> {
         distTo_.put(startNode, 0.0);
 
         Double2ObjectRBTreeMap<V> map = new Double2ObjectRBTreeMap<>();
-        map.put(distTo_.getDouble(startNode), startNode);
+        map.put(distTo_.get(startNode), startNode);
         while (!map.isEmpty()) {
             double currentMin = map.firstDoubleKey();
             V v = map.remove(currentMin);
@@ -66,11 +64,11 @@ public class DijkstraShortestPath<V> implements PathFinder<V> {
                 if (visited.get(w))
                     continue;
                 // relaxation
-                if (distTo_.getDouble(w) > distTo_.getDouble(v) + edge.getWeight()) {
-                    distTo_.put(w, distTo_.getDouble(v) + edge.getWeight());
+                if (distTo_.get(w) > distTo_.get(v) + edge.getWeight()) {
+                    distTo_.put(w, distTo_.get(v) + edge.getWeight());
                     edgeTo_.put(w, edge);
                 }
-                map.put(distTo_.getDouble(w), w);
+                map.put(distTo_.get(w), w);
             }
             visited.put(v, true);
         }
