@@ -133,7 +133,7 @@ class EMGFitterTest {
         }
         XYSeriesCollection<String> dataset2 = new XYSeriesCollection<>(series);
 
-        Chart chart = JChart.histogram(null, null, null, dataset);
+        Chart chart = JChart.histogram(dataset, null, null, null);
         chart.getXYPlot()
                 .addDataset(dataset2, XYChartType.LINE);
         chart.show();

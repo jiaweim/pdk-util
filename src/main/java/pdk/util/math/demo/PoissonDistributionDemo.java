@@ -41,7 +41,7 @@ public class PoissonDistributionDemo {
             dataset.addValue(probability1, series2, String.valueOf(i));
         }
 
-        Chart chart = JChart.bar(null, "k", "probability of k", dataset);
+        Chart chart = JChart.bar(dataset, "k", "probability of k");
         chart.getCategoryPlot()
                 .getBarRenderer(0)
                 .seriesPaint(0, colors[0])
