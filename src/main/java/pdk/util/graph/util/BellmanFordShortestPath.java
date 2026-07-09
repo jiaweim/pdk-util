@@ -154,7 +154,7 @@ public class BellmanFordShortestPath<V> implements PathFinder<V> {
         Deque<V> nodes = new ArrayDeque<>();
         nodes.addFirst(targetNode);
         for (Edge<V> e = edgeTo.get(targetNode); e != null; e = edgeTo.get(e.getSource())) {
-            path.push(e);
+            path.addFirst(e);
             nodes.addFirst(e.getSource());
         }
         return new GraphPath<>(graph, startNode, targetNode,

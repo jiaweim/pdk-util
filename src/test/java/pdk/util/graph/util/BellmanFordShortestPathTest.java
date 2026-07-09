@@ -3,11 +3,12 @@ package pdk.util.graph.util;
 import org.junit.jupiter.api.Test;
 import pdk.util.ArrayUtils;
 import pdk.util.graph.Digraph;
+import pdk.util.graph.Edge;
+import pdk.util.graph.GraphPath;
 
-import java.util.List;
+import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Jiawei Mao
@@ -59,5 +60,191 @@ class BellmanFordShortestPathTest {
 
         BellmanFordShortestPath<Integer> shortestPath = new BellmanFordShortestPath<>(g, 0);
         assertTrue(shortestPath.hasNegativeCycle());
+    }
+
+    @Test
+    void testSimplePathNoNegativeEdges() {
+        Digraph<String> graph = new Digraph<>(List.of("A", "B", "C", "D", "E"));
+        graph.addEdge("A", "B", 1.0);
+        graph.addEdge("B", "C", 2.0);
+        graph.addEdge("A", "C", 4.0);
+
+        BellmanFordShortestPath<String> sp = new BellmanFordShortestPath<>(graph, "A");
+        assertEquals(0.0, sp.getWeight("A"));
+        assertEquals(1.0, sp.getWeight("B"));
+        assertEquals(3.0, sp.getWeight("C")); // A->B->C
+        assertTrue(sp.hasPathTo("B"));
+        assertTrue(sp.hasPathTo("C"));
+        assertFalse(sp.hasPathTo("D")); // D 不可达
+    }
+
+
+    @Test
+    void testGraphWithNegativeWeightsNoCycle() {
+        Digraph<String> graph = new Digraph<>(List.of("A", "B", "C", "D", "E"));
+
+        graph.addEdge("A", "B", 4.0);
+        graph.addEdge("A", "C", 5.0);
+        graph.addEdge("C", "B", -3.0);  // 负边但无环
+        graph.addEdge("B", "D", 2.0);
+        graph.addEdge("C", "D", 3.0);
+
+        BellmanFordShortestPath<String> sp = new BellmanFordShortestPath<>(graph, "A");
+        // A->C->B: 5 + (-3) = 2 < 4
+        assertEquals(2.0, sp.getWeight("B"));
+        // A->C->D: 5+3=8, A->C->B->D: 2+2=4
+        assertEquals(4.0, sp.getWeight("D"));
+    }
+
+    @Test
+    void testPathNodesAndEdgesOrder() {
+        Digraph<String> graph = new Digraph<>(List.of("A", "B", "C", "D", "E"));
+        graph.addEdge("A", "B", 1.0);
+        graph.addEdge("B", "C", 2.0);
+        BellmanFordShortestPath<String> sp = new BellmanFordShortestPath<>(graph, "A");
+        GraphPath<String> path = sp.getPath("C");
+        assertNotNull(path);
+
+        // 节点顺序 A -> B -> C
+        List<String> nodes = new ArrayList<>(path.getNodeList());
+        assertEquals(Arrays.asList("A", "B", "C"), nodes);
+
+        // 边顺序 A->B , B->C
+        List<Edge<String>> edges = new ArrayList<>(path.getEdgeList());
+        assertEquals(2, edges.size());
+        assertEquals("A", edges.get(0).getSource());
+        assertEquals("B", edges.get(0).getTarget());
+        assertEquals("B", edges.get(1).getSource());
+        assertEquals("C", edges.get(1).getTarget());
+    }
+
+    @Test
+    void testPathToSource() {
+        Digraph<String> graph = new Digraph<>(List.of("A", "B", "C", "D", "E"));
+
+        BellmanFordShortestPath<String> sp = new BellmanFordShortestPath<>(graph, "A");
+        GraphPath<String> path = sp.getPath("A");
+        assertNotNull(path);
+        assertEquals(Collections.singletonList("A"), new ArrayList<>(path.getNodeList()));
+        assertTrue(new ArrayList<>(path.getEdgeList()).isEmpty());
+    }
+
+    // ========== 负环检测 ==========
+    @Test
+    void testNegativeCycleExists() {
+        Digraph<String> graph = new Digraph<>(List.of("A", "B", "C", "D", "E"));
+
+        graph.addEdge("A", "B", 1.0);
+        graph.addEdge("B", "C", 2.0);
+        graph.addEdge("C", "A", -4.0);  // 总权重 -1
+        BellmanFordShortestPath<String> sp = new BellmanFordShortestPath<>(graph, "A");
+        assertTrue(sp.hasNegativeCycle());
+        Queue<String> cycle = sp.getCycle();
+        assertNotNull(cycle);
+        assertTrue(new HashSet<>(cycle).containsAll(Arrays.asList("A", "B", "C")));
+    }
+
+    @Test
+    void testNegativeCycleThrowsOnQuery() {
+        Digraph<String> graph = new Digraph<>(List.of("A", "B", "C", "D", "E"));
+        graph.addEdge("A", "B", 1.0);
+        graph.addEdge("B", "A", -2.0);
+        BellmanFordShortestPath<String> sp = new BellmanFordShortestPath<>(graph, "A");
+        assertThrows(UnsupportedOperationException.class, () -> sp.getWeight("B"));
+        assertThrows(UnsupportedOperationException.class, () -> sp.getPath("B"));
+    }
+
+    @Test
+    void testNoNegativeCycleWhenNone() {
+        Digraph<String> graph = new Digraph<>(List.of("A", "B", "C", "D", "E"));
+        graph.addEdge("A", "B", 1.0);
+        graph.addEdge("B", "C", 2.0);
+        BellmanFordShortestPath<String> sp = new BellmanFordShortestPath<>(graph, "A");
+        assertFalse(sp.hasNegativeCycle());
+        assertNull(sp.getCycle());
+    }
+
+    // ========== 边界与特殊值 ==========
+    @Test
+    void testDisconnectedNodes() {
+        Digraph<String> graph = new Digraph<>(List.of("A", "B", "C", "D", "E"));
+        graph.addEdge("A", "B", 1.0);
+        BellmanFordShortestPath<String> sp = new BellmanFordShortestPath<>(graph, "A");
+        assertFalse(sp.hasPathTo("C"));
+        assertEquals(Double.POSITIVE_INFINITY, sp.getWeight("C"));
+        assertNull(sp.getPath("C"));
+    }
+
+    @Test
+    void testZeroWeightEdges() {
+        Digraph<String> graph = new Digraph<>(List.of("A", "B", "C", "D", "E"));
+        graph.addEdge("A", "B", 0.0);
+        graph.addEdge("B", "C", 0.0);
+        BellmanFordShortestPath<String> sp = new BellmanFordShortestPath<>(graph, "A");
+        assertEquals(0.0, sp.getWeight("C"));
+        assertTrue(sp.hasPathTo("C"));
+    }
+
+
+    @Test
+    void testVerySmallNegativeWeight() {
+        Digraph<String> graph = new Digraph<>(List.of("A", "B", "C", "D", "E"));
+        // 权重极小的边，绝对值小于 EPSILON，不应形成负环
+        graph.addEdge("A", "B", -1e-15);
+        graph.addEdge("B", "A", -1e-15);
+        BellmanFordShortestPath<String> sp = new BellmanFordShortestPath<>(graph, "A");
+        // 由于 EPSILON 过滤，不会更新距离，因此无负环
+        assertFalse(sp.hasNegativeCycle());
+    }
+
+    @Test
+    void testSingleNodeGraph() {
+        Digraph<String> graph = new Digraph<>(List.of("A", "B", "C", "D", "E"));
+        BellmanFordShortestPath<String> sp = new BellmanFordShortestPath<>(graph, "A");
+        assertEquals(0.0, sp.getWeight("A"));
+        assertTrue(sp.hasPathTo("A"));
+        GraphPath<String> p = sp.getPath("A");
+        assertNotNull(p);
+        assertEquals(1, p.getNodeList().size());
+        assertTrue(p.getNodeList().contains("A"));
+    }
+
+    // ========== 多次松弛触发负环检测 ==========
+    @Test
+    void testNegativeCycleDetectedAfterManyRelaxations() {
+        Digraph<String> graph = new Digraph<>(List.of("A", "B", "C", "D", "E"));
+
+        for (int i = 0; i < 10; i++) {
+            graph.addNode("N" + i);
+        }
+        for (int i = 0; i < 9; i++) {
+            graph.addEdge("N" + i, "N" + (i + 1), 1.0);
+        }
+        graph.addEdge("N9", "N0", -15.0);  // 负环
+        BellmanFordShortestPath<String> sp = new BellmanFordShortestPath<>(graph, "N0");
+        assertTrue(sp.hasNegativeCycle());
+    }
+
+    // ========== 多路径与收敛一致性 ==========
+    @Test
+    void testMultiplePathsToSameNode() {
+        Digraph<String> graph = new Digraph<>(List.of("A", "B", "C", "D", "E"));
+        graph.addEdge("A", "B", 2.0);
+        graph.addEdge("A", "C", 1.0);
+        graph.addEdge("C", "B", 0.5);
+        BellmanFordShortestPath<String> sp = new BellmanFordShortestPath<>(graph, "A");
+        assertEquals(1.5, sp.getWeight("B")); // A→C→B
+    }
+
+    @Test
+    void testRepeatedQueryConsistency() {
+        Digraph<String> graph = new Digraph<>(List.of("A", "B", "C", "D", "E"));
+        graph.addEdge("A", "B", 1.0);
+        graph.addEdge("B", "C", 1.0);
+        graph.addEdge("A", "C", 3.0);
+        BellmanFordShortestPath<String> sp = new BellmanFordShortestPath<>(graph, "A");
+        double first = sp.getWeight("C");
+        assertEquals(2.0, first);
+        assertEquals(first, sp.getWeight("C")); // 多次查询不变
     }
 }

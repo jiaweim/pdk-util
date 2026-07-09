@@ -56,12 +56,12 @@ class DijkstraShortestPathTest {
         assertEquals(v2, path1.endNode());
         assertEquals(2, path1.weight());
 
-        assertIterableEquals(path.getPath(v2).nodeList(), Arrays.asList(v1, v2));
-        assertIterableEquals(path.getPath(v3).nodeList(), Arrays.asList(v1, v4, v3));
-        assertIterableEquals(path.getPath(v4).nodeList(), Arrays.asList(v1, v4));
-        assertIterableEquals(path.getPath(v5).nodeList(), Arrays.asList(v1, v4, v5));
-        assertIterableEquals(path.getPath(v6).nodeList(), Arrays.asList(v1, v4, v7, v6));
-        assertIterableEquals(path.getPath(v7).nodeList(), Arrays.asList(v1, v4, v7));
+        assertIterableEquals(path.getPath(v2).getNodeList(), Arrays.asList(v1, v2));
+        assertIterableEquals(path.getPath(v3).getNodeList(), Arrays.asList(v1, v4, v3));
+        assertIterableEquals(path.getPath(v4).getNodeList(), Arrays.asList(v1, v4));
+        assertIterableEquals(path.getPath(v5).getNodeList(), Arrays.asList(v1, v4, v5));
+        assertIterableEquals(path.getPath(v6).getNodeList(), Arrays.asList(v1, v4, v7, v6));
+        assertIterableEquals(path.getPath(v7).getNodeList(), Arrays.asList(v1, v4, v7));
     }
 
     @Test
@@ -77,11 +77,11 @@ class DijkstraShortestPathTest {
         g.addEdge("F", "E", 5);
 
         DijkstraShortestPath<String> path = new DijkstraShortestPath<>(g, "A");
-        assertIterableEquals(List.of("A", "B"), path.getPath("B").nodeList());
-        assertIterableEquals(List.of("A", "C"), path.getPath("C").nodeList());
-        assertIterableEquals(List.of("A", "B", "D"), path.getPath("D").nodeList());
-        assertIterableEquals(List.of("A", "B", "D", "E"), path.getPath("E").nodeList());
-        assertIterableEquals(List.of("A", "B", "D", "F"), path.getPath("F").nodeList());
+        assertIterableEquals(List.of("A", "B"), path.getPath("B").getNodeList());
+        assertIterableEquals(List.of("A", "C"), path.getPath("C").getNodeList());
+        assertIterableEquals(List.of("A", "B", "D"), path.getPath("D").getNodeList());
+        assertIterableEquals(List.of("A", "B", "D", "E"), path.getPath("E").getNodeList());
+        assertIterableEquals(List.of("A", "B", "D", "F"), path.getPath("F").getNodeList());
 
         assertEquals(0, path.getWeight("A"));
         assertEquals(10, path.getWeight("B"));

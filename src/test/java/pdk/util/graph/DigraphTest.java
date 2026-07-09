@@ -77,11 +77,11 @@ class DigraphTest {
         g.addEdge("D", "F", 1);
         g.addEdge("F", "E", 5);
 
-        assertIterableEquals(List.of("A", "B"), g.getShortestPath("A", "B").nodeList());
-        assertIterableEquals(List.of("A", "C"), g.getShortestPath("A", "C").nodeList());
-        assertIterableEquals(List.of("A", "B", "D"), g.getShortestPath("A", "D").nodeList());
-        assertIterableEquals(List.of("A", "B", "D", "E"), g.getShortestPath("A", "E").nodeList());
-        assertIterableEquals(List.of("A", "B", "D", "F"), g.getShortestPath("A", "F").nodeList());
+        assertIterableEquals(List.of("A", "B"), g.getShortestPath("A", "B").getNodeList());
+        assertIterableEquals(List.of("A", "C"), g.getShortestPath("A", "C").getNodeList());
+        assertIterableEquals(List.of("A", "B", "D"), g.getShortestPath("A", "D").getNodeList());
+        assertIterableEquals(List.of("A", "B", "D", "E"), g.getShortestPath("A", "E").getNodeList());
+        assertIterableEquals(List.of("A", "B", "D", "F"), g.getShortestPath("A", "F").getNodeList());
     }
 
     @Test

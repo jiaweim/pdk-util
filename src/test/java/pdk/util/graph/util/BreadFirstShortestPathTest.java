@@ -59,6 +59,6 @@ class BreadFirstShortestPathTest {
         assertEquals(v4, path.getParentNode(v7));
 
         GraphPath<String> p7 = path.getPath(v7);
-        assertIterableEquals(List.of(v3, v1, v4, v7), p7.nodeList());
+        assertIterableEquals(List.of(v3, v1, v4, v7), p7.getNodeList());
     }
 }

@@ -33,7 +33,8 @@ public final class GraphPath<V> {
      * @param edgeList  list of edges of the path
      * @param weight    total weight of the path
      */
-    public GraphPath(Graph<V> graph, V startNode, V endNode, Collection<V> nodeList, Collection<Edge<V>> edgeList, double weight) {
+    public GraphPath(Graph<V> graph, V startNode, V endNode, Collection<V> nodeList,
+            Collection<Edge<V>> edgeList, double weight) {
         requireNonNull(nodeList);
         requireNonNull(edgeList);
         requireNonNull(graph);
@@ -102,14 +103,14 @@ public final class GraphPath<V> {
      *
      * @return node list
      */
-    public Collection<V> nodeList() {return nodeList;}
+    public Collection<V> getNodeList() {return nodeList;}
 
     /**
      * list of edge in this path
      *
      * @return edge list
      */
-    public Collection<Edge<V>> edgeList() {return edgeList;}
+    public Collection<Edge<V>> getEdgeList() {return edgeList;}
 
     /**
      * weight of this path

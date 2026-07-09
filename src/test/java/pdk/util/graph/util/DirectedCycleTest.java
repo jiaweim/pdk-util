@@ -4,10 +4,10 @@ import org.junit.jupiter.api.Test;
 import pdk.util.ArrayUtils;
 import pdk.util.graph.Digraph;
 
+import java.util.Deque;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertIterableEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Jiawei Mao
@@ -95,5 +95,191 @@ class DirectedCycleTest {
         DirectedCycle<String> cycle = new DirectedCycle<>(g);
         assertTrue(cycle.hasCycle());
         assertIterableEquals(List.of("E", "D", "F", "E"), cycle.getCycle());
+    }
+
+    @Test
+    public void testEmptyGraph() {
+
+        Digraph<Integer> graph = new Digraph<>(List.of());
+        DirectedCycle<Integer> finder = new DirectedCycle<>(graph);
+
+        assertFalse(finder.hasCycle());
+        assertNull(finder.getCycle());
+    }
+
+    @Test
+    public void testSingleVertex() {
+        Digraph<Integer> graph = new Digraph<>(List.of(1));
+        DirectedCycle<Integer> finder = new DirectedCycle<>(graph);
+
+        assertFalse(finder.hasCycle());
+    }
+
+    @Test
+    public void testSingleEdge() {
+        Digraph<Integer> graph = new Digraph<>(List.of(1, 2));
+        graph.addEdge(1, 2, 1);
+
+        DirectedCycle<Integer> finder = new DirectedCycle<>(graph);
+
+        assertFalse(finder.hasCycle());
+    }
+
+    @Test
+    public void testLinearGraph() {
+        Digraph<Integer> graph = new Digraph<>(List.of(1, 2, 3, 4));
+
+        graph.addEdge(1, 2, 1);
+        graph.addEdge(2, 3, 1);
+        graph.addEdge(3, 4, 1);
+
+        DirectedCycle<Integer> finder = new DirectedCycle<>(graph);
+        assertFalse(finder.hasCycle());
+    }
+
+    @Test
+    public void testSimpleCycle() {
+
+        Digraph<Integer> graph = new Digraph<>(List.of(1, 2, 3));
+
+        graph.addEdge(1, 2, 1);
+        graph.addEdge(2, 3, 1);
+        graph.addEdge(3, 1, 1);
+
+        DirectedCycle<Integer> finder = new DirectedCycle<>(graph);
+
+        assertTrue(finder.hasCycle());
+        assertCycle(graph, finder.getCycle());
+    }
+
+    @Test
+    public void testSelfLoop() {
+        Digraph<Integer> graph = new Digraph<>(List.of(1));
+        graph.addEdge(1, 1, 1);
+
+        DirectedCycle<Integer> finder = new DirectedCycle<>(graph);
+
+        assertTrue(finder.hasCycle());
+        assertCycle(graph, finder.getCycle());
+    }
+
+    @Test
+    public void testDisconnectedGraphWithoutCycle() {
+        Digraph<Integer> graph = new Digraph<>(List.of(1, 2, 3, 4, 5));
+
+        graph.addEdge(1, 2, 1);
+        graph.addEdge(2, 3, 1);
+        graph.addEdge(4, 5, 1);
+
+        DirectedCycle<Integer> finder = new DirectedCycle<>(graph);
+
+        assertFalse(finder.hasCycle());
+    }
+
+    @Test
+    public void testDisconnectedGraphWithCycle() {
+        Digraph<Integer> graph = new Digraph<>(List.of(1, 2, 3, 4, 5));
+
+        graph.addEdge(1, 2, 1);
+        graph.addEdge(3, 4, 1);
+        graph.addEdge(4, 5, 1);
+        graph.addEdge(5, 3, 1);
+
+        DirectedCycle<Integer> finder = new DirectedCycle<>(graph);
+
+        assertTrue(finder.hasCycle());
+        assertCycle(graph, finder.getCycle());
+    }
+
+    @Test
+    public void testCrossEdgeNotCycle() {
+
+        Digraph<Integer> graph = new Digraph<>(List.of(1, 2, 3, 4));
+
+        graph.addEdge(1, 2, 1);
+        graph.addEdge(1, 3, 1);
+        graph.addEdge(2, 4, 1);
+        graph.addEdge(3, 4, 1);
+
+        DirectedCycle<Integer> finder = new DirectedCycle<>(graph);
+
+        assertFalse(finder.hasCycle());
+    }
+
+    @Test
+    public void testBackEdgeCycle() {
+
+        Digraph<Integer> graph = new Digraph<>(List.of(1, 2, 3, 4));
+
+        graph.addEdge(1, 2, 1);
+        graph.addEdge(2, 3, 1);
+        graph.addEdge(3, 4, 1);
+        graph.addEdge(4, 2, 1);
+
+        DirectedCycle<Integer> finder = new DirectedCycle<>(graph);
+
+        assertTrue(finder.hasCycle());
+
+        assertCycle(graph, finder.getCycle());
+    }
+
+    /**
+     * Verify returned cycle.
+     */
+    private static <V> void assertCycle(Digraph<V> graph, Deque<V> cycle) {
+
+        assertNotNull(cycle);
+        assertTrue(cycle.size() >= 2);
+
+        assertEquals(cycle.getFirst(), cycle.getLast());
+
+        List<V> list = List.copyOf(cycle);
+        for (int i = 0; i < list.size() - 1; i++) {
+            V from = list.get(i);
+            V to = list.get(i + 1);
+
+            boolean found = graph.getOutgoingEdges(from)
+                    .stream()
+                    .anyMatch(e -> e.getTarget().equals(to));
+
+            assertTrue(found, "Missing edge: " + from + " -> " + to);
+        }
+    }
+
+    @Test
+    public void testLongChain() {
+        int n = 10000;
+
+        Digraph<Integer> graph = new Digraph<>(java.util.stream.IntStream.range(0, n)
+                .boxed().toList());
+
+        for (int i = 0; i < n - 1; i++) {
+            graph.addEdge(i, i + 1, 1);
+        }
+
+        DirectedCycle<Integer> finder = new DirectedCycle<>(graph);
+        assertFalse(finder.hasCycle());
+    }
+
+    @Test
+    public void testLargeCycle() {
+
+        int n = 5000;
+        Digraph<Integer> graph =
+                new Digraph<>(java.util.stream.IntStream.range(0, n)
+                        .boxed()
+                        .toList());
+
+        for (int i = 0; i < n - 1; i++) {
+            graph.addEdge(i, i + 1, 1);
+        }
+
+        graph.addEdge(n - 1, 0, 1);
+
+        DirectedCycle<Integer> finder = new DirectedCycle<>(graph);
+
+        assertTrue(finder.hasCycle());
+
+        assertCycle(graph, finder.getCycle());
     }
 }

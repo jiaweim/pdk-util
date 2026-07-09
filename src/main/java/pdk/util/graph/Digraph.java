@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.doubles.Double2ObjectRBTreeMap;
 import org.jspecify.annotations.Nullable;
 import pdk.util.graph.util.BellmanFordShortestPath;
 import pdk.util.graph.util.BreadthFirstIterator;
+import pdk.util.graph.util.DirectedCycle;
 
 import java.util.*;
 
@@ -122,12 +123,12 @@ public class Digraph<V> extends AbstractGraph<V> {
 
     @Override
     public List<Edge<V>> getIncomingEdges(V node) {
-        return Collections.unmodifiableList(incomingEdgeMap.get(node));
+        return incomingEdgeMap.get(node);
     }
 
     @Override
     public List<Edge<V>> getOutgoingEdges(V node) {
-        return Collections.unmodifiableList(outgoingEdgeMap.get(node));
+        return outgoingEdgeMap.get(node);
     }
 
     @Override
@@ -159,35 +160,8 @@ public class Digraph<V> extends AbstractGraph<V> {
      * @since 2024-12-03 ⭐
      */
     public boolean hasCycle() {
-        int V = getNodeCount();
-        Map<V, Boolean> visited = new HashMap<>();
-        Map<V, Boolean> beingVisited = new HashMap<>();
-        for (V v : nodeSet_) {
-            visited.put(v, false);
-            beingVisited.put(v, false);
-        }
-
-        for (V v : nodeSet_) {
-            if (!visited.get(v) && hasCycle(v, visited, beingVisited)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean hasCycle(V node, Map<V, Boolean> visited, Map<V, Boolean> beingVisited) {
-        beingVisited.put(node, true);
-        for (Edge<V> edge : getOutgoingEdges(node)) {
-            V u = edge.getTarget();
-            if (beingVisited.get(u)) {
-                return true;
-            } else if (!visited.get(u) && hasCycle(u, visited, beingVisited)) {
-                return true;
-            }
-        }
-        beingVisited.put(node, false);
-        visited.put(node, true);
-        return false;
+        DirectedCycle<V> directedCycle = new DirectedCycle<>(this);
+        return directedCycle.hasCycle();
     }
 
     /**

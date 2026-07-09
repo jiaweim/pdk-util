@@ -5,10 +5,12 @@ import org.apache.commons.rng.simple.RandomSource;
 import org.apache.commons.statistics.distribution.ContinuousDistribution;
 import org.apache.commons.statistics.distribution.NormalDistribution;
 import pdk.chart.Chart;
+import pdk.chart.Data;
 import pdk.chart.JChart;
 import pdk.chart.XYChartType;
+import pdk.chart.data.statistics.HistogramDataset;
+import pdk.chart.data.statistics.HistogramType;
 import pdk.chart.data.xy.XYSeries;
-import pdk.chart.data.xy.XYSeriesCollection;
 import pdk.util.ArgUtils;
 import pdk.util.ArrayUtils;
 import pdk.util.math.StatUtils;
@@ -148,9 +150,9 @@ public class KernelDensityEstimator implements ContinuousDistribution {
         double[] dataset = sampler.samples(1000).toArray();
         KernelDensityEstimator kde = new KernelDensityEstimator(dataset);
 
-        pdk.chart.data.statistics.HistogramDataset dataset1 = new pdk.chart.data.statistics.HistogramDataset();
+        HistogramDataset dataset1 = new HistogramDataset();
         dataset1.addSeries("Histogram", dataset, 30);
-        dataset1.setType(pdk.chart.data.statistics.HistogramType.SCALE_AREA_TO_1);
+        dataset1.setType(HistogramType.SCALE_AREA_TO_1);
 
         double[] x = ArrayUtils.linspace(-5, 5, 1000);
         double[] y = new double[x.length];
@@ -159,9 +161,8 @@ public class KernelDensityEstimator implements ContinuousDistribution {
         }
 
         XYSeries<String> series = new XYSeries<>("KDE", x, y);
-        XYSeriesCollection<String> dataset2 = new XYSeriesCollection<>(series);
 
-        Chart chart = JChart.line(dataset2);
+        Chart chart = JChart.line(Data.createXY(series));
         chart.getXYPlot()
                 .addDataset(dataset1, XYChartType.HISTOGRAM);
         chart.show();

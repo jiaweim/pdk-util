@@ -2,8 +2,9 @@ package pdk.util.chart;
 
 import org.apache.commons.statistics.distribution.ExponentialDistribution;
 import pdk.chart.Chart;
+import pdk.chart.Data;
 import pdk.chart.JChart;
-import pdk.chart.data.xy.XYSeriesCollection;
+import pdk.chart.data.xy.XYSeries;
 import pdk.util.data.Point2D;
 import pdk.util.math.DistributionUtils;
 
@@ -24,8 +25,8 @@ public class ExponentialDistributionDemo {
         ArrayList<Point2D> sample1 = DistributionUtils.sample(d1, 0.0, 4.0, 500);
         ArrayList<Point2D> sample2 = DistributionUtils.sample(d2, 0.0, 4.0, 500);
 
-        pdk.chart.data.xy.XYSeries<String> series1 = new pdk.chart.data.xy.XYSeries<>("λ=0.5");
-        pdk.chart.data.xy.XYSeries<String> series2 = new pdk.chart.data.xy.XYSeries<>("λ=1.0");
+        XYSeries<String> series1 = new XYSeries<>("λ=0.5");
+        XYSeries<String> series2 = new XYSeries<>("λ=1.0");
         for (int i = 0; i < sample1.size(); i++) {
             Point2D p1 = sample1.get(i);
             Point2D p2 = sample2.get(i);
@@ -33,11 +34,7 @@ public class ExponentialDistributionDemo {
             series2.add(p2.getX(), p2.getY());
         }
 
-        XYSeriesCollection<String> dataset1 = new XYSeriesCollection<>();
-        dataset1.addSeries(series1);
-        dataset1.addSeries(series2);
-
-        Chart chart = JChart.line(dataset1, "X", "Probability density");
+        Chart chart = JChart.line(Data.createXY(series1, series2), "X", "Probability density");
         chart.show();
     }
 }

@@ -36,28 +36,28 @@ class DAGLongestPathTest {
 
         DAGLongestPath<Integer> longestPath = new DAGLongestPath<>(digraph, 5);
         GraphPath<Integer> p0 = longestPath.getPath(0);
-        assertIterableEquals(List.of(5, 1, 3, 6, 4, 0), p0.nodeList());
+        assertIterableEquals(List.of(5, 1, 3, 6, 4, 0), p0.getNodeList());
 
         GraphPath<Integer> p1 = longestPath.getPath(1);
-        assertIterableEquals(List.of(5, 1), p1.nodeList());
+        assertIterableEquals(List.of(5, 1), p1.getNodeList());
 
         GraphPath<Integer> p2 = longestPath.getPath(2);
-        assertIterableEquals(List.of(5, 1, 3, 6, 4, 7, 2), p2.nodeList());
+        assertIterableEquals(List.of(5, 1, 3, 6, 4, 7, 2), p2.getNodeList());
 
         GraphPath<Integer> p3 = longestPath.getPath(3);
-        assertIterableEquals(List.of(5, 1, 3), p3.nodeList());
+        assertIterableEquals(List.of(5, 1, 3), p3.getNodeList());
 
         GraphPath<Integer> p4 = longestPath.getPath(4);
-        assertIterableEquals(List.of(5, 1, 3, 6, 4), p4.nodeList());
+        assertIterableEquals(List.of(5, 1, 3, 6, 4), p4.getNodeList());
 
         GraphPath<Integer> p5 = longestPath.getPath(5);
-        assertIterableEquals(List.of(5), p5.nodeList());
+        assertIterableEquals(List.of(5), p5.getNodeList());
 
         GraphPath<Integer> p6 = longestPath.getPath(6);
-        assertIterableEquals(List.of(5, 1, 3, 6), p6.nodeList());
+        assertIterableEquals(List.of(5, 1, 3, 6), p6.getNodeList());
 
         GraphPath<Integer> p7 = longestPath.getPath(7);
-        assertIterableEquals(List.of(5, 1, 3, 6, 4, 7), p7.nodeList());
+        assertIterableEquals(List.of(5, 1, 3, 6, 4, 7), p7.getNodeList());
     }
 
     @Test
@@ -100,7 +100,7 @@ class DAGLongestPathTest {
         DAGLongestPath<String> longestPath = new DAGLongestPath<>(g, "s");
 
         GraphPath<String> patht = longestPath.getPath("t");
-        assertIterableEquals(List.of("s", "01", "02", "91", "92", "61", "62", "81", "82", "21", "22", "t"), patht.nodeList());
+        assertIterableEquals(List.of("s", "01", "02", "91", "92", "61", "62", "81", "82", "21", "22", "t"), patht.getNodeList());
     }
 
     @Test

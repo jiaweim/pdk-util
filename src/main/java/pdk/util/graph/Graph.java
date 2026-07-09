@@ -32,7 +32,7 @@ public interface Graph<V> {
      * @param <V>   node type
      * @return {@link UndirectedGraph} instance
      */
-    public static <V> UndirectedGraph<V> undirectedGraph(V... nodes) {
+    static <V> UndirectedGraph<V> undirectedGraph(V... nodes) {
         return new UndirectedGraph<>(nodes);
     }
 
