@@ -21,7 +21,7 @@ import static java.util.Objects.requireNonNull;
  * String utilities.
  *
  * @author Jiawei Mao
- * @version 1.2.0
+ * @version 1.3.0
  * @since 18 Mar 2026, 1:58 PM
  */
 public final class StringUtils {
@@ -34,6 +34,11 @@ public final class StringUtils {
     public static final String EMPTY = "";
 
     public static final String COMMA = ",";
+
+    public static final String DASH = "-";
+
+    public static final String UNDERSCORE = "_";
+
     /**
      * commons separator
      */
