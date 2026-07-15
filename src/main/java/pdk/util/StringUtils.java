@@ -51,7 +51,7 @@ public final class StringUtils {
      * @return {@code true} if the CharSequence is empty or null.
      * @since 2026-03-18⭐
      */
-    public static boolean isEmpty(@Nullable final CharSequence cs) {
+    public static boolean isEmpty(final CharSequence cs) {
         return cs == null || cs.isEmpty();
     }
 

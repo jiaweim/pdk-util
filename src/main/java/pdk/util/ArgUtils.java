@@ -1,5 +1,7 @@
 package pdk.util;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Comparator;
 
 /**
@@ -351,5 +353,37 @@ public final class ArgUtils {
             }
         }
         return true;
+    }
+
+    /**
+     * Checks that the given path refers to an existing regular file,
+     * and returns it if so. Throws an appropriate runtime exception otherwise.
+     *
+     * @param filePath the path to check; must not be null
+     * @return the same path
+     * @throws NullPointerException     if the path is null
+     * @throws IllegalArgumentException if the path does not exist,
+     *                                  or is not a regular file
+     */
+    public static Path checkExists(Path filePath) {
+        checkNonNull(filePath, "Path must not be null");
+
+        Path absolute = filePath.toAbsolutePath().normalize();
+
+        // Use exists() instead of notExists() because notExists() may return
+        // false when the existence cannot be determined (e.g. permission denied).
+        if (!Files.exists(absolute)) {
+            throw new IllegalArgumentException(
+                    "File does not exist or is not accessible: " + absolute);
+        }
+        if (!Files.isRegularFile(absolute)) {
+            throw new IllegalArgumentException(
+                    "Not a regular file: " + absolute);
+        }
+        if (!Files.isReadable(absolute)) {
+            throw new IllegalArgumentException("File is not readable: " + absolute);
+        }
+
+        return absolute;
     }
 }
