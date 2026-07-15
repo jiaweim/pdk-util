@@ -9,7 +9,6 @@ import java.net.URL;
 import java.nio.file.Path;
 
 import static java.util.Objects.requireNonNull;
-import static pdk.util.ArgUtils.firstNonNull;
 
 /**
  * Helper class for resource.
@@ -33,7 +32,7 @@ public final class ResourceUtils {
     public static URL getResourceURL(String resourceName) {
         requireNonNull(resourceName);
 
-        ClassLoader loader = firstNonNull(Thread.currentThread().getContextClassLoader(), ResourceUtils.class.getClassLoader());
+        ClassLoader loader = ArgUtils.checkNonNullElse(Thread.currentThread().getContextClassLoader(), ResourceUtils.class.getClassLoader());
         URL url = loader.getResource(resourceName);
         requireNonNull(url, String.format("resource %s not found", resourceName));
         return url;

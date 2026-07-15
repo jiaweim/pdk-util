@@ -6,12 +6,58 @@ import java.util.Comparator;
  * Class for argument check.
  *
  * @author Jiawei Mao
- * @version 1.1.0
+ * @version 1.2.0
  * @since 01 Jul 2024, 5:20 PM
  */
 public final class ArgUtils {
 
     private ArgUtils() {}
+
+    /**
+     * Checks that the specified object reference is not {@code null}.
+     *
+     * @param obj the object reference to check for nullity
+     * @param <T> the type of the reference
+     * @return {@code obj} if not {@code null}
+     * @throws NullPointerException if {@code obj} is {@code null}
+     */
+    public static <T> T checkNonNull(T obj) {
+        if (obj == null)
+            throw new NullPointerException();
+        return obj;
+    }
+
+    /**
+     * Checks that the specified object reference is not {@code null} and
+     * throws a customized {@link NullPointerException} if it is.
+     *
+     * @param obj     the object reference to check for nullity
+     * @param message detail message to be used in the event that a {@code
+     *                NullPointerException} is thrown
+     * @param <T>     the type of the reference
+     * @return {@code obj} if not {@code null}
+     * @throws NullPointerException if {@code obj} is {@code null}
+     */
+    public static <T> T checkNonNull(T obj, String message) {
+        if (obj == null)
+            throw new NullPointerException(message);
+        return obj;
+    }
+
+    /**
+     * {@return the first argument if it is non-{@code null} and
+     * otherwise the second argument if it is non-{@code null}}
+     *
+     * @param obj        an object
+     * @param defaultObj a non-{@code null} object to return if the first argument
+     *                   is {@code null}
+     * @param <T>        the type of the reference
+     * @throws NullPointerException if both {@code obj} is null and
+     *                              {@code defaultObj} is {@code null}
+     */
+    public static <T> T checkNonNullElse(T obj, T defaultObj) {
+        return (obj != null) ? obj : checkNonNull(defaultObj, "defaultObj");
+    }
 
     /**
      * Ensures that {@code start} and {@code end} specify a valid <i>positions</i> in an array, list
@@ -217,26 +263,6 @@ public final class ArgUtils {
     }
 
     /**
-     * Returns the first of two given parameters that is not {@code null}, if either is, or otherwise
-     * throws a {@link NullPointerException}.
-     *
-     * @param first  the first argument
-     * @param second the second argument
-     * @param <T>    type of the argument
-     * @return {@code first} if it is non-null; otherwise {@code second} if it is non-null
-     * @throws NullPointerException if both {@code first} and {@code second} are null
-     */
-    public static <T> T firstNonNull(T first, T second) {
-        if (first != null) {
-            return first;
-        }
-        if (second != null) {
-            return second;
-        }
-        throw new NullPointerException("Both parameters are null");
-    }
-
-    /**
      * Make use the {@code value} is nonnegative
      *
      * @param value a long value
@@ -277,6 +303,7 @@ public final class ArgUtils {
         }
         return x;
     }
+
 
     /**
      * Ensures the truth of an expression involving the state of the calling instance, but not
