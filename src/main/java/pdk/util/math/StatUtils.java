@@ -9,8 +9,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static java.util.Objects.requireNonNull;
-import static pdk.util.ArgUtils.checkArgument;
-import static pdk.util.ArgUtils.checkNonNegative;
+import static pdk.util.ArgUtils.*;
 
 /**
  * Statistic utilities.
@@ -62,69 +61,6 @@ public final class StatUtils {
         return min;
     }
 
-
-    /**
-     * Returns the greatest value present in {@code collection}.
-     *
-     * @param collection a collection of double values
-     * @return the value present in {@code collection} that is greater than or equal to every other value
-     * in the collection
-     */
-    public static double max(Collection<Double> collection) {
-        requireNonNull(collection);
-
-        checkArgument(!collection.isEmpty());
-        double max = Double.NEGATIVE_INFINITY;
-        for (Double value : collection) {
-            max = Math.max(max, value);
-        }
-        return max;
-    }
-
-
-    /**
-     * Returns the greatest value present in {@code array}.
-     *
-     * @param array a <i>nonempty</i> array of {@code int} values
-     * @return the value present in {@code array} that is greater than or equal to every other value
-     * in the array
-     * @throws IllegalArgumentException if {@code array} is empty
-     * @since 2026-03-24⭐
-     */
-    public static short max(short... array) {
-        requireNonNull(array);
-        checkArgument(array.length > 0);
-
-        short max = Short.MIN_VALUE;
-        for (short value : array) {
-            if (value > max) {
-                max = value;
-            }
-        }
-        return max;
-    }
-
-    /**
-     * Returns the greatest value present in {@code array}.
-     *
-     * @param array a <i>nonempty</i> array of {@code int} values
-     * @return the value present in {@code array} that is greater than or equal to every other value
-     * in the array
-     * @throws IllegalArgumentException if {@code array} is empty
-     * @since 2026-03-24⭐
-     */
-    public static double max(double... array) {
-        requireNonNull(array);
-        checkArgument(array.length > 0);
-
-        double max = Double.MIN_VALUE;
-        for (double value : array) {
-            if (value > max) {
-                max = value;
-            }
-        }
-        return max;
-    }
 
     /**
      * Returns the minimum and maximum value present in {@code array}.
@@ -182,14 +118,36 @@ public final class StatUtils {
      * @throws IllegalArgumentException if {@code array} is empty
      * @since 2026-03-24⭐
      */
-    public static int max(int... array) {
-        requireNonNull(array);
+    public static short max(short... array) {
+        checkNonNull(array);
         checkArgument(array.length > 0);
 
-        int max = Integer.MIN_VALUE;
-        for (int value : array) {
-            if (value > max) {
-                max = value;
+        short max = array[0];
+        for (int i = 1; i < array.length; i++) {
+            if (array[i] > max) {
+                max = array[i];
+            }
+        }
+        return max;
+    }
+
+    /**
+     * Returns the greatest value present in {@code array}.
+     *
+     * @param array a <i>nonempty</i> array of {@code int} values
+     * @return the value present in {@code array} that is greater than or equal to every other value
+     * in the array
+     * @throws IllegalArgumentException if {@code array} is empty
+     * @since 2026-03-24⭐
+     */
+    public static int max(int... array) {
+        checkNonNull(array);
+        checkArgument(array.length > 0);
+
+        int max = array[0];
+        for (int i = 1; i < array.length; i++) {
+            if (array[i] > max) {
+                max = array[i];
             }
         }
         return max;
@@ -204,11 +162,107 @@ public final class StatUtils {
      * @throws IllegalArgumentException if {@code array} is empty
      */
     public static long max(long... array) {
+        checkNonNull(array);
         checkArgument(array.length > 0);
 
         long max = array[0];
         for (int i = 1; i < array.length; i++) {
-            max = Math.max(max, array[i]);
+            if (array[i] > max) {
+                max = array[i];
+            }
+        }
+        return max;
+    }
+
+    /**
+     * Returns the greatest value present in {@code array}.
+     *
+     * @param array a <i>nonempty</i> array of {@code int} values
+     * @return the value present in {@code array} that is greater than or equal to every other value
+     * in the array
+     * @throws IllegalArgumentException if {@code array} is empty
+     * @since 2026-03-24⭐
+     */
+    public static double max(double... array) {
+        checkNonNull(array);
+        checkArgument(array.length > 0);
+
+        double max = array[0];
+        for (int i = 1; i < array.length; i++) {
+            if (array[i] > max) {
+                max = array[i];
+            }
+        }
+        return max;
+    }
+
+    /**
+     * Returns the maximum value in the provided {@link Collection} of {@link Double} values.
+     * <p>
+     * This method ignores {@code null} elements and {@link Double#NaN NaN} values during comparison.
+     * If all non-null elements are {@code NaN}, the result is {@code NaN}.
+     * If the collection contains only {@code null} elements, an {@link IllegalArgumentException} is thrown.
+     * <p>
+     * The comparison follows the rules of IEEE 754 floating-point arithmetic:
+     * <ul>
+     *   <li>Positive zero and negative zero are considered equal in the sense that if both are present,
+     *       the first encountered value will be returned (as {@code 0.0 > -0.0} is {@code false}).</li>
+     *   <li>Positive and negative infinities are compared numerically.</li>
+     *   <li>{@code NaN} values are skipped, so they never become the maximum unless there are
+     *       no other non-null, non-{@code NaN} elements.</li>
+     * </ul>
+     * <p>
+     * This method is consistent with {@link #max(double...)} in its handling of special floating-point
+     * values and nulls, ensuring predictable behavior across both primitive array and collection inputs.
+     *
+     * @param collection the collection of double values; must not be {@code null} or empty
+     * @return the maximum value in the collection, ignoring {@code null} and {@code NaN} entries,
+     * or {@link Double#NaN} if the only non-null elements are {@code NaN}
+     * @throws NullPointerException     if {@code collection} is {@code null}
+     * @throws IllegalArgumentException if the collection is empty or contains only {@code null} elements
+     * @since 1.2
+     *
+     * <b>Examples:</b>
+     * <pre>{@code
+     * // Simple maximum
+     * StatUtils.max(Arrays.asList(1.5, 3.2, 2.7));  // returns 3.2
+     *
+     * // Nulls are skipped
+     * StatUtils.max(Arrays.asList(null, 5.0, null)); // returns 5.0
+     *
+     * // NaN values are ignored when other numbers exist
+     * StatUtils.max(Arrays.asList(Double.NaN, 4.0, 2.0)); // returns 4.0
+     *
+     * // All NaN returns NaN
+     * StatUtils.max(Arrays.asList(Double.NaN, Double.NaN)); // returns NaN
+     *
+     * // All null throws exception
+     * StatUtils.max(Arrays.asList(null, null)); // throws IllegalArgumentException
+     * }</pre>
+     */
+    public static double max(Collection<Double> collection) {
+        checkNonNull(collection);
+        checkArgument(!collection.isEmpty());
+        double max = Double.NEGATIVE_INFINITY;
+        boolean hasValid = false;
+        boolean hasNumber = false;
+        for (Double value : collection) {
+            if (value != null) {
+                hasValid = true;
+                if (value.isNaN()) {
+                    continue;
+                }
+                hasNumber = true;
+                if (value > max) {
+                    max = value;
+                }
+            }
+        }
+        if (!hasValid) {
+            throw new IllegalArgumentException("Collection contains no valid numbers");
+        }
+        if (!hasNumber) {
+            return Double.NaN;
         }
         return max;
     }

@@ -1,5 +1,6 @@
 package pdk.util.math;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -18,6 +19,104 @@ class StatUtilsTest {
 
     private static final double EPS = 1E-15;
 
+    @Nested
+    class MaxTest {
+        @Test
+        void shouldThrowNullPointerExceptionWhenArrayIsNull() {
+            assertThrows(NullPointerException.class, () -> StatUtils.max((double[]) null));
+        }
+
+        @Test
+        void shouldThrowIllegalArgumentExceptionWhenArrayIsEmpty() {
+            assertThrows(IllegalArgumentException.class, () -> StatUtils.max(new double[0]));
+        }
+
+        @Test
+        void shouldReturnElementForSingleElementArray() {
+            assertEquals(42.0, StatUtils.max(42.0), 0.0);
+        }
+
+        @Test
+        void shouldReturnMaxForPositiveNumbers() {
+            assertEquals(3.5, StatUtils.max(1.2, 2.7, 3.5, 2.0), 1e-10);
+        }
+
+        @Test
+        void shouldReturnMaxWhenMixedWithNegativeNumbers() {
+            assertEquals(5.0, StatUtils.max(-1.0, 5.0, -3.0, 2.0), 1e-10);
+        }
+
+        @Test
+        void shouldReturnMaxWhenAllNegative() {
+            assertEquals(-0.5, StatUtils.max(-5.0, -2.5, -0.5, -3.0), 1e-10);
+        }
+
+        @Test
+        void shouldHandlePositiveInfinity() {
+            assertEquals(Double.POSITIVE_INFINITY,
+                    StatUtils.max(1.0, Double.POSITIVE_INFINITY, 3.0), 0.0);
+        }
+
+        @Test
+        void shouldReturnMaxEvenIfFirstElementIsPositiveInfinity() {
+            assertEquals(Double.POSITIVE_INFINITY,
+                    StatUtils.max(Double.POSITIVE_INFINITY, 1.0, 3.0), 0.0);
+        }
+
+        @Test
+        void shouldHandleNegativeInfinity() {
+            // 第一个元素是有限值，后面出现负无穷，应返回有限值
+            assertEquals(0.0, StatUtils.max(0.0, Double.NEGATIVE_INFINITY, -5.0), 1e-10);
+        }
+
+        @Test
+        void shouldReturnNegativeInfinityWhenAllElementsAreNegativeInfinity() {
+            assertEquals(Double.NEGATIVE_INFINITY,
+                    StatUtils.max(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY), 0.0);
+        }
+
+        @Test
+        void shouldReturnMaxWhenArrayContainsNegativeMaxValue() {
+            double result = StatUtils.max(-Double.MAX_VALUE, -100.0, -50.0);
+            assertEquals(-50.0, result, 1e-10);
+        }
+
+        @Test
+        void shouldReturnMaxWhenDuplicatesExist() {
+            assertEquals(7.7, StatUtils.max(7.7, 3.3, 7.7, 5.5), 1e-10);
+        }
+
+        @Test
+        void shouldTreatNegativeZeroAndPositiveZeroAsEqual() {
+            // 若第一个是 -0.0，后续 0.0 比较时 -0.0 < 0.0 为 false，所以 max 不会更新，返回 -0.0
+            double result = StatUtils.max(-0.0, 0.0);
+            assertTrue(result == 0.0 || result == -0.0);
+        }
+
+        // --- NaN 相关测试 ---
+
+        @Test
+        void shouldReturnMaxWhenArrayContainsNaNandOthers() {
+            // 如果 NaN 不是第一个元素，它会被跳过，返回正常最大值
+            double result = StatUtils.max(1.0, Double.NaN, 3.0);
+            assertEquals(3.0, result, 1e-10);
+        }
+
+        @Test
+        void shouldReturnNaNWhenFirstElementIsNaN() {
+            // 当第一个元素是 NaN 时，max 初始为 NaN，后续任何比较 (value > NaN) 都为 false，
+            // 因此 max 始终是 NaN，最终返回 NaN
+            double result = StatUtils.max(Double.NaN, 2.0, 3.0);
+            assertTrue(Double.isNaN(result));
+        }
+
+        @Test
+        void shouldReturnNaNWhenAllElementsAreNaN() {
+            double result = StatUtils.max(Double.NaN, Double.NaN);
+            assertTrue(Double.isNaN(result));
+        }
+    }
+
     @Test
     void min() {
         int[] array = new int[]{4, 2, 1, 0, -7};
@@ -31,6 +130,7 @@ class StatUtilsTest {
         int max = StatUtils.max(array);
         assertEquals(4, max);
     }
+
 
     @Test
     void sum() {
@@ -218,14 +318,14 @@ class StatUtilsTest {
     }
 
     @Test
-    void indexOfMax(){
+    void indexOfMax() {
         assertEquals(3, StatUtils.indexOfMax(3, 7, 2, 9, 4));
         assertEquals(1, StatUtils.indexOfMax(-5, -2, -8));
     }
 
     @Test
-    void maxChar(){
-        char[] array = new  char[]{'a', 'b', 'c'};
+    void maxChar() {
+        char[] array = new char[]{'a', 'b', 'c'};
         System.out.println(Character.codePointAt(array, 0));
     }
 }
