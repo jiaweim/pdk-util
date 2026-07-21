@@ -383,3 +383,7 @@ assertEquals(0.28, p7.weight(), 1e-10);
 assertIterableEquals(List.of(5, 7), p7.nodeList());
 ```
 
+## Math
+
+### norm
+

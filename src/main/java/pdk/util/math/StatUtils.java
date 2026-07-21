@@ -692,10 +692,72 @@ public final class StatUtils {
      * @since 2025-02-18⭐
      */
     public static double[] mode(double[] sample, final int begin, final int length) {
-        requireNonNull(sample);
+        checkNonNull(sample);
         checkNonNegative(begin, "index");
         checkNonNegative(length, "length");
 
         return org.hipparchus.stat.StatUtils.mode(sample, begin, length);
+    }
+
+    /**
+     * Computes the Euclidean (L2) norm of a vector.
+     * <p>
+     * The L2 norm is defined as the square root of the sum of squared absolute values:
+     * <pre>
+     *     ||x||<sub>2</sub> = &radic;( &Sigma;<sub>i</sub> x<sub>i</sub><sup>2</sup> )
+     * </pre>
+     * <p>
+     * <b>Numerical strategy:</b> to avoid overflow and underflow when the vector contains
+     * extremely large or small finite components, the algorithm first scans the input to
+     * find the maximum absolute value. It then scales each component by this maximum before
+     * squaring and summing, and finally multiplies the square root of the sum by the scaling
+     * factor.
+     * <p>
+     * <b>Special floating-point values:</b>
+     * <ul>
+     *   <li>If any element is {@code NaN}, the method immediately returns {@code NaN}
+     *       (IEEE 754 requirement).</li>
+     *   <li>If the vector contains infinite values but no {@code NaN}, the norm is
+     *       {@link Double#POSITIVE_INFINITY}.</li>
+     *   <li>The zero vector (all elements exactly zero) returns {@code 0.0}.</li>
+     *   <li>An empty array is treated as the zero vector and returns {@code 0.0}.</li>
+     * </ul>
+     *
+     * @param xs the input array representing the vector; must not be {@code null}
+     * @return the L2 norm of the vector
+     * @throws IllegalArgumentException if {@code xs} is {@code null}
+     * @since 2026-07-21
+     */
+    public static double getL2Norm(double[] xs) {
+        checkNonNull(xs);
+
+        // check NaN
+        for (double v : xs) {
+            if (Double.isNaN(v)) {
+                return Double.NaN;
+            }
+        }
+
+        // Prevent overflow after scaling
+        double max = 0.0;
+        for (double v : xs) {
+            double abs = Math.abs(v);
+            if (abs > max) {
+                max = abs;
+            }
+        }
+        if (max == 0.0) {
+            return 0.0;
+        }
+        if (Double.isInfinite(max)) {
+            return Double.POSITIVE_INFINITY;
+        }
+
+        double sum = 0.0;
+        for (double v : xs) {
+            double scaled = v / max;
+            sum += scaled * scaled;
+        }
+        return max * Math.sqrt(sum);
     }
 }

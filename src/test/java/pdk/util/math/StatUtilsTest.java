@@ -328,4 +328,132 @@ class StatUtilsTest {
         char[] array = new char[]{'a', 'b', 'c'};
         System.out.println(Character.codePointAt(array, 0));
     }
+
+    @Nested
+    class L2Norm {
+        @Test
+        void testNormalVector() {
+            double[] v = {3.0, 4.0};
+            assertEquals(5.0, StatUtils.getL2Norm(v), 1e-15);
+        }
+
+        @Test
+        void testNegativeValues() {
+            double[] v = {-3.0, -4.0};
+            assertEquals(5.0, StatUtils.getL2Norm(v), 1e-15);
+        }
+
+        @Test
+        void testZeroVector() {
+            double[] v = {0.0, 0.0, 0.0};
+            assertEquals(0.0, StatUtils.getL2Norm(v), 0.0);
+        }
+
+        @Test
+        void testEmptyArray() {
+            double[] v = {};
+            assertEquals(0.0, StatUtils.getL2Norm(v), 0.0);
+        }
+
+        @Test
+        void testSingleElement() {
+            double[] v = {5.0};
+            assertEquals(5.0, StatUtils.getL2Norm(v), 1e-15);
+        }
+
+        @Test
+        void testSingleNegativeElement() {
+            double[] v = {-5.0};
+            assertEquals(5.0, StatUtils.getL2Norm(v), 1e-15);
+        }
+
+        @Test
+        void testLargeValuesNoOverflow() {
+            double[] v = {1e200, 1e200};
+            double expected = Math.sqrt(2.0) * 1e200;
+            assertEquals(expected, StatUtils.getL2Norm(v), expected * 1e-15);
+        }
+
+        @Test
+        void testSmallValuesNoUnderflow() {
+            double[] v = {1e-200, 1e-200};
+            double expected = Math.sqrt(2.0) * 1e-200;
+            assertEquals(expected, StatUtils.getL2Norm(v), expected * 1e-15);
+        }
+
+        @Test
+        void testMixedDynamicRange() {
+            double[] v = {1e200, 1e-200};
+            // 缩放后极小值分量湮没，范数近似为 1e200
+            assertEquals(1e200, StatUtils.getL2Norm(v), 1e-10);
+        }
+
+        @Test
+        void testAllNegativeExtremeValues() {
+            double[] v = {-1e200, -1e200};
+            double expected = Math.sqrt(2.0) * 1e200;
+            assertEquals(expected, StatUtils.getL2Norm(v), expected * 1e-15);
+        }
+
+        @Test
+        void testWithPositiveInfinity() {
+            double[] v = {1.0, Double.POSITIVE_INFINITY};
+            assertTrue(Double.isInfinite(StatUtils.getL2Norm(v)));
+        }
+
+        @Test
+        void testWithOnlyPositiveInfinity() {
+            double[] v = {Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY};
+            assertTrue(Double.isInfinite(StatUtils.getL2Norm(v)));
+        }
+
+        @Test
+        void testWithNegativeInfinity() {
+            double[] v = {-1.0, Double.NEGATIVE_INFINITY};
+            assertTrue(Double.isInfinite(StatUtils.getL2Norm(v)));
+        }
+
+        @Test
+        void testWithNaN() {
+            double[] v = {1.0, Double.NaN};
+            assertTrue(Double.isNaN(StatUtils.getL2Norm(v)));
+        }
+
+        @Test
+        void testAllNaN() {
+            double[] v = {Double.NaN, Double.NaN};
+            assertTrue(Double.isNaN(StatUtils.getL2Norm(v)));
+        }
+
+        @Test
+        void testNaNFirst() {
+            double[] v = {Double.NaN, 1.0};
+            assertTrue(Double.isNaN(StatUtils.getL2Norm(v)));
+        }
+
+        @Test
+        void testInfinityAndNaN() {
+            double[] v = {Double.POSITIVE_INFINITY, Double.NaN};
+            // NaN 优先级更高
+            assertTrue(Double.isNaN(StatUtils.getL2Norm(v)));
+        }
+
+        @Test
+        void testNullInputThrowsException() {
+            // 假设 checkNonNull(xs) 在入参为 null 时抛出 IllegalArgumentException
+            assertThrows(NullPointerException.class, () -> StatUtils.getL2Norm(null));
+        }
+
+        @Test
+        void testVeryLargeArray() {
+            int n = 1_000_000;
+            double[] v = new double[n];
+            for (int i = 0; i < n; i++) {
+                v[i] = 1.0;
+            }
+            assertEquals(Math.sqrt(n), StatUtils.getL2Norm(v), Math.sqrt(n) * 1e-15);
+        }
+    }
+
+
 }
