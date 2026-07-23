@@ -315,7 +315,40 @@ public final class MathUtils {
      * @return x value of the third point
      */
     public static double linearInterpolateX(Point2D point1, Point2D point2, double y3) {
-        double k = (point2.getY() - point1.getY()) / (point2.getX() - point1.getX());
-        return (y3 - point1.getY()) / k + point1.getX();
+        return linearInterpolateX(point1.getX(), point1.getY(), point2.getX(), point2.getY(), y3);
     }
+
+    /**
+     * Performs linear interpolation to estimate the x-coordinate
+     * corresponding to a given y-coordinate between two points.
+     *
+     * <p>Given two points (x1, y1) and (x2, y2), this method
+     * calculates x where the line connecting the two points reaches
+     * the specified targetY.</p>
+     *
+     * @param x1      first point x-coordinate
+     * @param y1      first point y-coordinate
+     * @param x2      second point x-coordinate
+     * @param y2      second point y-coordinate
+     * @param targetY target y-coordinate
+     * @return interpolated x-coordinate, or {@link Double#NaN} if
+     * interpolation is not possible
+     */
+    public static double linearInterpolateX(double x1, double y1, double x2, double y2, double targetY) {
+        double deltaY = y2 - y1;
+        double deltaX = x2 - x1;
+        // 水平或垂直线
+        if (Math.abs(deltaY) < 1E-12) {
+            return Double.NaN;
+        }
+
+        if (Math.abs(deltaX) < 1E-12) {
+            return (x1 - x2) / 2.0;
+        }
+
+        double k = deltaY / deltaX;
+        return (targetY - y1) / k + x1;
+    }
+
+
 }
