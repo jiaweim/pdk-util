@@ -44,7 +44,7 @@ public interface Func2D {
         for (int i = 0; i < samples; i++) {
             double x = start + (step * i);
             double y = f(x);
-            list.add(Point.create(x, y));
+            list.add(Point.of(x, y));
         }
         return list;
     }

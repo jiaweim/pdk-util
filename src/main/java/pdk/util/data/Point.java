@@ -1,6 +1,10 @@
 package pdk.util.data;
 
 import pdk.util.ICopy;
+import pdk.util.PDKRuntimeException;
+import pdk.util.io.ImmutableBinary;
+import pdk.util.io.Input;
+import pdk.util.io.Output;
 
 import java.util.Comparator;
 import java.util.Objects;
@@ -12,7 +16,7 @@ import java.util.Objects;
  * @version 1.0.0
  * @since 07 May 2026, 3:38 PM
  */
-public class Point implements ICopy<Point>, Comparable<Point> {
+public class Point implements ICopy<Point>, Comparable<Point>, ImmutableBinary {
 
     /**
      * Create a 1D point
@@ -20,7 +24,7 @@ public class Point implements ICopy<Point>, Comparable<Point> {
      * @param value value
      * @return {@link Point}
      */
-    public static Point create(double value) {
+    public static Point of(double value) {
         return new Point(value);
     }
 
@@ -31,7 +35,7 @@ public class Point implements ICopy<Point>, Comparable<Point> {
      * @param y y value
      * @return {@link Point2D} instance
      */
-    public static Point2D create(double x, double y) {
+    public static Point2D of(double x, double y) {
         return new Point2D(x, y);
     }
 
@@ -43,14 +47,13 @@ public class Point implements ICopy<Point>, Comparable<Point> {
      * @param z z value
      * @return {@link Point3D} instance
      */
-    public static Point3D create(double x, double y, double z) {
+    public static Point3D of(double x, double y, double z) {
         return new Point3D(x, y, z);
     }
 
-
     protected final double x;
 
-    protected Point(double x) {
+    public Point(double x) {
         this.x = x;
     }
 
@@ -103,5 +106,26 @@ public class Point implements ICopy<Point>, Comparable<Point> {
     @Override
     public int hashCode() {
         return Objects.hashCode(x);
+    }
+
+    @Override
+    public void write(Output output) throws PDKRuntimeException {
+        output.writeDouble(x);
+    }
+
+    /**
+     * Deserializes a {@link Point} from the given {@link Input}.
+     * <p>
+     * This static factory method reads a single {@code double} value
+     * and creates a new immutable 1D point. It is the counterpart to
+     * {@link #write(Output)} and is automatically invoked by
+     * {@link BinaryIO} when reading an {@link ImmutableBinary} type.
+     *
+     * @param input the input stream to read binary data from
+     * @return a new {@code Point} instance with the deserialized x-coordinate
+     * @throws PDKRuntimeException if an I/O error occurs or the data is insufficient
+     */
+    public static Point fromBinary(Input input) {
+        return new Point(input.readDouble());
     }
 }

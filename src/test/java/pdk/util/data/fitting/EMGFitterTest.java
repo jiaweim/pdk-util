@@ -147,7 +147,7 @@ class EMGFitterTest {
         List<Point2D> sample = emg1.sample(start, end, 500);
         List<Point2D> realSample = new ArrayList<>(sample.size());
         for (Point2D point2D : sample) {
-            realSample.add(Point.create(point2D.getX(), area * (point2D.getY() + point2D.getY() * Math.random() * 0.1)));
+            realSample.add(Point.of(point2D.getX(), area * (point2D.getY() + point2D.getY() * Math.random() * 0.1)));
         }
 
         EMGFitter fitter = new EMGFitter(null, Integer.MAX_VALUE);

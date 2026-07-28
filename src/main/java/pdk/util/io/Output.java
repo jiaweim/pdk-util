@@ -1,6 +1,6 @@
 package pdk.util.io;
 
-import pdk.util.exception.PDKRuntimeException;
+import pdk.util.PDKRuntimeException;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -55,11 +55,13 @@ public class Output extends OutputStream implements AutoCloseable {
      *                      maxBufferSize and an exception is thrown. Can be -1 for no maximum.
      */
     public Output(int bufferSize, int maxBufferSize) {
-        if (bufferSize > maxBufferSize && maxBufferSize != -1) throw new IllegalArgumentException(
-                "bufferSize: " + bufferSize + " cannot be greater than maxBufferSize: " + maxBufferSize);
-        if (maxBufferSize < -1) throw new IllegalArgumentException("maxBufferSize cannot be < -1: " + maxBufferSize);
+        if (bufferSize > maxBufferSize && maxBufferSize != -1)
+            throw new IllegalArgumentException("bufferSize: " + bufferSize
+                    + " cannot be greater than maxBufferSize: " + maxBufferSize);
+        if (maxBufferSize < -1)
+            throw new IllegalArgumentException("maxBufferSize cannot be < -1: " + maxBufferSize);
         this.capacity = bufferSize;
-        this.maxCapacity = maxBufferSize == -1 ? Input.maxArraySize : maxBufferSize;
+        this.maxCapacity = maxBufferSize == -1 ? Input.MAX_ARRAY_SIZE : maxBufferSize;
         this.buffer = new byte[bufferSize];
     }
 
@@ -105,7 +107,8 @@ public class Output extends OutputStream implements AutoCloseable {
      */
     public Output(OutputStream outputStream, int bufferSize) {
         this(bufferSize, bufferSize);
-        if (outputStream == null) throw new IllegalArgumentException("outputStream cannot be null.");
+        if (outputStream == null)
+            throw new IllegalArgumentException("outputStream cannot be null.");
         this.outputStream = outputStream;
     }
 
@@ -150,7 +153,7 @@ public class Output extends OutputStream implements AutoCloseable {
         if (maxBufferSize < -1)
             throw new IllegalArgumentException("maxBufferSize cannot be < -1: " + maxBufferSize);
         this.buffer = buffer;
-        this.maxCapacity = maxBufferSize == -1 ? Input.maxArraySize : maxBufferSize;
+        this.maxCapacity = maxBufferSize == -1 ? Input.MAX_ARRAY_SIZE : maxBufferSize;
         capacity = buffer.length;
         position = 0;
         total = 0;

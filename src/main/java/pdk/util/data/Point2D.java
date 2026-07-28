@@ -1,5 +1,10 @@
 package pdk.util.data;
 
+import pdk.util.PDKRuntimeException;
+import pdk.util.io.ImmutableBinary;
+import pdk.util.io.Input;
+import pdk.util.io.Output;
+
 import java.util.Objects;
 
 /**
@@ -13,7 +18,7 @@ public class Point2D extends Point {
 
     protected final double y;
 
-    protected Point2D(double x, double y) {
+    public Point2D(double x, double y) {
         super(x);
         this.y = y;
     }
@@ -42,5 +47,27 @@ public class Point2D extends Point {
     @Override
     public Point2D copy() {
         return new Point2D(x, y);
+    }
+
+    @Override
+    public void write(Output output) throws PDKRuntimeException {
+        output.writeDouble(x);
+        output.writeDouble(y);
+    }
+
+    /**
+     * Deserializes a {@link Point2D} from the given {@link Input}.
+     * <p>
+     * This static factory method reads two {@code double} values
+     * and creates a new immutable Point2D. It is the counterpart to
+     * {@link #write(Output)} and is automatically invoked by
+     * {@link BinaryIO} when reading an {@link ImmutableBinary} type.
+     *
+     * @param input the input stream to read binary data from
+     * @return a new {@code Point} instance with the deserialized x-coordinate
+     * @throws PDKRuntimeException if an I/O error occurs or the data is insufficient
+     */
+    public static Point2D fromBinary(Input input) {
+        return new Point2D(input.readDouble(), input.readDouble());
     }
 }

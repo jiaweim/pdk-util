@@ -1,4 +1,4 @@
-package pdk.util.exception;
+package pdk.util;
 
 /**
  * PDK RuntimeException
@@ -24,5 +24,9 @@ public class PDKRuntimeException extends RuntimeException {
      */
     public PDKRuntimeException(Throwable exception) {
         super(exception);
+    }
+
+    public PDKRuntimeException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

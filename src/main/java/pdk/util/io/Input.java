@@ -1,6 +1,6 @@
 package pdk.util.io;
 
-import pdk.util.exception.PDKRuntimeException;
+import pdk.util.PDKRuntimeException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,7 +9,9 @@ import static java.util.Objects.requireNonNull;
 
 /**
  * An {@link InputStream} that reads data from a byte[] and optionally fills the byte[] from
- * another {@link InputStream} as needed. Utility methods are provided for efficiently reading primitive types and strings.
+ * another {@link InputStream} as needed.
+ * <p>
+ * Utility methods are provided for efficiently reading primitive types and strings.
  *
  * @author Jiawei Mao
  * @version 1.0.0
@@ -18,9 +20,10 @@ import static java.util.Objects.requireNonNull;
 public class Input extends InputStream {
 
     /**
-     * Maximum reasonable array length. See: https://stackoverflow.com/questions/3038392/do-java-arrays-have-a-maximum-size
+     * Maximum reasonable array length. See:
+     * <a href="https://stackoverflow.com/questions/3038392/do-java-arrays-have-a-maximum-size">stackoverflow</a>
      */
-    public static final int maxArraySize = Integer.MAX_VALUE - 8;
+    public static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
 
     /**
      * buffer to hold data
@@ -374,8 +377,8 @@ public class Input extends InputStream {
     }
 
     /**
-     * Returns true if the {@link #limit()} has been reached and {@link #fill(byte[], int, int)} is unable to provide more
-     * bytes.
+     * Returns true if the {@link #limit()} has been reached and
+     * {@link #fill(byte[], int, int)} is unable to provide more bytes.
      *
      * @return true if reach the end
      */
@@ -441,7 +444,7 @@ public class Input extends InputStream {
     public long skip(long count) throws PDKRuntimeException {
         long remaining = count;
         while (remaining > 0) {
-            int skip = (int) Math.min(maxArraySize, remaining);
+            int skip = (int) Math.min(MAX_ARRAY_SIZE, remaining);
             skip(skip);
             remaining -= skip;
         }
@@ -534,7 +537,8 @@ public class Input extends InputStream {
      * @return the int value read
      */
     public int readInt(int count) {
-        if (count < 0 || count > 4) throw new IllegalArgumentException("count must be >= 0 and <= 4: " + count);
+        if (count < 0 || count > 4)
+            throw new IllegalArgumentException("count must be >= 0 and <= 4: " + count);
         require(count);
         int p = position;
         position = p + count;

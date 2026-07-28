@@ -35,7 +35,6 @@ module pdk.util {
     exports pdk.util.data;
     exports pdk.util.data.fitting;
     exports pdk.util.data.func;
-    exports pdk.util.exception;
     exports pdk.util.graph;
     exports pdk.util.graph.util;
     exports pdk.util.io;

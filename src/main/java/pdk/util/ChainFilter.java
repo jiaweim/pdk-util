@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static java.util.Objects.requireNonNull;
+import static pdk.util.ArgUtils.checkNonNull;
 
 /**
  * Filter delegate to a list of {@link IFilter}
@@ -38,7 +38,7 @@ public class ChainFilter<T> implements IFilter<T> {
      * @param mode       {@link Mode} to define relationship between filters
      */
     public ChainFilter(List<IFilter<T>> filterList, Mode mode) {
-        requireNonNull(filterList);
+        checkNonNull(filterList);
 
         this.filters_ = new ArrayList<>(filterList);
         this.mode_ = mode;

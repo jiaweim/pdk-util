@@ -118,7 +118,7 @@ public final class DistributionUtils {
         for (int i = 0; i < samples; i++) {
             double x = start + (i * step);
             double y = distribution.density(x);
-            list.add(Point.create(x, y));
+            list.add(Point.of(x, y));
         }
         return list;
     }
