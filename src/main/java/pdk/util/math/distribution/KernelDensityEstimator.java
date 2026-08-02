@@ -4,13 +4,12 @@ import org.apache.commons.rng.UniformRandomProvider;
 import org.apache.commons.rng.simple.RandomSource;
 import org.apache.commons.statistics.distribution.ContinuousDistribution;
 import org.apache.commons.statistics.distribution.NormalDistribution;
-import pdk.chart.Chart;
-import pdk.chart.Data;
-import pdk.chart.JChart;
-import pdk.chart.XYChartType;
+import pdk.chart.LineChart;
+import pdk.chart.XYChart;
 import pdk.chart.data.statistics.HistogramDataset;
 import pdk.chart.data.statistics.HistogramType;
 import pdk.chart.data.xy.XYSeries;
+import pdk.chart.model.Data;
 import pdk.util.ArgUtils;
 import pdk.util.ArrayUtils;
 import pdk.util.math.StatUtils;
@@ -162,9 +161,8 @@ public class KernelDensityEstimator implements ContinuousDistribution {
 
         XYSeries<String> series = new XYSeries<>("KDE", x, y);
 
-        Chart chart = JChart.line(Data.createXY(series));
-        chart.getXYPlot()
-                .addDataset(dataset1, XYChartType.HISTOGRAM);
+        LineChart chart = new LineChart(Data.createXY(series));
+        chart.addDataset(dataset1, XYChart.ChartType.BAR);
         chart.show();
     }
 }

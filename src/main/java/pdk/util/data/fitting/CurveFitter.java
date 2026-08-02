@@ -7,13 +7,14 @@ import org.hipparchus.optim.nonlinear.vector.leastsquares.LeastSquaresOptimizer;
 import org.hipparchus.optim.nonlinear.vector.leastsquares.LeastSquaresProblem;
 import org.hipparchus.optim.nonlinear.vector.leastsquares.LevenbergMarquardtOptimizer;
 import pdk.chart.Chart;
-import pdk.chart.JChart;
+import pdk.chart.LineChart;
 import pdk.chart.data.xy.XYSeries;
 import pdk.chart.data.xy.XYSeriesCollection;
 import pdk.util.data.Point2D;
 import pdk.util.data.WeightPoint2D;
 import pdk.util.data.func.Func2D;
 
+import java.awt.*;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -220,7 +221,7 @@ public abstract class CurveFitter implements ParametricUnivariateFunction {
      * @param sampleSize Number of data points sampled from the fitting function
      * @return {@link Chart}
      */
-    public Chart showFit(double[] parameters, Collection<WeightPoint2D> dataset,
+    public LineChart showFit(double[] parameters, Collection<WeightPoint2D> dataset,
             double start, double end, int sampleSize) {
 
         Func2D func2D = x -> CurveFitter.this.value(x, parameters);
@@ -240,11 +241,9 @@ public abstract class CurveFitter implements ParametricUnivariateFunction {
         data.addSeries(actualSeries);
         data.addSeries(fitSeries);
 
-        Chart chart = JChart.line(data);
-        chart.getXYPlot()
-                .getLineAndShapeRenderer()
-                .seriesLineWidth(0, 4f)
-                .seriesLineWidth(1, 4f);
+        LineChart chart = new LineChart(data);
+        chart.setSeriesStroke(0, new BasicStroke(4f));
+        chart.setSeriesStroke(1, new BasicStroke(4f));
         return chart;
     }
 

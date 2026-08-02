@@ -3,9 +3,8 @@ package pdk.util.math.demo;
 import org.apache.commons.rng.UniformRandomProvider;
 import org.apache.commons.statistics.distribution.NormalDistribution;
 import org.hipparchus.random.RandomDataGenerator;
-import pdk.chart.Chart;
-import pdk.chart.JChart;
-import pdk.chart.XYChartType;
+import pdk.chart.LineChart;
+import pdk.chart.XYChart;
 import pdk.chart.data.statistics.HistogramDataset;
 import pdk.chart.data.statistics.HistogramType;
 import pdk.util.math.SamplingUtils;
@@ -52,9 +51,8 @@ public class MHSamplerDemo {
             yValues[i] = gaussian.density(pi[i]);
         }
 
-        Chart chart = JChart.line(pi, yValues);
-        chart.getXYPlot()
-                .addDataset(dataset1, XYChartType.HISTOGRAM);
+        LineChart chart = new LineChart(pi, yValues);
+        chart.addDataset(dataset1, XYChart.ChartType.BAR);
         chart.show();
     }
 }

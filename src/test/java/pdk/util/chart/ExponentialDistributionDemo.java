@@ -2,9 +2,9 @@ package pdk.util.chart;
 
 import org.apache.commons.statistics.distribution.ExponentialDistribution;
 import pdk.chart.Chart;
-import pdk.chart.Data;
-import pdk.chart.JChart;
+import pdk.chart.LineChart;
 import pdk.chart.data.xy.XYSeries;
+import pdk.chart.model.Data;
 import pdk.util.data.Point2D;
 import pdk.util.math.DistributionUtils;
 
@@ -34,7 +34,7 @@ public class ExponentialDistributionDemo {
             series2.add(p2.getX(), p2.getY());
         }
 
-        Chart chart = JChart.line(Data.createXY(series1, series2), "X", "Probability density");
+        Chart chart = new LineChart(Data.createXY(series1, series2), "X", "Probability density");
         chart.show();
     }
 }

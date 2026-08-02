@@ -1,8 +1,7 @@
 package pdk.util.math.demo;
 
 import org.apache.commons.statistics.distribution.PoissonDistribution;
-import pdk.chart.Chart;
-import pdk.chart.JChart;
+import pdk.chart.CategoryBarChart;
 import pdk.chart.block.BlockBorder;
 import pdk.chart.data.category.DefaultCategoryDataset;
 import pdk.chart.legend.LegendTitle;
@@ -41,11 +40,9 @@ public class PoissonDistributionDemo {
             dataset.addValue(probability1, series2, String.valueOf(i));
         }
 
-        Chart chart = JChart.bar(dataset, "k", "probability of k");
-        chart.getCategoryPlot()
-                .getBarRenderer(0)
-                .seriesPaint(0, colors[0])
-                .seriesPaint(1, colors[1]);
+        CategoryBarChart chart = new CategoryBarChart(dataset, "k", "probability of k");
+        chart.setSeriesPaint(0, colors[0]);
+        chart.setSeriesPaint(1, colors[1]);
         LegendTitle legend = chart.getLegend();
 
         legend.setPosition(pdk.chart.api.RectangleEdge.RIGHT);

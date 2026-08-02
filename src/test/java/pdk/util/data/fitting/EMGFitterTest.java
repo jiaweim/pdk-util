@@ -4,9 +4,9 @@ import org.apache.commons.rng.sampling.distribution.*;
 import org.hipparchus.optim.nonlinear.vector.leastsquares.LeastSquaresOptimizer;
 import org.hipparchus.random.RandomDataGenerator;
 import org.junit.jupiter.api.Test;
-import pdk.chart.Chart;
-import pdk.chart.JChart;
-import pdk.chart.XYChartType;
+import pdk.chart.BarChart;
+import pdk.chart.LineChart;
+import pdk.chart.XYChart;
 import pdk.chart.data.xy.XYSeries;
 import pdk.chart.data.xy.XYSeriesCollection;
 import pdk.util.data.Point;
@@ -16,6 +16,7 @@ import pdk.util.data.func.ExponentiallyModifiedGaussianFunc;
 import pdk.util.data.func.Func2D;
 import pdk.util.math.SamplingUtils;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -133,9 +134,8 @@ class EMGFitterTest {
         }
         XYSeriesCollection<String> dataset2 = new XYSeriesCollection<>(series);
 
-        Chart chart = JChart.histogram(dataset, null, null, null);
-        chart.getXYPlot()
-                .addDataset(dataset2, XYChartType.LINE);
+        BarChart chart = new BarChart(dataset, null, null, null);
+        chart.addDataset(dataset2, XYChart.ChartType.LINE);
         chart.show();
     }
 
@@ -170,11 +170,9 @@ class EMGFitterTest {
         dataset.addSeries(s1);
         dataset.addSeries(s2);
 
-        Chart chart = JChart.line(dataset, "X", "f(x)");
-        chart.getXYPlot()
-                .getLineAndShapeRenderer()
-                .seriesLineWidth(0, 3f)
-                .seriesLineWidth(1, 3f);
+        LineChart chart = new LineChart(dataset, "X", "f(x)");
+        chart.setSeriesStroke(0, new BasicStroke(3f));
+        chart.setSeriesStroke(1, new BasicStroke(3f));
         chart.show();
     }
 

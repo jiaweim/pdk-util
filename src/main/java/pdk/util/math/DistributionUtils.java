@@ -3,8 +3,8 @@ package pdk.util.math;
 import org.apache.commons.statistics.distribution.*;
 import org.hipparchus.special.Gamma;
 import pdk.chart.Chart;
-import pdk.chart.JChart;
-import pdk.chart.XYChartType;
+import pdk.chart.LineChart;
+import pdk.chart.XYChart;
 import pdk.chart.data.xy.XYSeries;
 import pdk.chart.data.xy.XYSeriesCollection;
 import pdk.util.ArgUtils;
@@ -132,12 +132,12 @@ public final class DistributionUtils {
      * @param samples      number of data points
      * @return {@link Chart}
      */
-    public static Chart pdfChart(ContinuousDistribution distribution, double start, double end, int samples) {
+    public static LineChart pdfChart(ContinuousDistribution distribution, double start, double end, int samples) {
         ArrayList<Point2D> sample = sample(distribution, start, end, samples);
         XYSeries<String> series = createSeries("", sample);
         XYSeriesCollection<String> dataset = new XYSeriesCollection<>(series);
 
-        return JChart.line(dataset, "X", "Probability Density");
+        return new LineChart(dataset, "X", "Probability Density");
     }
 
     /**
@@ -152,7 +152,7 @@ public final class DistributionUtils {
      * @param samples      number of data points
      * @return {@link Chart}
      */
-    public static Chart pdfChart(ContinuousDistribution distribution, double start, double end,
+    public static LineChart pdfChart(ContinuousDistribution distribution, double start, double end,
             double areaStart, double areaEnd, int samples) {
 
         double shadowStart = Math.max(start, areaStart);
@@ -171,9 +171,8 @@ public final class DistributionUtils {
         XYSeriesCollection<String> dataset1 = new XYSeriesCollection<>(lineSeries);
         XYSeriesCollection<String> dataset2 = new XYSeriesCollection<>(areaSeries);
 
-        Chart chart = JChart.line(dataset1, "X", "Probability Density");
-        chart.getXYPlot()
-                .addDataset(dataset2, XYChartType.AREA);
+        LineChart chart = new LineChart(dataset1, "X", "Probability Density");
+        chart.addDataset(dataset2, XYChart.ChartType.AREA);
 
         return chart;
     }

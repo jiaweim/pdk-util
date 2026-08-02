@@ -1,12 +1,12 @@
 package pdk.util.data.func;
 
-import pdk.chart.Chart;
-import pdk.chart.JChart;
+import pdk.chart.LineChart;
 import pdk.chart.api.RectangleEdge;
 import pdk.chart.data.xy.XYSeries;
 import pdk.chart.data.xy.XYSeriesCollection;
 import pdk.util.data.Point2D;
 
+import java.awt.*;
 import java.util.List;
 
 /**
@@ -43,13 +43,11 @@ public class EMGDemo {
         dataset.addSeries(toSeries("μ=0, σ=3, τ=1", sample3));
         dataset.addSeries(toSeries("μ=-3, σ=1, τ=0.25", sample4));
 
-        Chart chart = JChart.line(dataset, "X", "Y");
-        chart.getXYPlot()
-                .getLineAndShapeRenderer()
-                .seriesLineWidth(0, 4f)
-                .seriesLineWidth(1, 4f)
-                .seriesLineWidth(2, 4f)
-                .seriesLineWidth(3, 4f);
+        LineChart chart = new LineChart(dataset, "X", "Y");
+        chart.setSeriesStroke(0, new BasicStroke(4f));
+        chart.setSeriesStroke(1, new BasicStroke(4f));
+        chart.setSeriesStroke(2, new BasicStroke(4f));
+        chart.setSeriesStroke(3, new BasicStroke(4f));
         chart.getLegend().setPosition(RectangleEdge.RIGHT);
         chart.show();
     }
