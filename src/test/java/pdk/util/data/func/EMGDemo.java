@@ -44,10 +44,11 @@ public class EMGDemo {
         dataset.addSeries(toSeries("μ=-3, σ=1, τ=0.25", sample4));
 
         LineChart chart = new LineChart(dataset, "X", "Y");
-        chart.setSeriesStroke(0, new BasicStroke(4f));
-        chart.setSeriesStroke(1, new BasicStroke(4f));
-        chart.setSeriesStroke(2, new BasicStroke(4f));
-        chart.setSeriesStroke(3, new BasicStroke(4f));
+        chart.getRenderer()
+                .withSeriesStroke(0, new BasicStroke(4f))
+                .withSeriesStroke(1, new BasicStroke(4f))
+                .withSeriesStroke(2, new BasicStroke(4f))
+                .withSeriesStroke(3, new BasicStroke(4f));
         chart.getLegend().setPosition(RectangleEdge.RIGHT);
         chart.show();
     }

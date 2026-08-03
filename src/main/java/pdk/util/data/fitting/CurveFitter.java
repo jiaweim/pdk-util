@@ -242,8 +242,9 @@ public abstract class CurveFitter implements ParametricUnivariateFunction {
         data.addSeries(fitSeries);
 
         LineChart chart = new LineChart(data);
-        chart.setSeriesStroke(0, new BasicStroke(4f));
-        chart.setSeriesStroke(1, new BasicStroke(4f));
+        chart.getRenderer()
+                .withSeriesStrokeWidth(0, 4f)
+                .withSeriesStrokeWidth(1, 4f);
         return chart;
     }
 

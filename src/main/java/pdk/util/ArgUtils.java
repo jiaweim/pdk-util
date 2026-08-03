@@ -306,6 +306,33 @@ public final class ArgUtils {
         return x;
     }
 
+    /**
+     * Make use the {@code value} is positive.
+     *
+     * @param x    value to check
+     * @param role name of the value
+     * @return the value
+     */
+    public static double checkPositive(double x, String role) {
+        if (!(x > 0)) { // not x > 0, to work with NaN.
+            throw new IllegalArgumentException(role + " (" + x + ") must be > 0");
+        }
+        return x;
+    }
+
+    /**
+     * Make use the {@code value} is positive.
+     *
+     * @param x value to check
+     * @return the value
+     */
+    public static double checkPositive(double x) {
+        if (!(x > 0)) { // not x > 0, to work with NaN.
+            throw new IllegalArgumentException(" (" + x + ") must be > 0");
+        }
+        return x;
+    }
+
 
     /**
      * Ensures the truth of an expression involving the state of the calling instance, but not

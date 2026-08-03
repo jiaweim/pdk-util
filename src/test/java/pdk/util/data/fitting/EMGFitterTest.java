@@ -16,7 +16,6 @@ import pdk.util.data.func.ExponentiallyModifiedGaussianFunc;
 import pdk.util.data.func.Func2D;
 import pdk.util.math.SamplingUtils;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -134,8 +133,8 @@ class EMGFitterTest {
         }
         XYSeriesCollection<String> dataset2 = new XYSeriesCollection<>(series);
 
-        BarChart chart = new BarChart(dataset, null, null, null);
-        chart.addDataset(dataset2, XYChart.ChartType.LINE);
+        BarChart chart = new BarChart(dataset, null, null);
+        chart.addDataset(dataset2, XYChart.Type.LINE);
         chart.show();
     }
 
@@ -171,8 +170,9 @@ class EMGFitterTest {
         dataset.addSeries(s2);
 
         LineChart chart = new LineChart(dataset, "X", "f(x)");
-        chart.setSeriesStroke(0, new BasicStroke(3f));
-        chart.setSeriesStroke(1, new BasicStroke(3f));
+        chart.getRenderer()
+                .withSeriesStrokeWidth(0, 3f)
+                .withSeriesStrokeWidth(1, 3f);
         chart.show();
     }
 

@@ -1,7 +1,6 @@
 package pdk.util.data.func;
 
 import pdk.chart.LineChart;
-import pdk.chart.axis.NumberAxis;
 
 import java.awt.*;
 
@@ -17,9 +16,10 @@ public class Func2DShowDemo {
         Func2D func2D = x -> x * x + 2;
 
         LineChart chart = func2D.show(-40, 40, 400);
-        NumberAxis yAxis = chart.getRangeAxisAsNumber();
-        yAxis.setRange(0, 40);
-        chart.setSeriesStroke(0, new BasicStroke(2f));
+        chart.getRangeAxisAsNumber()
+                .withRange(0, 40);
+        chart.getRenderer()
+                .withSeriesStroke(0, new BasicStroke(2f));
         chart.show();
     }
 }

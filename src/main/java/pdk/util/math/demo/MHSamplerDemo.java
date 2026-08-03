@@ -52,7 +52,7 @@ public class MHSamplerDemo {
         }
 
         LineChart chart = new LineChart(pi, yValues);
-        chart.addDataset(dataset1, XYChart.ChartType.BAR);
+        chart.addDataset(dataset1, XYChart.Type.BAR);
         chart.show();
     }
 }

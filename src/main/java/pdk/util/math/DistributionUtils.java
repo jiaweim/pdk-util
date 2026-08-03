@@ -172,7 +172,7 @@ public final class DistributionUtils {
         XYSeriesCollection<String> dataset2 = new XYSeriesCollection<>(areaSeries);
 
         LineChart chart = new LineChart(dataset1, "X", "Probability Density");
-        chart.addDataset(dataset2, XYChart.ChartType.AREA);
+        chart.addDataset(dataset2, XYChart.Type.AREA);
 
         return chart;
     }
