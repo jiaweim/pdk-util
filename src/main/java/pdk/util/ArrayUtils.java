@@ -11,6 +11,7 @@ import java.util.*;
 import static java.util.Objects.checkFromToIndex;
 import static java.util.Objects.requireNonNull;
 import static pdk.util.ArgUtils.checkArgument;
+import static pdk.util.ArgUtils.checkNonNull;
 
 /**
  * Array utilities
@@ -526,7 +527,7 @@ public final class ArrayUtils {
      * Sorts the elements of {@code array} in descending order.
      */
     public static void sortDescending(int[] array) {
-        requireNonNull(array);
+        checkNonNull(array);
         IntArrays.stableSort(array, IntComparators.OPPOSITE_COMPARATOR);
     }
 

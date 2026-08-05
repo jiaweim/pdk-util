@@ -1,5 +1,6 @@
 package pdk.util;
 
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Comparator;
@@ -7,6 +8,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static java.util.Objects.requireNonNull;
+import static pdk.util.ArgUtils.checkNonNull;
 
 /**
  * Sorting-related utility class.
@@ -513,5 +515,330 @@ public final class SortUtils {
         }
         int hi = getUpperBound(array, lo, array.length, high);
         return new int[]{lo, hi};
+    }
+
+
+    /**
+     * Returns the permutation of indices that sorts the specified array in
+     * ascending order.
+     *
+     * <p>The sorting is stable. If two elements have equal values, their original
+     * relative order is preserved.</p>
+     *
+     * <p>The original array is not modified. If {@code indices} is the returned
+     * array, then:</p>
+     *
+     * <pre>{@code
+     * array[indices[0]] <= array[indices[1]] <= ...
+     * }</pre>
+     *
+     * <p>NaN ordering follows {@link Double#compare(double, double)}.</p>
+     *
+     * @param array input array
+     * @return sorted index permutation
+     * @throws NullPointerException if {@code array} is {@code null}
+     * @since 2026-08-05⭐
+     */
+    public static int[] argsort(double[] array) {
+        checkNonNull(array);
+
+        int n = array.length;
+        int[] indices = new int[n];
+        for (int i = 0; i < n; i++) {
+            indices[i] = i;
+        }
+
+        if (n < 2) {
+            return indices;
+        }
+
+        IntArrays.stableSort(indices, (k1, k2) -> Double.compare(array[k1], array[k2]));
+        return indices;
+    }
+
+    /**
+     * Returns the permutation of indices that sorts the specified array in
+     * descending order.
+     *
+     * <p>The sorting is stable. If two elements have equal values, their original
+     * relative order is preserved.</p>
+     *
+     * <p>The original array is not modified.</p>
+     *
+     * <p>NaN ordering follows {@link Double#compare(double, double)}. Since the
+     * comparison order is reversed, NaN values are placed before other values.</p>
+     *
+     * @param array input array
+     * @return descending sorted index permutation
+     * @throws NullPointerException if {@code array} is {@code null}
+     * @since 2026-08-05⭐
+     */
+    public static int[] argsortDescending(double[] array) {
+        checkNonNull(array);
+
+        int n = array.length;
+        int[] indices = new int[n];
+        for (int i = 0; i < n; i++) {
+            indices[i] = i;
+        }
+
+        if (n < 2) {
+            return indices;
+        }
+
+        IntArrays.stableSort(
+                indices,
+                (k1, k2) -> Double.compare(array[k2], array[k1])
+        );
+
+        return indices;
+    }
+
+    /**
+     * Returns the permutation of indices that sorts the specified array in
+     * ascending order.
+     *
+     * <p>The sorting is stable. If two elements have equal values, their original
+     * relative order is preserved.</p>
+     *
+     * <p>The original array is not modified. If {@code indices} is the returned
+     * array, then:</p>
+     *
+     * <pre>{@code
+     * array[indices[0]] <= array[indices[1]] <= ...
+     * }</pre>
+     *
+     * @param array input array
+     * @return sorted index permutation
+     * @throws NullPointerException if {@code array} is {@code null}
+     * @since 2026-08-05⭐
+     */
+    public static int[] argsort(int[] array) {
+        checkNonNull(array);
+
+        int n = array.length;
+        int[] indices = new int[n];
+        for (int i = 0; i < n; i++) {
+            indices[i] = i;
+        }
+
+        if (n < 2) {
+            return indices;
+        }
+
+        IntArrays.stableSort(indices,
+                (k1, k2) -> Integer.compare(array[k1], array[k2]));
+
+        return indices;
+    }
+
+    /**
+     * Returns the permutation of indices that sorts the specified array in
+     * ascending order.
+     *
+     * <p>The sorting is stable. If two elements have equal values, their original
+     * relative order is preserved.</p>
+     *
+     * <p>The original array is not modified. If {@code indices} is the returned
+     * array, then:</p>
+     *
+     * <pre>{@code
+     * array[indices[0]] <= array[indices[1]] <= ...
+     * }</pre>
+     *
+     * <p>NaN ordering follows {@link Float#compare(float, float)}.</p>
+     *
+     * @param array input array
+     * @return sorted index permutation
+     * @throws NullPointerException if {@code array} is {@code null}
+     * @since 2026-08-05⭐
+     */
+    public static int[] argsort(float[] array) {
+        checkNonNull(array);
+
+        int n = array.length;
+        int[] indices = new int[n];
+        for (int i = 0; i < n; i++) {
+            indices[i] = i;
+        }
+
+        if (n < 2) {
+            return indices;
+        }
+
+        IntArrays.stableSort(
+                indices,
+                (k1, k2) -> Float.compare(array[k1], array[k2])
+        );
+
+        return indices;
+    }
+
+    /**
+     * Returns the permutation of indices that sorts the specified array in
+     * descending order.
+     *
+     * <p>The sorting is stable. If two elements have equal values, their original
+     * relative order is preserved.</p>
+     *
+     * <p>NaN ordering follows {@link Float#compare(float, float)}.</p>
+     *
+     * @param array input array
+     * @return descending sorted index permutation
+     * @throws NullPointerException if {@code array} is {@code null}
+     * @since 2026-08-05⭐
+     */
+    public static int[] argsortDescending(float[] array) {
+        checkNonNull(array);
+
+        int n = array.length;
+        int[] indices = new int[n];
+        for (int i = 0; i < n; i++) {
+            indices[i] = i;
+        }
+
+        if (n < 2) {
+            return indices;
+        }
+
+        IntArrays.stableSort(
+                indices,
+                (k1, k2) -> Float.compare(array[k2], array[k1])
+        );
+
+        return indices;
+    }
+
+    /**
+     * Returns the permutation of indices that sorts the specified array in
+     * descending order.
+     *
+     * <p>The sorting is stable. If two elements have equal values, their original
+     * relative order is preserved.</p>
+     *
+     * @param array input array
+     * @return descending sorted index permutation
+     * @throws NullPointerException if {@code array} is {@code null}
+     * @since 2026-08-05⭐
+     */
+    public static int[] argsortDescending(int[] array) {
+        checkNonNull(array);
+
+        int n = array.length;
+        int[] indices = new int[n];
+        for (int i = 0; i < n; i++) {
+            indices[i] = i;
+        }
+
+        if (n < 2) {
+            return indices;
+        }
+
+        IntArrays.stableSort(
+                indices,
+                (k1, k2) -> Integer.compare(array[k2], array[k1])
+        );
+
+        return indices;
+    }
+
+    /**
+     * Returns the permutation of indices that sorts the specified array according
+     * to the given comparator.
+     *
+     * <p>The sorting is stable. If two elements are considered equal by the
+     * comparator, their original relative order is preserved.</p>
+     *
+     * <p>The original array is not modified. If {@code indices} is the returned
+     * array, then:</p>
+     *
+     * <pre>{@code
+     * comparator.compare(array[indices[i]], array[indices[i + 1]]) <= 0
+     * }</pre>
+     *
+     * <p>The comparator defines the ordering of the elements.</p>
+     *
+     * @param <T>        element type
+     * @param array      input array
+     * @param comparator comparator used for ordering elements
+     * @return sorted index permutation
+     * @throws NullPointerException if {@code array} or {@code comparator} is
+     *                              {@code null}
+     * @since 2026-08-05⭐
+     */
+    public static <T> int[] argsort(T[] array, Comparator<? super T> comparator) {
+        checkNonNull(array);
+        checkNonNull(comparator);
+
+        int n = array.length;
+        int[] indices = new int[n];
+        for (int i = 0; i < n; i++) {
+            indices[i] = i;
+        }
+
+        if (n < 2) {
+            return indices;
+        }
+
+        IntArrays.stableSort(
+                indices,
+                (k1, k2) -> comparator.compare(array[k1], array[k2])
+        );
+
+        return indices;
+    }
+
+    /**
+     * Returns the permutation of indices that sorts the specified array according
+     * to the natural ordering of its elements.
+     *
+     * @param <T>   element type implementing natural ordering
+     * @param array input array
+     * @return sorted index permutation
+     * @throws NullPointerException if {@code array} is {@code null}
+     * @since 2026-08-05⭐
+     */
+    public static <T extends Comparable<? super T>> int[] argsort(T[] array) {
+        return argsort(array, Comparator.naturalOrder());
+    }
+
+    /**
+     * Returns the permutation of indices that sorts the specified array in
+     * descending order according to the given comparator.
+     *
+     * <p>The sorting is stable. If two elements are considered equal by the
+     * comparator, their original relative order is preserved.</p>
+     *
+     * @param <T>        element type
+     * @param array      input array
+     * @param comparator comparator defining ascending order
+     * @return descending sorted index permutation
+     * @throws NullPointerException if {@code array} or {@code comparator} is null
+     * @since 2026-08-05⭐
+     */
+    public static <T> int[] argsortDescending(
+            T[] array,
+            Comparator<? super T> comparator) {
+
+        checkNonNull(array);
+        checkNonNull(comparator);
+
+        int n = array.length;
+        int[] indices = new int[n];
+
+        for (int i = 0; i < n; i++) {
+            indices[i] = i;
+        }
+
+        if (n < 2) {
+            return indices;
+        }
+
+        IntArrays.stableSort(
+                indices,
+                (k1, k2) -> comparator.compare(array[k2], array[k1])
+        );
+
+        return indices;
     }
 }

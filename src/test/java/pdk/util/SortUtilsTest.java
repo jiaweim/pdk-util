@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -1002,4 +1003,276 @@ class SortUtilsTest {
         assertArrayEquals(new int[]{5, 6}, SortUtils.getBound(data2, 2, 9, comparator, 1.51, 2.0));
         assertArrayEquals(new int[]{5, 5}, SortUtils.getBound(data2, 2, 9, comparator, 1.51, 1.9));
     }
+
+    @Nested
+    class ArgSortDouble {
+        @Test
+        void testArgsortNormalArray() {
+            double[] values = {3.0, 1.0, 2.0};
+
+            int[] indices = SortUtils.argsort(values);
+
+            assertArrayEquals(
+                    new int[]{1, 2, 0},
+                    indices
+            );
+        }
+
+        @Test
+        void testAscending() {
+            double[] intensityValues = new double[]{2.0, 1.0, 3.0, 5.0, 2.0, 6.0};
+            int[] indexArray = SortUtils.argsort(intensityValues);
+            assertArrayEquals(new int[]{1, 0, 4, 2, 3, 5}, indexArray);
+        }
+
+        @Test
+        void testDescending() {
+            double[] values = new double[]{2.0, 3.0, 1.0, 4.0, 6.1, 7.2, 4.6};
+            int[] indexArray = SortUtils.argsortDescending(values);
+            assertArrayEquals(new int[]{5, 4, 6, 3, 1, 0, 2}, indexArray);
+        }
+
+        @Test
+        void testDescending2() {
+            double[] array = {1.0, 2.0, 3.0, 6.0, 4.0, 5.0};
+            int[] indexArray = SortUtils.argsortDescending(array);
+            assertArrayEquals(new int[]{3, 5, 4, 2, 1, 0}, indexArray);
+
+            double[] values = new double[array.length];
+            for (int i = 0; i < array.length; i++) {
+                values[i] = array[indexArray[i]];
+            }
+            assertArrayEquals(new double[]{6., 5., 4., 3., 2., 1.}, values, 1E-15);
+        }
+
+        @Test
+        void testSameObjectValues() {
+            List<Double> values = new ArrayList<>();
+            values.add(1.);
+            values.add(1.);
+            values.add(1.);
+            values.add(1.);
+            Double[] array = values.toArray(new Double[0]);
+            int[] indexArray = SortUtils.argsort(array, Comparator.comparingDouble(o -> o));
+            assertArrayEquals(new int[]{0, 1, 2, 3}, indexArray);
+
+            array = new Double[]{1.0, 2.0, 2.0, 3.0};
+            indexArray = SortUtils.argsort(array, Comparator.comparingDouble(o -> o));
+            assertArrayEquals(new int[]{0, 1, 2, 3}, indexArray);
+        }
+
+        @Test
+        void testSameDoubleValues() {
+            double[] array = new double[]{1.0, 1.0, 1.0, 1.0};
+            int[] indexArray = SortUtils.argsort(array);
+            assertArrayEquals(new int[]{0, 1, 2, 3}, indexArray);
+
+            array = new double[]{1.0, 2.0, 2.0, 3.0};
+            indexArray = SortUtils.argsortDescending(array);
+            assertArrayEquals(new int[]{3, 1, 2, 0}, indexArray);
+        }
+
+        @Test
+        void testArgsortAlreadySorted() {
+            double[] values = {1.0, 2.0, 3.0};
+
+            int[] indices = SortUtils.argsort(values);
+
+            assertArrayEquals(
+                    new int[]{0, 1, 2},
+                    indices
+            );
+        }
+
+        @Test
+        void testArgsortReverseOrder() {
+            double[] values = {5.0, 4.0, 3.0, 2.0, 1.0};
+
+            int[] indices = SortUtils.argsort(values);
+
+            assertArrayEquals(
+                    new int[]{4, 3, 2, 1, 0},
+                    indices
+            );
+        }
+
+        @Test
+        void testArgsortWithNegativeValues() {
+            double[] values = {2.0, -1.0, 0.0, -3.0};
+
+            int[] indices = SortUtils.argsort(values);
+
+            assertArrayEquals(
+                    new int[]{3, 1, 2, 0},
+                    indices
+            );
+        }
+
+        @Test
+        void testArgsortWithDuplicateValuesIsStable() {
+            double[] values = {
+                    2.0,
+                    1.0,
+                    2.0,
+                    1.0
+            };
+
+            int[] indices = SortUtils.argsort(values);
+
+            /*
+             * Stable ordering:
+             *
+             * value 1.0:
+             *   index 1 before index 3
+             *
+             * value 2.0:
+             *   index 0 before index 2
+             *
+             */
+            assertArrayEquals(
+                    new int[]{1, 3, 0, 2},
+                    indices
+            );
+        }
+
+        @Test
+        void testArgsortEmptyArray() {
+            double[] values = {};
+
+            int[] indices = SortUtils.argsort(values);
+
+            assertNotNull(indices);
+            assertEquals(0, indices.length);
+        }
+
+        @Test
+        void testArgsortSingleElement() {
+            double[] values = {10.0};
+
+            int[] indices = SortUtils.argsort(values);
+
+            assertArrayEquals(
+                    new int[]{0},
+                    indices
+            );
+        }
+
+        @Test
+        void testArgsortDoesNotModifyInput() {
+            double[] values = {3.0, 1.0, 2.0};
+            double[] copy = values.clone();
+
+            SortUtils.argsort(values);
+
+            assertArrayEquals(copy, values);
+        }
+
+        @Test
+        void testArgsortWithNaN() {
+            double[] values = {
+                    2.0,
+                    Double.NaN,
+                    1.0
+            };
+
+            int[] indices = SortUtils.argsort(values);
+
+            /*
+             * Double.compare ordering:
+             *
+             * 1.0 < 2.0 < NaN
+             */
+            assertArrayEquals(
+                    new int[]{2, 0, 1},
+                    indices
+            );
+        }
+
+        @Test
+        void testArgsortWithMultipleNaNValuesIsStable() {
+            double[] values = {
+                    Double.NaN,
+                    2.0,
+                    Double.NaN,
+                    1.0
+            };
+
+            int[] indices = SortUtils.argsort(values);
+
+            /*
+             * Ordering:
+             *
+             * 1.0
+             * 2.0
+             * NaN(index 0)
+             * NaN(index 2)
+             *
+             * NaN elements keep original order.
+             */
+            assertArrayEquals(
+                    new int[]{3, 1, 0, 2},
+                    indices
+            );
+        }
+
+        @Test
+        void testArgsortNullArray() {
+            assertThrows(
+                    NullPointerException.class,
+                    () -> SortUtils.argsort((double[]) null)
+            );
+        }
+
+        @Test
+        void testArgsortRandomArray() {
+            double[] values = {
+                    5.3,
+                    -2.1,
+                    8.0,
+                    0.0,
+                    5.3,
+                    -9.5,
+                    1.2
+            };
+
+            int[] indices = SortUtils.argsort(values);
+
+            assertSortedByIndices(values, indices);
+            assertPermutation(indices, values.length);
+        }
+
+        private static void assertSortedByIndices(double[] array,
+                int[] indices) {
+
+            for (int i = 1; i < indices.length; i++) {
+                assertTrue(
+                        Double.compare(
+                                array[indices[i - 1]],
+                                array[indices[i]]
+                        ) <= 0
+                );
+            }
+        }
+
+        private static void assertPermutation(int[] indices,
+                int length) {
+
+            boolean[] visited = new boolean[length];
+
+            for (int index : indices) {
+                assertTrue(index >= 0 && index < length);
+                assertFalse(
+                        visited[index],
+                        "Duplicate index: " + index
+                );
+                visited[index] = true;
+            }
+
+            for (boolean value : visited) {
+                assertTrue(value);
+            }
+        }
+    }
+
+
 }

@@ -7,6 +7,8 @@ module pdk.util {
     requires it.unimi.dsi.fastutil;
     requires com.google.common;
     requires org.jspecify;
+    requires org.eclipse.collections.api;
+
 
     // math
     requires org.apache.commons.rng.simple;
@@ -27,6 +29,7 @@ module pdk.util {
     // GUI
     requires java.desktop;
     requires pdk.chart;
+    requires org.eclipse.collections.impl;
 
     // exports
     exports pdk.util;
