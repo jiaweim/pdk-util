@@ -80,7 +80,7 @@ public final class SortUtils {
      * @return index of the lower bound
      */
     public static <C> int getLowerBound(List<? extends C> list, @NonNull Comparator<? super C> comparator, C value) {
-        requireNonNull(list, "array is null");
+        requireNonNull(list, "list is null");
         requireNonNull(comparator, "comparator is null");
         if (list.isEmpty()) {
             return -1;
@@ -100,25 +100,32 @@ public final class SortUtils {
     }
 
     /**
-     * Returns index of the first element not less than the key (&ge;).
+     * Returns index of the first element not less than the key (&ge;)
+     * within the range {@code [fromInclusive, toExclusive)}.
      * <p>
      * Considering equal elements to yield the smallest possible position.
      *
      * <ul>
-     *     <li>If the array contains the value, return the index of its first occurrence.</li>
-     *     <li>If the array does not contain the value, return the index of the first element that is larger than the target value.</li>
-     *     <li>If all elements are smaller than the target value, return the length of the array.</li>
-     *     <li>If all elements are greater than the target value, return 0, e.g. the index of the first element larger than the target value</li>
-     *     <li>if the array is empty, return -1</li>
+     *     <li>If the range contains the value, return the index of its first occurrence.</li>
+     *     <li>If the range does not contain the value, return the index of the first element
+     *      larger than the target value.</li>
+     *     <li>If all elements in the range are smaller than the target value, return {@code toExclusive}.</li>
+     *     <li>If all elements in the range are greater than the target value,
+     *          return {@code fromInclusive}</li>
+     *     <li>if the search range is empty, return {@code -1}</li>
      * </ul>
      *
-     * @param array      a sorted array
-     * @param comparator {@link Comparator} to compare elements
-     * @param value      an element to insert
-     * @param <C>        element type
+     * @param array         a sorted array
+     * @param fromInclusive start index (inclusive)
+     * @param toExclusive   end index (exclusive)
+     * @param comparator    {@link Comparator} to compare elements
+     * @param value         an element to search for
+     * @param <C>           element type
      * @return index of the lower bound
+     * @throws NullPointerException if {@code array} or {@code comparator} is null
      */
-    public static <C> int getLowerBound(@NonNull C[] array, int fromInclusive, int toExclusive, @NonNull Comparator<C> comparator, C value) {
+    public static <C> int getLowerBound(@NonNull C[] array, int fromInclusive, int toExclusive,
+            @NonNull Comparator<C> comparator, C value) {
         requireNonNull(array, "array is null");
         requireNonNull(comparator, "comparator is null");
         if (array.length == 0) {
@@ -209,12 +216,28 @@ public final class SortUtils {
     }
 
     /**
-     * Returns index of the first element not less than the key (&ge;).
+     * Returns index of the first element not less than the key (&ge;)
+     * within the prefix {@code [0, range)} of the array.
+     *
+     * <p>The prefix is clipped to the array length.</p>
+     *
+     * <ul>
+     *    <li>If the prefix contains the value, return the index of its first occurrence.</li>
+     *    <li>If the prefix does not contain the value, return the index of the first
+     *        element larger than the target value.</li>
+     *    <li>If all elements in the prefix are smaller than the target value,
+     *        return the upper bound of the prefix.</li>
+     *    <li>If all elements in the prefix are greater than the target value,
+     *        return {@code 0}.</li>
+     *    <li>If the array is empty or {@code range <= 0}, return {@code -1}.</li>
+     * </ul>
      *
      * @param array a sorted array
-     * @param value an element to search
-     * @param range Search only within the subarray [0, range)
+     * @param value an element to search for
+     * @param range search only within the subarray {@code [0, range)};
+     *              must be non-negative
      * @return index of the lower bound
+     * @throws NullPointerException if {@code array} is null
      */
     public static int getLowerBound(int[] array, int value, int range) {
         requireNonNull(array, "array is null");
@@ -252,7 +275,7 @@ public final class SortUtils {
      * @param comparator {@link Comparator} to compare elements
      * @param value      an element to insert
      * @param <C>        element type
-     * @return index of the lower bound
+     * @return index of the upper bound
      */
     public static <C> int getUpperBound(@NonNull C[] array, @NonNull Comparator<C> comparator, C value) {
         requireNonNull(array, "array is null");
@@ -291,7 +314,7 @@ public final class SortUtils {
      * @param comparator {@link Comparator} to compare elements
      * @param value      an element to insert
      * @param <C>        element type
-     * @return index of the lower bound
+     * @return index of the upper bound
      */
     public static <C> int getUpperBound(List<? extends C> list, @NonNull Comparator<? super C> comparator, C value) {
         requireNonNull(list, "array is null");
@@ -314,28 +337,40 @@ public final class SortUtils {
     }
 
     /**
-     * Returns index of the first element greater than the key (&gt;).
+     * Returns the index of the first element greater than the key (&gt;)
+     * within the range {@code [fromInclusive, toExclusive)}.
      * <p>
      * Considering equal elements to yield the largest possible position.
      *
      * <ul>
-     *     <li>If the array contains the value, return the index of its last occurrence + 1.</li>
-     *     <li>If the array does not contain the value, return the index of the first element that is larger than the target value.</li>
-     *     <li>If all elements are smaller than the target value, return the length of the array.</li>
-     *     <li>If all elements are greater than the target value, return 0, e.g. the index of the first element larger than the target value</li>
-     *     <li>if the array is empty, return -1</li>
+     *     <li>If the range contains the value, return the index after its last occurrence.</li>
+     *     <li>If the range does not contain the value, return the index of the first
+     *      element larger than the target value.</li>
+     *     <li>If all elements in the range are smaller than the target value,
+     *      return {@code toExclusive}.</li>
+     *     <li>If all elements in the range are greater than the target value,
+     *      return {@code fromInclusive}</li>
+     *     <li>if the array is empty, return {@code -1}</li>
+     *     <li>If the search range is empty, return {@code fromInclusive}</li>
      * </ul>
      *
      * @param array         a sorted array
-     * @param comparator    {@link Comparator} to compare elements
-     * @param value         an element to insert
      * @param fromInclusive from index (inclusive)
      * @param toExclusive   to index (exclusive)
+     * @param comparator    {@link Comparator} to compare elements
+     * @param value         an element to insert
      * @param <C>           element type
-     * @return index of the lower bound
+     * @return index of the upper bound
+     * @throws NullPointerException if {@code array} or {@code comparator} is null
      */
     public static <C> int getUpperBound(@NonNull C[] array, int fromInclusive, int toExclusive,
             @NonNull Comparator<C> comparator, C value) {
+        requireNonNull(array, "array is null");
+        requireNonNull(comparator, "comparator is null");
+        if (array.length == 0) {
+            return -1;
+        }
+
         int lo = fromInclusive;
         int hi = toExclusive;
         while (lo < hi) {
@@ -350,25 +385,36 @@ public final class SortUtils {
     }
 
     /**
-     * Returns index of the first element greater than the key (&gt;).
+     * Returns index of the first element greater than the key (&gt;)
+     * within the range {@code [fromIndex, toIndex)}.
      * <p>
      * Considering equal elements to yield the largest possible position.
      *
      * <ul>
-     *     <li>If the array contains the value, return the index of its last occurrence + 1.</li>
-     *     <li>If the array does not contain the value, return the index of the first element that is larger than the target value.</li>
-     *     <li>If all elements are smaller than the target value, return the length of the array.</li>
-     *     <li>If all elements are greater than the target value, return 0, e.g. the index of the first element larger than the target value</li>
-     *     <li>if the array is empty, return -1</li>
+     *     <li>If the range contains the value, return the index after its last occurrence.</li>
+     *     <li>If the range does not contain the value, return the index of the first
+     *          element larger than the target value.</li>
+     *     <li>If all elements in the range are smaller than the target value,
+     *           return {@code toIndex}.</li>
+     *     <li>If all elements in the range are greater than the target value,
+     *           return {@code fromIndex}.</li>
+     *     <li>If the array is empty, return {@code -1}.</li>
+     *     <li>If the search range is empty, return {@code fromIndex}.</li>
      * </ul>
      *
      * @param array     a sorted array
-     * @param value     an element to insert
      * @param fromIndex from index (inclusive)
      * @param toIndex   to index (exclusive)
-     * @return index of the lower bound
+     * @param value     an element to search for
+     * @return index of the upper bound
+     * @throws NullPointerException if {@code array} is null
      */
     public static int getUpperBound(double[] array, int fromIndex, int toIndex, double value) {
+        requireNonNull(array, "array is null");
+        if (array.length == 0) {
+            return -1;
+        }
+
         int lo = fromIndex;
         int hi = toIndex;
         while (lo < hi) {
@@ -397,7 +443,7 @@ public final class SortUtils {
      *
      * @param array a sorted array
      * @param value an element to insert
-     * @return index of the lower bound
+     * @return index of the upper bound
      */
     public static int getUpperBound(double[] array, double value) {
         requireNonNull(array, "array is null");
@@ -419,26 +465,36 @@ public final class SortUtils {
     }
 
     /**
-     * Return a half-open interval [low,high) that covers all elements between the two given values
-     * (inclusive of the smaller, exclusive of the larger).
-     * <p>
-     * More precisely, it computes:
+     * Returns a half-open interval {@code [lowerBound, upperBound)} that covers
+     * all elements whose values lie in the closed value range
+     * {@code [low, high]}.
      *
+     * <p>More precisely:</p>
      * <ul>
-     *     <li>{@code low} = {@link #getLowerBound(Object[], Comparator, Object)} of the <b>smaller</b></li>
-     *     <li>{@code high}= {@link #getUpperBound(Object[], Comparator, Object)} of the <b>larger</b></li>
+     *     <li>{@code lowerBound} = index of the first element {@code >= low}</li>
+     *     <li>{@code upperBound} = index of the first element {@code > high}</li>
      * </ul>
+     *
+     *  <p>The returned interval therefore includes all elements {@code x}
+     *  satisfying {@code low <= x <= high}. If {@code high} is present in the
+     *  array, its position is included in the interval.</p>
+     *
+     *  <p>The caller must ensure {@code comparator.compare(low, high) <= 0}.</p>
      *
      * @param array      sorted array
      * @param comparator comparator
-     * @param low        the smaller element
+     * @param low        the lower value
      * @param high       the larger element
      * @param <C>        element type
-     * @return index array of size 2, where [0]=low, and [1]=high
+     * @return index array of size 2:
+     * {@code [0] = lower bound index},
+     * {@code [1] = upper bound index}
+     * @throws NullPointerException if {@code array} or {@code comparator} is null
      */
     public static <C> int[] getBound(@NonNull C[] array, @NonNull Comparator<? super C> comparator, C low, C high) {
-        Objects.requireNonNull(array);
-        Objects.requireNonNull(comparator);
+        requireNonNull(array);
+        requireNonNull(comparator);
+
         if (array.length == 0) {
             return new int[]{-1, -1};
         }
@@ -452,24 +508,35 @@ public final class SortUtils {
     }
 
     /**
-     * Return a half-open interval [low,high) that covers all elements between the two given values
-     * (inclusive of the smaller, exclusive of the larger) in a given range.
-     * <p>
-     * More precisely, it computes:
+     * Returns a half-open index interval {@code [lowerBound, upperBound)} that
+     * covers all elements in the specified range whose values lie in the closed
+     * value range {@code [low, high]}.
      *
+     * <p>More precisely:</p>
      * <ul>
-     *     <li>{@code low} = {@link #getLowerBound(Object[], Comparator, Object)} of the <b>smaller</b></li>
-     *     <li>{@code high}= {@link #getUpperBound(Object[], Comparator, Object)} of the <b>larger</b></li>
+     *     <li>{@code lowerBound} = index of the first element {@code >= low}
+     *         within {@code [fromInclusive, toExclusive)}</li>
+     *     <li>{@code upperBound} = index of the first element {@code > high}
+     *         within {@code [lowerBound, toExclusive)}</li>
      * </ul>
      *
+     * <p>The returned interval therefore includes all elements {@code x}
+     * satisfying {@code low <= x <= high}. If {@code high} is present in the
+     * range, its position is included.</p>
+     *
+     * <p>The caller must ensure {@code comparator.compare(low, high) <= 0}.</p>
+     *
      * @param array         sorted array
-     * @param fromInclusive start searching index
-     * @param toExclusive   end starting index
-     * @param comparator    comparator
-     * @param low           the smaller element
-     * @param high          the larger element
+     * @param fromInclusive start index (inclusive)
+     * @param toExclusive   end index (exclusive)
+     * @param comparator    comparator used for ordering elements
+     * @param low           lower value (inclusive)
+     * @param high          upper value (inclusive)
      * @param <C>           element type
-     * @return index array of size 2, where [0]=low, and [1]=high
+     * @return an int array of size 2:
+     * {@code [0] = lower bound index},
+     * {@code [1] = upper bound index}
+     * @throws NullPointerException if {@code array} or {@code comparator} is null
      */
     public static <C> int[] getBound(@NonNull C[] array, int fromInclusive, int toExclusive,
             @NonNull Comparator<C> comparator, C low, C high) {
@@ -488,20 +555,29 @@ public final class SortUtils {
     }
 
     /**
-     * Return a half-open interval [low,high) that covers all elements between the two given values
-     * (inclusive of the smaller, exclusive of the larger).
-     * <p>
-     * More precisely, it computes:
+     * Returns a half-open index interval {@code [lowerBound, upperBound)} that
+     * covers all elements whose values lie in the closed value range
+     * {@code [low, high]}.
      *
+     * <p>More precisely:</p>
      * <ul>
-     *     <li>{@code low} = {@link #getLowerBound(double[], double)} of the <b>smaller</b></li>
-     *     <li>{@code high}= {@link #getUpperBound(double[], double)} of the <b>larger</b></li>
+     *     <li>{@code lowerBound} = index of the first element {@code >= low}</li>
+     *     <li>{@code upperBound} = index of the first element {@code > high}</li>
      * </ul>
      *
+     * <p>The returned interval therefore includes all elements {@code x}
+     * satisfying {@code low <= x <= high}. If {@code high} is present in the
+     * array, its position is included.</p>
+     *
+     * <p>The caller must ensure {@code Double.compare(low, high) <= 0}.</p>
+     *
      * @param array sorted array
-     * @param low   the smaller element
-     * @param high  the larger element
-     * @return index array of size 2, where [0]=low, and [1]=high
+     * @param low   lower value (inclusive)
+     * @param high  upper value (inclusive)
+     * @return an int array of size 2:
+     * {@code [0] = lower bound index},
+     * {@code [1] = upper bound index}
+     * @throws NullPointerException if {@code array} is null
      */
     public static int[] getBound(double[] array, double low, double high) {
         Objects.requireNonNull(array);
