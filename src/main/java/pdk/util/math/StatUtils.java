@@ -9,7 +9,8 @@ import java.util.Collection;
 import java.util.List;
 
 import static java.util.Objects.requireNonNull;
-import static pdk.util.ArgUtils.*;
+import static pdk.util.ArgUtils.checkArgument;
+import static pdk.util.ArgUtils.checkNonNegative;
 
 /**
  * Statistic utilities.
@@ -119,7 +120,7 @@ public final class StatUtils {
      * @since 2026-03-24⭐
      */
     public static short max(short... array) {
-        checkNonNull(array);
+        requireNonNull(array);
         checkArgument(array.length > 0);
 
         short max = array[0];
@@ -141,7 +142,7 @@ public final class StatUtils {
      * @since 2026-03-24⭐
      */
     public static int max(int... array) {
-        checkNonNull(array);
+        requireNonNull(array);
         checkArgument(array.length > 0);
 
         int max = array[0];
@@ -162,7 +163,7 @@ public final class StatUtils {
      * @throws IllegalArgumentException if {@code array} is empty
      */
     public static long max(long... array) {
-        checkNonNull(array);
+        requireNonNull(array);
         checkArgument(array.length > 0);
 
         long max = array[0];
@@ -184,7 +185,7 @@ public final class StatUtils {
      * @since 2026-03-24⭐
      */
     public static double max(double... array) {
-        checkNonNull(array);
+        requireNonNull(array);
         checkArgument(array.length > 0);
 
         double max = array[0];
@@ -241,7 +242,7 @@ public final class StatUtils {
      * }</pre>
      */
     public static double max(Collection<Double> collection) {
-        checkNonNull(collection);
+        requireNonNull(collection);
         checkArgument(!collection.isEmpty());
         double max = Double.NEGATIVE_INFINITY;
         boolean hasValid = false;
@@ -367,7 +368,6 @@ public final class StatUtils {
     public static double mean(double... values) {
         return Mean.of(values).getAsDouble();
     }
-
 
     /**
      * Return sum of values in array.
@@ -566,7 +566,6 @@ public final class StatUtils {
         return variance.getAsDouble();
     }
 
-
     /**
      * Return the standard deviation of given double values
      *
@@ -692,7 +691,7 @@ public final class StatUtils {
      * @since 2025-02-18⭐
      */
     public static double[] mode(double[] sample, final int begin, final int length) {
-        checkNonNull(sample);
+        requireNonNull(sample);
         checkNonNegative(begin, "index");
         checkNonNegative(length, "length");
 
@@ -729,7 +728,7 @@ public final class StatUtils {
      * @since 2026-07-21
      */
     public static double getL2Norm(double[] xs) {
-        checkNonNull(xs);
+        requireNonNull(xs);
 
         // check NaN
         for (double v : xs) {
@@ -760,4 +759,5 @@ public final class StatUtils {
         }
         return max * Math.sqrt(sum);
     }
+
 }

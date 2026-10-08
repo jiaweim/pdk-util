@@ -90,10 +90,4 @@ class FileUtilsTest {
         Path path = FileUtils.toPath(fileUrl);
         assertEquals(Path.of("C:/Users/example/file.txt"), path);
     }
-
-    @Test
-    void createDirectory() throws IOException {
-        Path abc = FileUtils.createDirectory(Path.of("G:\\dataset\\_test"), "abc");
-        System.out.println(abc);
-    }
 }
