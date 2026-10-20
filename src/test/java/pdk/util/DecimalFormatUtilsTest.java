@@ -8,6 +8,7 @@ import java.text.NumberFormat;
 import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static pdk.util.DecimalFormatUtils.getPercent;
 
 /**
  *
@@ -19,8 +20,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class DecimalFormatUtilsTest {
 
     @Test
-    void testScientific() {
-        DecimalFormat format = DecimalFormatUtils.scientific(2);
+    void testGetScientific() {
+        DecimalFormat format = DecimalFormatUtils.getScientific(2);
 
         assertEquals("4.15E-2", format.format(0.04151515));
         assertEquals("4.16E-2", format.format(0.04155515));
@@ -139,5 +140,14 @@ class DecimalFormatUtilsTest {
     void testInteger4() {
         NumberFormat nf = DecimalFormatUtils.F0;
         assertEquals("12984367", nf.format(12984366.538442783));
+    }
+
+    @Test
+    void testGetPercent() {
+        DecimalFormat decimalFormat = getPercent(2);
+        assertEquals("12.35%", decimalFormat.format(0.123456));
+        assertEquals("50.00%", decimalFormat.format(0.5));
+        assertEquals("12%", getPercent(0).format(0.123456));
+        assertEquals("12.3456%", getPercent(4).format(0.123456));
     }
 }
