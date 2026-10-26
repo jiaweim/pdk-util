@@ -3,6 +3,7 @@ package pdk.util.math;
 import org.apache.commons.numbers.combinatorics.Combinations;
 import org.junit.jupiter.api.Test;
 import pdk.util.data.Point;
+import pdk.util.data.Point1D;
 import pdk.util.data.Point2D;
 
 import java.util.Arrays;

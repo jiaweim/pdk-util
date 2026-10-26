@@ -4,7 +4,7 @@ import org.apache.commons.statistics.distribution.TDistribution;
 
 import java.util.Arrays;
 
-import static pdk.util.ArgUtils.checkNonNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Correlation utilities.
@@ -78,8 +78,8 @@ public final class CorrelationUtils {
      * @since 2026-07-21⭐
      */
     public static double getKLDivergence(double[] distribution, double[] approximation) {
-        checkNonNull(distribution);
-        checkNonNull(approximation);
+        requireNonNull(distribution);
+        requireNonNull(approximation);
 
         if (distribution.length != approximation.length) {
             throw new IllegalArgumentException("distribution and approximation must have same length");
@@ -147,8 +147,8 @@ public final class CorrelationUtils {
      * @since 2026-07-21⭐
      */
     public static double getPearsonCorrelation(double[] xs, double[] ys) {
-        checkNonNull(xs);
-        checkNonNull(ys);
+        requireNonNull(xs);
+        requireNonNull(ys);
 
         if (xs.length != ys.length) {
             throw new IllegalArgumentException("Arrays must have the same length");
@@ -235,8 +235,8 @@ public final class CorrelationUtils {
      */
     public static double getPearsonCorrelation(double[] xs, double[] ys,
             int fromIndex, int length) {
-        checkNonNull(xs);
-        checkNonNull(ys);
+        requireNonNull(xs);
+        requireNonNull(ys);
 
         if (length < 2) {
             // Correlation requires at least 2 data points
@@ -399,8 +399,8 @@ public final class CorrelationUtils {
      * @since 2026-07-21⭐
      */
     public static double getCosine(double[] xs, double[] ys) {
-        checkNonNull(xs);
-        checkNonNull(ys);
+        requireNonNull(xs);
+        requireNonNull(ys);
 
         if (xs.length != ys.length) {
             throw new IllegalArgumentException("Array length should equal");

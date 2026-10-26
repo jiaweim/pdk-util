@@ -10,7 +10,7 @@ import pdk.util.PDKRuntimeException;
  * given input. Because the object is mutable, its fields can be reassigned
  * during deserialization.
  * <p>
- * Typical usage with {@link BinaryIO}:
+ * Typical usage with {@link BinaryIOUtils}:
  * <pre>{@code
  *   MyMutable obj = BinaryIO.read(input, MyMutable.class);
  *   }</pre>

@@ -8,8 +8,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Path;
 
-import static pdk.util.ArgUtils.checkNonNull;
-import static pdk.util.ArgUtils.checkNonNullElse;
+import static java.util.Objects.requireNonNull;
+import static java.util.Objects.requireNonNullElse;
 
 /**
  * Helper class for resource.
@@ -31,11 +31,11 @@ public final class ResourceUtils {
      * @throws NullPointerException if the resource is not found
      */
     public static URL getResourceURL(String resourceName) {
-        checkNonNull(resourceName);
+        requireNonNull(resourceName);
 
-        ClassLoader loader = checkNonNullElse(Thread.currentThread().getContextClassLoader(), ResourceUtils.class.getClassLoader());
+        ClassLoader loader = requireNonNullElse(Thread.currentThread().getContextClassLoader(), ResourceUtils.class.getClassLoader());
         URL url = loader.getResource(resourceName);
-        checkNonNull(url, String.format("resource %s not found", resourceName));
+        requireNonNull(url, String.format("resource %s not found", resourceName));
         return url;
     }
 
@@ -47,10 +47,10 @@ public final class ResourceUtils {
      * @throws IllegalArgumentException if the resource is not found
      */
     public static URL getResourceURL(ClassLoader classLoader, String resourceName) {
-        checkNonNull(resourceName);
+        requireNonNull(resourceName);
 
         URL url = classLoader.getResource(resourceName);
-        checkNonNull(url, String.format("resource %s not found.", resourceName));
+        requireNonNull(url, String.format("resource %s not found.", resourceName));
         return url;
     }
 
@@ -62,10 +62,10 @@ public final class ResourceUtils {
      * @throws IllegalArgumentException if the resource is not found
      */
     public static URL getResourceURL(Class<?> contextClass, String resourceName) {
-        checkNonNull(resourceName);
+        requireNonNull(resourceName);
 
         URL url = contextClass.getResource(resourceName);
-        checkNonNull(url, String.format("resource %s relative to %s not found.",
+        requireNonNull(url, String.format("resource %s relative to %s not found.",
                 resourceName, contextClass.getName()));
         return url;
     }
@@ -101,9 +101,9 @@ public final class ResourceUtils {
      * @throws NullPointerException If {@code name} is {@code null}
      */
     public static @Nullable InputStream getResourceStream(ClassLoader classLoader, String name) {
-        checkNonNull(name);
+        requireNonNull(name);
         URL url = classLoader.getResource(name);
-        checkNonNull(url, String.format("resource %s not found.", name));
+        requireNonNull(url, String.format("resource %s not found.", name));
         try {
             return url.openStream();
         } catch (IOException e) {
@@ -120,10 +120,10 @@ public final class ResourceUtils {
      * @return An input stream for reading the resource; {@code null} if an I/O exception occurs
      */
     public static @Nullable InputStream getResourceStream(Class<?> contextClass, String name) {
-        checkNonNull(name);
+        requireNonNull(name);
 
         URL url = contextClass.getResource(name);
-        checkNonNull(url, String.format("resource %s relative to %s not found.",
+        requireNonNull(url, String.format("resource %s relative to %s not found.",
                 name, contextClass.getName()));
         try {
             return url.openStream();

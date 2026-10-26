@@ -5,6 +5,7 @@ import pdk.chart.LineChart;
 import pdk.chart.data.xy.XYSeries;
 import pdk.chart.model.Data;
 import pdk.util.data.Point;
+import pdk.util.data.Point1D;
 import pdk.util.data.Point2D;
 
 import java.util.ArrayList;

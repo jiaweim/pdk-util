@@ -8,7 +8,7 @@ import static java.util.Objects.requireNonNull;
  * Serialization utility
  *
  * @author Jiawei Mao
- * @version 1.0.0
+ * @version 2.0.0
  * @since 19 Jun 2025, 5:20 PM
  */
 public class SerializationUtils {
@@ -19,7 +19,7 @@ public class SerializationUtils {
      * Serializes an {@link Object} to the specified stream.
      *
      * <p>The stream will be closed once the object is written.
-     * This avoids the need for a finally clause, and maybe also exception
+     * This avoids the need for a final clause, and maybe also exception
      * handling, in the application code.</p>
      *
      * <p>The stream passed in is not buffered internally within this method.
@@ -30,7 +30,6 @@ public class SerializationUtils {
      * @throws NullPointerException   if {@code outputStream} is {@code null}
      * @throws SerializationException (runtime) if the serialization fails
      */
-    @SuppressWarnings("resource") // outputStream is managed by the caller
     public static void serialize(final Serializable obj, final OutputStream outputStream) {
         requireNonNull(outputStream, "outputStream");
 
@@ -54,7 +53,6 @@ public class SerializationUtils {
         serialize(obj, baos);
         return baos.toByteArray();
     }
-
 
     /**
      * Deserializes a single {@link Object} from an array of bytes.
@@ -101,9 +99,9 @@ public class SerializationUtils {
      * @throws NullPointerException   if {@code inputStream} is {@code null}
      * @throws SerializationException (runtime) if the serialization fails
      */
-    @SuppressWarnings("resource") // inputStream is managed by the caller
     public static <T> T deserialize(final InputStream inputStream) {
         requireNonNull(inputStream, "inputStream");
+
         try (ObjectInputStream in = new ObjectInputStream(inputStream)) {
             @SuppressWarnings("unchecked") final T obj = (T) in.readObject();
             return obj;

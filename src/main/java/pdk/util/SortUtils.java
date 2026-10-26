@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Objects;
 
 import static java.util.Objects.requireNonNull;
-import static pdk.util.ArgUtils.checkNonNull;
 
 /**
  * Sorting-related utility class.
@@ -616,7 +615,7 @@ public final class SortUtils {
      * @since 2026-08-05⭐
      */
     public static int[] argsort(double[] array) {
-        checkNonNull(array);
+        requireNonNull(array);
 
         int n = array.length;
         int[] indices = new int[n];
@@ -650,7 +649,7 @@ public final class SortUtils {
      * @since 2026-08-05⭐
      */
     public static int[] argsortDescending(double[] array) {
-        checkNonNull(array);
+        requireNonNull(array);
 
         int n = array.length;
         int[] indices = new int[n];
@@ -690,7 +689,7 @@ public final class SortUtils {
      * @since 2026-08-05⭐
      */
     public static int[] argsort(int[] array) {
-        checkNonNull(array);
+        requireNonNull(array);
 
         int n = array.length;
         int[] indices = new int[n];
@@ -730,7 +729,7 @@ public final class SortUtils {
      * @since 2026-08-05⭐
      */
     public static int[] argsort(float[] array) {
-        checkNonNull(array);
+        requireNonNull(array);
 
         int n = array.length;
         int[] indices = new int[n];
@@ -765,7 +764,7 @@ public final class SortUtils {
      * @since 2026-08-05⭐
      */
     public static int[] argsortDescending(float[] array) {
-        checkNonNull(array);
+        requireNonNull(array);
 
         int n = array.length;
         int[] indices = new int[n];
@@ -798,7 +797,7 @@ public final class SortUtils {
      * @since 2026-08-05⭐
      */
     public static int[] argsortDescending(int[] array) {
-        checkNonNull(array);
+        requireNonNull(array);
 
         int n = array.length;
         int[] indices = new int[n];
@@ -843,8 +842,8 @@ public final class SortUtils {
      * @since 2026-08-05⭐
      */
     public static <T> int[] argsort(T[] array, Comparator<? super T> comparator) {
-        checkNonNull(array);
-        checkNonNull(comparator);
+        requireNonNull(array);
+        requireNonNull(comparator);
 
         int n = array.length;
         int[] indices = new int[n];
@@ -892,12 +891,10 @@ public final class SortUtils {
      * @throws NullPointerException if {@code array} or {@code comparator} is null
      * @since 2026-08-05⭐
      */
-    public static <T> int[] argsortDescending(
-            T[] array,
-            Comparator<? super T> comparator) {
+    public static <T> int[] argsortDescending(T[] array, Comparator<? super T> comparator) {
 
-        checkNonNull(array);
-        checkNonNull(comparator);
+        requireNonNull(array);
+        requireNonNull(comparator);
 
         int n = array.length;
         int[] indices = new int[n];

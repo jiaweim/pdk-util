@@ -1,7 +1,6 @@
 package pdk.util.data;
 
 import pdk.util.PDKRuntimeException;
-import pdk.util.io.ImmutableBinary;
 import pdk.util.io.Input;
 import pdk.util.io.Output;
 
@@ -48,13 +47,15 @@ public class Point3D extends Point2D {
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Point3D point3D)) return false;
-        if (!super.equals(o)) return false;
-        return Double.compare(z, point3D.z) == 0;
+
+        return Double.compare(x, point3D.x) == 0
+                && Double.compare(y, point3D.y) == 0
+                && Double.compare(z, point3D.z) == 0;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), z);
+        return Objects.hash(x, y, z);
     }
 
     @Override
@@ -66,11 +67,6 @@ public class Point3D extends Point2D {
 
     /**
      * Deserializes a {@link Point3D} from the given {@link Input}.
-     * <p>
-     * This static factory method reads two {@code double} values
-     * and creates a new immutable Point3D. It is the counterpart to
-     * {@link #write(Output)} and is automatically invoked by
-     * {@link BinaryIO} when reading an {@link ImmutableBinary} type.
      *
      * @param input the input stream to read binary data from
      * @return a new {@code Point} instance with the deserialized x-coordinate

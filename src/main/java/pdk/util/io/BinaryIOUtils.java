@@ -23,23 +23,9 @@ import java.nio.file.Path;
  * @author Jiawei Mao
  * @version 1.2.0
  */
-public final class BinaryIO {
+public final class BinaryIOUtils {
 
-    private BinaryIO() {}
-
-    /**
-     * Serializes the given object into the specified {@link Output}.
-     * The caller is responsible for configuring the {@code Output}
-     * (buffer size, maximum capacity, underlying stream, etc.) and
-     * for closing it after use.
-     *
-     * @param obj the object to serialize; must not be {@code null}
-     * @param out the output to write to; not closed by this method
-     * @throws PDKRuntimeException if an I/O error occurs
-     */
-    public static void serialize(BinaryWritable obj, Output out) {
-        obj.write(out);
-    }
+    private BinaryIOUtils() {}
 
     /**
      * Serializes the given object into a new byte array using a
@@ -49,8 +35,8 @@ public final class BinaryIO {
      * @return a byte array containing the binary representation
      * @throws PDKRuntimeException if an I/O error occurs
      */
-    public static byte[] serialize(BinaryWritable obj) {
-        return serialize(obj, 256);
+    public static byte[] write(BinaryWritable obj) {
+        return write(obj, 256);
     }
 
     /**
@@ -63,27 +49,23 @@ public final class BinaryIO {
      * @return a byte array containing the binary representation
      * @throws PDKRuntimeException if an I/O error occurs
      */
-    public static byte[] serialize(BinaryWritable obj, int initialBufferSize) {
-        Output out = new Output(initialBufferSize, -1); // -1 means no max capacity
-        try {
+    public static byte[] write(BinaryWritable obj, int initialBufferSize) {
+        try (Output out = new Output(initialBufferSize, -1)) { // -1 means no max capacity
             obj.write(out);
             return out.toBytes();
-        } finally {
-            out.close();
         }
     }
 
     /**
-     * Serializes the given object directly to the file specified by the path.
+     * Serializes a {@link BinaryWritable} object to the file specified by the path.
      * The file is created if it does not exist, or overwritten if it does.
-     * A default buffer of 4096 bytes is used internally.
      *
      * @param obj  the object to serialize
      * @param path the path to the target file
      * @throws PDKRuntimeException if an I/O error occurs during writing
      */
-    public static void writeToFile(BinaryWritable obj, Path path) {
-        writeToFile(obj, path, 4096);
+    public static void write(BinaryWritable obj, Path path) {
+        write(obj, path, 4096);
     }
 
     /**
@@ -95,7 +77,7 @@ public final class BinaryIO {
      * @param bufferSize internal buffer size for the {@link Output}
      * @throws PDKRuntimeException if an I/O error occurs
      */
-    public static void writeToFile(BinaryWritable obj, Path path, int bufferSize) {
+    public static void write(BinaryWritable obj, Path path, int bufferSize) {
         try (OutputStream fos = Files.newOutputStream(path);
              Output out = new Output(fos, bufferSize)) {
             obj.write(out);
@@ -115,7 +97,7 @@ public final class BinaryIO {
      * @return a new instance deserialized from the file
      * @throws PDKRuntimeException if an I/O error occurs or the data is invalid
      */
-    public static <T extends BinaryWritable> T readFromFile(Path path, Class<T> type) {
+    public static <T extends BinaryWritable> T read(Path path, Class<T> type) {
         try (InputStream fis = Files.newInputStream(path);
              Input in = new Input(fis, 4096)) {
             return read(in, type);

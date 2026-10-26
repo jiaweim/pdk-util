@@ -8,7 +8,7 @@ package pdk.util.io;
  * exact signature:
  * <pre>{@code public static MyType fromBinary(Input input)}</pre>
  * This method should read all fields from the input and return a new, fully
- * initialized instance. The utility class {@link BinaryIO} automatically
+ * initialized instance. The utility class {@link BinaryIOUtils} automatically
  * detects and uses this factory when deserializing.
  * <p>
  * Because the object is immutable, it is safe to share and does not require

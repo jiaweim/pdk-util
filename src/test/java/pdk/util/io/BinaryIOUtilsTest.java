@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import pdk.util.PDKRuntimeException;
 import pdk.util.data.Point;
+import pdk.util.data.Point1D;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @version 1.0.0
  * @since 28 Jul 2026, 10:18 AM
  */
-class BinaryIOTest {
+class BinaryIOUtilsTest {
     @TempDir
     Path tempDir;
 
@@ -26,11 +27,11 @@ class BinaryIOTest {
 
     @Test
     void shouldWriteAndReadBackPoint() {
-        Point original = Point.of(3.14);
+        Point1D original = Point.of(3.14);
         Path file = tempDir.resolve("point.bin");
 
-        BinaryIO.writeToFile(original, file);
-        Point restored = BinaryIO.readFromFile(file, Point.class);
+        BinaryIOUtils.write(original, file);
+        Point1D restored = BinaryIOUtils.read(file, Point1D.class);
 
         assertEquals(original, restored, "Object should survive file roundtrip");
         assertNotSame(original, restored);
@@ -38,76 +39,76 @@ class BinaryIOTest {
 
     @Test
     void shouldOverwriteExistingFile() {
-        Point first = Point.of(1.0);
-        Point second = Point.of(2.0);
+        Point1D first = Point.of(1.0);
+        Point1D second = Point.of(2.0);
         Path file = tempDir.resolve("overwrite.bin");
 
-        BinaryIO.writeToFile(first, file);
-        BinaryIO.writeToFile(second, file);   // overwrite
-        Point restored = BinaryIO.readFromFile(file, Point.class);
+        BinaryIOUtils.write(first, file);
+        BinaryIOUtils.write(second, file);   // overwrite
+        Point1D restored = BinaryIOUtils.read(file, Point1D.class);
 
         assertEquals(second, restored);
     }
 
     @Test
     void shouldHandleZero() {
-        Point zero = Point.of(0.0);
+        Point1D zero = Point.of(0.0);
         Path file = tempDir.resolve("zero.bin");
 
-        BinaryIO.writeToFile(zero, file);
-        Point restored = BinaryIO.readFromFile(file, Point.class);
+        BinaryIOUtils.write(zero, file);
+        Point1D restored = BinaryIOUtils.read(file, Point1D.class);
 
         assertEquals(0.0, restored.getX());
     }
 
     @Test
     void shouldHandleNaN() {
-        Point nan = Point.of(Double.NaN);
+        Point1D nan = Point.of(Double.NaN);
         Path file = tempDir.resolve("nan.bin");
 
-        BinaryIO.writeToFile(nan, file);
-        Point restored = BinaryIO.readFromFile(file, Point.class);
+        BinaryIOUtils.write(nan, file);
+        Point1D restored = BinaryIOUtils.read(file, Point1D.class);
 
         assertTrue(Double.isNaN(restored.getX()));
     }
 
     @Test
     void shouldHandleInfinity() {
-        Point posInf = Point.of(Double.POSITIVE_INFINITY);
-        Point negInf = Point.of(Double.NEGATIVE_INFINITY);
+        Point1D posInf = Point.of(Double.POSITIVE_INFINITY);
+        Point1D negInf = Point.of(Double.NEGATIVE_INFINITY);
         Path posFile = tempDir.resolve("posInf.bin");
         Path negFile = tempDir.resolve("negInf.bin");
 
-        BinaryIO.writeToFile(posInf, posFile);
-        BinaryIO.writeToFile(negInf, negFile);
+        BinaryIOUtils.write(posInf, posFile);
+        BinaryIOUtils.write(negInf, negFile);
 
         assertEquals(Double.POSITIVE_INFINITY,
-                BinaryIO.readFromFile(posFile, Point.class).getX());
+                BinaryIOUtils.read(posFile, Point1D.class).getX());
         assertEquals(Double.NEGATIVE_INFINITY,
-                BinaryIO.readFromFile(negFile, Point.class).getX());
+                BinaryIOUtils.read(negFile, Point1D.class).getX());
     }
 
     // ──────────── Buffer size variants ────────────
 
     @Test
     void shouldWorkWithCustomBufferSize() {
-        Point original = Point.of(42.0);
+        Point1D original = Point.of(42.0);
         Path file = tempDir.resolve("customBuffer.bin");
 
-        BinaryIO.writeToFile(original, file, 16);   // tiny buffer
-        Point restored = BinaryIO.readFromFile(file, Point.class);
+        BinaryIOUtils.write(original, file, 16);   // tiny buffer
+        Point1D restored = BinaryIOUtils.read(file, Point1D.class);
 
         assertEquals(original, restored);
     }
 
     @Test
     void shouldWorkWithDefaultBuffer() {
-        Point original = Point.of(99.9);
+        Point1D original = Point.of(99.9);
         Path file = tempDir.resolve("defaultBuffer.bin");
 
         // Uses the single-arg overload (default 4096 buffer)
-        BinaryIO.writeToFile(original, file);
-        Point restored = BinaryIO.readFromFile(file, Point.class);
+        BinaryIOUtils.write(original, file);
+        Point1D restored = BinaryIOUtils.read(file, Point1D.class);
 
         assertEquals(original, restored);
     }
@@ -119,7 +120,7 @@ class BinaryIOTest {
         Path missing = tempDir.resolve("doesNotExist.bin");
 
         assertThrows(PDKRuntimeException.class,
-                () -> BinaryIO.readFromFile(missing, Point.class));
+                () -> BinaryIOUtils.read(missing, Point1D.class));
     }
 
     @Test
@@ -128,7 +129,7 @@ class BinaryIOTest {
         Files.createDirectory(dir);
 
         assertThrows(PDKRuntimeException.class,
-                () -> BinaryIO.writeToFile(Point.of(1.0), dir));
+                () -> BinaryIOUtils.write(Point.of(1.0), dir));
     }
 
     @Test
@@ -137,6 +138,6 @@ class BinaryIOTest {
         Files.write(file, new byte[]{0x01, 0x02});  // not a valid Point (8 bytes expected)
 
         assertThrows(PDKRuntimeException.class,
-                () -> BinaryIO.readFromFile(file, Point.class));
+                () -> BinaryIOUtils.read(file, Point1D.class));
     }
 }

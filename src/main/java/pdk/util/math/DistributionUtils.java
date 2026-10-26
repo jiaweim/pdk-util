@@ -9,6 +9,7 @@ import pdk.chart.data.xy.XYSeries;
 import pdk.chart.data.xy.XYSeriesCollection;
 import pdk.util.ArgUtils;
 import pdk.util.data.Point;
+import pdk.util.data.Point1D;
 import pdk.util.data.Point2D;
 
 import java.util.ArrayList;

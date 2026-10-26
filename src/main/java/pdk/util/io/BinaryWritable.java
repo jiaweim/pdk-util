@@ -11,6 +11,10 @@ import pdk.util.PDKRuntimeException;
  * @since 28 Jul 2026, 10:26 AM
  */
 public interface BinaryWritable {
+
+    public static final byte NULL = 0;
+    public static final byte NOT_NULL = 1;
+
     /**
      * Writes the state of this object to the given {@link Output}.
      * The order of written fields must be consistent with the corresponding

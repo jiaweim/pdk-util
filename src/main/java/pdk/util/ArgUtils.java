@@ -4,6 +4,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * Class for argument check.
  *
@@ -14,52 +16,6 @@ import java.util.Comparator;
 public final class ArgUtils {
 
     private ArgUtils() {}
-
-    /**
-     * Checks that the specified object reference is not {@code null}.
-     *
-     * @param obj the object reference to check for nullity
-     * @param <T> the type of the reference
-     * @return {@code obj} if not {@code null}
-     * @throws NullPointerException if {@code obj} is {@code null}
-     */
-    public static <T> T checkNonNull(T obj) {
-        if (obj == null)
-            throw new NullPointerException();
-        return obj;
-    }
-
-    /**
-     * Checks that the specified object reference is not {@code null} and
-     * throws a customized {@link NullPointerException} if it is.
-     *
-     * @param obj     the object reference to check for nullity
-     * @param message detail message to be used in the event that a {@code
-     *                NullPointerException} is thrown
-     * @param <T>     the type of the reference
-     * @return {@code obj} if not {@code null}
-     * @throws NullPointerException if {@code obj} is {@code null}
-     */
-    public static <T> T checkNonNull(T obj, String message) {
-        if (obj == null)
-            throw new NullPointerException(message);
-        return obj;
-    }
-
-    /**
-     * {@return the first argument if it is non-{@code null} and
-     * otherwise the second argument if it is non-{@code null}}
-     *
-     * @param obj        an object
-     * @param defaultObj a non-{@code null} object to return if the first argument
-     *                   is {@code null}
-     * @param <T>        the type of the reference
-     * @throws NullPointerException if both {@code obj} is null and
-     *                              {@code defaultObj} is {@code null}
-     */
-    public static <T> T checkNonNullElse(T obj, T defaultObj) {
-        return (obj != null) ? obj : checkNonNull(defaultObj, "defaultObj");
-    }
 
     /**
      * Ensures that {@code start} and {@code end} specify a valid <i>positions</i> in an array, list
@@ -393,7 +349,7 @@ public final class ArgUtils {
      *                                  or is not a regular file
      */
     public static Path checkExists(Path filePath) {
-        checkNonNull(filePath, "Path must not be null");
+        requireNonNull(filePath, "Path must not be null");
 
         Path absolute = filePath.toAbsolutePath().normalize();
 
