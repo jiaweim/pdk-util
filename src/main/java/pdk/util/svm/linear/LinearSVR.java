@@ -9,6 +9,8 @@ package pdk.util.svm.linear;
  */
 public class LinearSVR extends LinearSVM {
 
+    public LinearSVR() {}
+
     @Override
     public void setSolverType(SolverType solverType) {
         int id = solverType.getId();
