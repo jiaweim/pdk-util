@@ -42,6 +42,32 @@ public final class ArrayUtils {
     public static final char[] EMPTY_CHAR_ARRAY = {};
 
     /**
+     * Creates a copy of the specified {@code double} array.
+     * <p>
+     * This method returns a new array containing the same elements as the input array.
+     *
+     * @param v the array to be copied
+     * @return a new array containing a copy of the elements of {@code v},
+     * or {@code null} if the input array is {@code null}
+     */
+    public static double[] copy(double[] v) {
+        return Arrays.copyOf(v, v.length);
+    }
+
+    /**
+     * Creates a copy of the specified {@code boolean} array.
+     * <p>
+     * This method returns a new array containing the same elements as the input array.
+     *
+     * @param v the array to be copied
+     * @return a new array containing a copy of the elements of {@code v},
+     * or {@code null} if the input array is {@code null}
+     */
+    public static boolean[] copy(boolean[] v) {
+        return Arrays.copyOf(v, v.length);
+    }
+
+    /**
      * Merge the two arrays.
      *
      * @param array1 a double array
@@ -56,6 +82,34 @@ public final class ArrayUtils {
         return result;
     }
 
+    /**
+     * Concatenates two {@code boolean} arrays into a single array.
+     * <p>
+     * If either of the input arrays is {@code null}, it is treated as an empty array.
+     * If both input arrays are {@code null} or empty, an empty array is returned.
+     *
+     * @param a the first array, or {@code null}
+     * @param b the second array, or {@code null}
+     * @return a new array containing all elements from {@code a} followed by all elements from {@code b}
+     */
+    public static boolean[] concat(boolean[] a, boolean[] b) {
+        if (a == null) {
+            a = new boolean[0];
+        }
+        if (b == null) {
+            b = new boolean[0];
+        }
+        if (a.length == 0) {
+            return copy(b);
+        } else if (b.length == 0) {
+            return copy(a);
+        } else {
+            boolean[] output = new boolean[a.length + b.length];
+            System.arraycopy(a, 0, output, 0, a.length);
+            System.arraycopy(b, 0, output, a.length, b.length);
+            return output;
+        }
+    }
 
     /**
      * Returns the code point of the character with the largest code point in the character array.
