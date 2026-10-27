@@ -8,7 +8,7 @@ module pdk.util {
     requires com.google.common;
     requires org.jspecify;
     requires org.eclipse.collections.api;
-
+    requires org.eclipse.collections.impl;
 
     // math
     requires org.apache.commons.rng.simple;
@@ -18,8 +18,6 @@ module pdk.util {
     requires org.apache.commons.numbers.arrays;
     requires org.apache.commons.numbers.combinatorics;
     requires org.apache.commons.numbers.gamma;
-
-    // statistics
     requires org.apache.commons.statistics.distribution;
     requires org.apache.commons.statistics.descriptive;
     requires hipparchus.core;
@@ -29,7 +27,9 @@ module pdk.util {
     // GUI
     requires java.desktop;
     requires pdk.chart;
-    requires org.eclipse.collections.impl;
+
+    // logging
+    requires org.slf4j;
 
     // exports
     exports pdk.util;
@@ -44,5 +44,6 @@ module pdk.util {
     exports pdk.util.math;
     exports pdk.util.math.distribution;
     exports pdk.util.math.test;
+    exports pdk.util.svm.linear;
     exports pdk.util.tuple;
 }

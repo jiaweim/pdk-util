@@ -2,6 +2,9 @@ package pdk.util.io;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,6 +49,18 @@ public final class IOUtils {
      */
     public static List<String> readLines(final InputStream input, final Charset charset) throws UncheckedIOException {
         return readLines(new InputStreamReader(input, charset));
+    }
+
+    public static void writeLines(Path file, List<String> lines) {
+        try (BufferedWriter writer = Files.newBufferedWriter(file, StandardCharsets.UTF_8)) {
+            for (String line : lines) {
+                writer.write(line);
+                writer.newLine();
+            }
+            writer.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
