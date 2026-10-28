@@ -11,9 +11,8 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.StringTokenizer;
 
 import static java.util.Objects.requireNonNull;
 import static pdk.util.svm.linear.Linear.atof;
@@ -157,6 +156,10 @@ public class SVMDataset {
         return n;
     }
 
+    public void setNumberOfFeatures(int n) {
+        this.n = n;
+    }
+
     /**
      * Return the number of samples in this dataset.
      *
@@ -164,6 +167,10 @@ public class SVMDataset {
      */
     public int size() {
         return l;
+    }
+
+    public void setSize(int size) {
+        this.l = size;
     }
 
     /**
@@ -324,69 +331,398 @@ public class SVMDataset {
         DoubleList vy = new DoubleArrayList();
         List<Feature[]> vx = new ArrayList<>();
         int maxIndex = 0;
-        int lineNr = 0;
+        boolean hasBias = bias >= 0;
+
         try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, charset))) {
-            while (true) {
-                String line = br.readLine();
-                if (line == null) {
-                    break;
-                }
+            String line;
+            int lineNr = 0;
+            while ((line = br.readLine()) != null) {
                 lineNr++;
-                StringTokenizer st = new StringTokenizer(line, " \t\n\r\f:");
-                String token;
-                try {
-                    token = st.nextToken();
-                } catch (NoSuchElementException e) {
-                    throw new InvalidInputDataException("empty line", lineNr, e);
+                int len = line.length();
+                if (len == 0)
+                    continue;
+
+                // 1. skip leading space
+                int pos = 0;
+                while (pos < len && Character.isWhitespace(line.charAt(pos))) {
+                    pos++;
+                }
+                if (pos == len) { // empty line
+                    continue;
                 }
 
-                // 第一列是 Y
+                // 2. parse label
+                int start = pos;
+                while (pos < len && !Character.isWhitespace(line.charAt(pos))) {
+                    pos++;
+                }
+
+                String token = line.substring(start, pos);
                 try {
                     vy.add(atof(token));
-                } catch (NumberFormatException e) {
-                    throw new InvalidInputDataException("invalid label: " + token, lineNr, e);
-                }
-                int m = st.countTokens() / 2;
-                Feature[] x;
-                if (bias >= 0) {
-                    x = new Feature[m + 1]; // 为 bias 留出位置
-                } else {
-                    x = new Feature[m];
+                } catch (Exception e) {
+                    throw new InvalidInputDataException("Invalid label: " + token, lineNr, e);
                 }
 
-                int indexBefore = 0;
-                for (int j = 0; j < m; j++) {
+                // 3. parse features
+                List<Feature> features = new ArrayList<>();
+                int prevIdx = 0;
+                while (pos < len) {
+                    // skip space between fields
+                    while (pos < len && Character.isWhitespace(line.charAt(pos))) {
+                        pos++;
+                    }
+                    if (pos == len)
+                        break;
 
-                    token = st.nextToken();
-                    int index;
+                    // 3a. index
+                    start = pos;
+                    while (pos < len && !Character.isWhitespace(line.charAt(pos))) {
+                        pos++;
+                    }
+                    int colon = line.indexOf(':', start);
+                    if (colon < start || colon >= pos) {
+                        throw new InvalidInputDataException("Missing ':' at line ", lineNr);
+                    }
+
+                    token = line.substring(start, colon);
+                    final int index;
+                    try {
+                        index = atoi(token);
+                    } catch (NumberFormatException e) {
+                        throw new InvalidInputDataException("invalid index: " + token, lineNr, e);
+                    }
+                    if (index <= 0)
+                        throw new InvalidInputDataException("invalid index: " + index, lineNr);
+                    if (index <= prevIdx)
+                        throw new InvalidInputDataException("indices must be sorted in ascending order", lineNr);
+                    prevIdx = index;
+
+                    token = line.substring(colon + 1, pos);
+                    final double value;
+                    try {
+                        value = atof(token);
+                    } catch (Exception e) {
+                        throw new InvalidInputDataException("invalid value: " + token, lineNr);
+                    }
+                    Feature feature = new Feature(index, value);
+                    features.add(feature);
+                }
+                if (!features.isEmpty()) {
+                    maxIndex = Math.max(maxIndex, features.getLast().getIndex());
+                }
+                int extra = hasBias ? 1 : 0;
+                Feature[] array = new Feature[features.size() + extra];
+                features.toArray(array);
+
+                vx.add(array);
+            }
+        }
+
+        return new SVMDataset(vy, vx, maxIndex, bias);
+    }
+
+    public static SVMDataset readTestDataset(InputStream inputStream, Charset charset, int numberOfFeatures,
+            double bias) throws InvalidInputDataException, IOException {
+        DoubleList vy = new DoubleArrayList();
+        List<Feature[]> vx = new ArrayList<>();
+        int n = bias >= 0 ? (numberOfFeatures + 1) : numberOfFeatures;
+
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, charset))) {
+            String line;
+            int lineNr = 0;
+            while ((line = br.readLine()) != null) {
+                lineNr++;
+                int len = line.length();
+                if (len == 0)
+                    continue;
+
+                // 1. skip leading space
+                int pos = 0;
+                while (pos < len && Character.isWhitespace(line.charAt(pos))) {
+                    pos++;
+                }
+                if (pos == len) { // empty line
+                    continue;
+                }
+
+                // 2. parse label
+                int start = pos;
+                while (pos < len && !Character.isWhitespace(line.charAt(pos))) {
+                    pos++;
+                }
+
+                String token = line.substring(start, pos);
+                try {
+                    vy.add(atof(token));
+                } catch (Exception e) {
+                    throw new InvalidInputDataException("Invalid label: " + token, lineNr, e);
+                }
+
+                // 3. parse features
+                List<Feature> x = new ArrayList<>();
+                while (pos < len) {
+                    // skip space between fields
+                    while (pos < len && Character.isWhitespace(line.charAt(pos))) {
+                        pos++;
+                    }
+                    if (pos == len)
+                        break;
+
+                    // 3a. index
+                    start = pos;
+                    while (pos < len && !Character.isWhitespace(line.charAt(pos))) {
+                        pos++;
+                    }
+                    int colon = line.indexOf(':', start);
+                    if (colon < start || colon >= pos) {
+                        throw new InvalidInputDataException("Missing ':' at line ", lineNr);
+                    }
+
+                    token = line.substring(start, colon);
+                    final int index;
                     try {
                         index = atoi(token);
                     } catch (NumberFormatException e) {
                         throw new InvalidInputDataException("invalid index: " + token, lineNr, e);
                     }
 
-                    // assert that indices are valid and sorted
                     if (index <= 0)
                         throw new InvalidInputDataException("invalid index: " + index, lineNr);
-                    if (index <= indexBefore)
-                        throw new InvalidInputDataException("indices must be sorted in ascending order", lineNr);
-                    indexBefore = index;
 
-                    token = st.nextToken();
+                    token = line.substring(colon + 1, pos);
+                    final double value;
                     try {
-                        double value = atof(token);
-                        x[j] = new Feature(index, value);
-                    } catch (NumberFormatException e) {
+                        value = atof(token);
+                    } catch (Exception e) {
                         throw new InvalidInputDataException("invalid value: " + token, lineNr);
                     }
+                    // feature indices larger than those in training are not used
+                    if (index <= numberOfFeatures) {
+                        Feature node = new Feature(index, value);
+                        x.add(node);
+                    }
                 }
-                if (m > 0) {
-                    maxIndex = Math.max(maxIndex, x[m - 1].getIndex());
+
+                if (bias >= 0) {
+                    Feature node = new Feature(n, bias);
+                    x.add(node);
                 }
-                vx.add(x);
+
+                Feature[] nodes = new Feature[x.size()];
+                nodes = x.toArray(nodes);
+                vx.add(nodes);
             }
         }
 
-        return new SVMDataset(vy, vx, maxIndex, bias);
+        return new SVMDataset(vy, vx, numberOfFeatures, bias);
+    }
+
+    /**
+     * Computes scaling parameters for this problem without modifying it.
+     *
+     * <p>See {@link #applyScale(ScaleParams)} for how the parameters are
+     * applied, and {@link #scale(double, double)} for a one-shot convenience
+     * method.
+     *
+     * @param lower the target lower bound for features
+     * @param upper the target upper bound for features; must be > {@code lower}
+     * @return the fitted parameters
+     * @throws IllegalArgumentException if {@code upper <= lower}
+     */
+    public ScaleParams fitScale(double lower, double upper) {
+        return fitScale(lower, upper, Double.NaN, Double.NaN);
+    }
+
+    /**
+     * Computes scaling parameters for features and labels without modifying
+     * this problem.
+     *
+     * <p>Feature scaling uses {@code [lower, upper]} as target range. If both
+     * {@code yLower} and {@code yUpper} are non-{@code NaN}, labels are also
+     * scaled from {@code [yMin, yMax]} to {@code [yLower, yUpper]}.
+     *
+     * <p><strong>Implicit zeros.</strong> Features that are absent from a sample
+     * are treated as zero. If feature {@code k} is not present in every sample,
+     * zero participates in the min/max computation for {@code k}. This matches
+     * the semantics of {@code svm-scale}.
+     *
+     * <p><strong>Bias.</strong> When {@code bias >= 0}, the bias feature
+     * ({@code index == n}) is ignored: it is neither scaled nor dropped.
+     *
+     * @param lower  the target lower bound for features
+     * @param upper  the target upper bound for features; must be > {@code lower}
+     * @param yLower the target lower bound for labels, or {@code NaN} to skip
+     * @param yUpper the target upper bound for labels, or {@code NaN} to skip
+     * @return the fitted parameters
+     * @throws IllegalArgumentException if bounds are inconsistent
+     */
+    public ScaleParams fitScale(double lower, double upper,
+            double yLower, double yUpper) {
+        if (!(upper > lower)) {
+            throw new IllegalArgumentException(
+                    "upper must be > lower, got lower=" + lower + ", upper=" + upper);
+        }
+        boolean yScaling = !Double.isNaN(yLower) && !Double.isNaN(yUpper);
+        if (yScaling && !(yUpper > yLower)) {
+            throw new IllegalArgumentException(
+                    "yUpper must be > yLower, got yLower=" + yLower + ", yUpper=" + yUpper);
+        }
+
+        int maxIndex = bias >= 0 ? n - 1 : n;
+        double[] featMin = new double[maxIndex + 1];
+        double[] featMax = new double[maxIndex + 1];
+        int[] featCount = new int[maxIndex + 1];
+        Arrays.fill(featMin, Double.POSITIVE_INFINITY);
+        Arrays.fill(featMax, Double.NEGATIVE_INFINITY);
+
+        for (int i = 0; i < l; i++) {
+            for (Feature f : x[i]) {
+                if (f == null) continue;
+                int idx = f.getIndex();
+                if (idx < 1 || idx > maxIndex)
+                    continue;
+                double v = f.getValue();
+                if (v < featMin[idx]) featMin[idx] = v;
+                if (v > featMax[idx]) featMax[idx] = v;
+                featCount[idx]++;
+            }
+        }
+
+        // 合并隐式零
+        for (int k = 1; k <= maxIndex; k++) {
+            if (featCount[k] == 0) {
+                // 该特征未出现过：全为 0，min == max == 0，后续 apply 时丢弃
+                featMin[k] = 0;
+                featMax[k] = 0;
+            } else if (featCount[k] < l) { // 该特征存在部分缺失
+                // 至少一个样本隐式为零
+                if (featMin[k] > 0)
+                    featMin[k] = 0;
+                if (featMax[k] < 0)
+                    featMax[k] = 0;
+            }
+        }
+
+        // 目标 y 的 min/max
+        double yMin = 0, yMax = 0;
+        if (yScaling) {
+            yMin = Double.POSITIVE_INFINITY;
+            yMax = Double.NEGATIVE_INFINITY;
+            for (double v : y) {
+                if (v < yMin) yMin = v;
+                if (v > yMax) yMax = v;
+            }
+        }
+
+        return new ScaleParams(lower, upper, yScaling, yLower, yUpper, yMin, yMax,
+                featMin, featMax);
+    }
+
+    /**
+     * Applies the given scaling parameters to this problem <strong>in
+     * place</strong>, modifying both {@link #x} and, if enabled, {@link #y}.
+     *
+     * <p>For every explicitly stored feature {@code (k, v)}:
+     * <ul>
+     *   <li>If {@code k} is the bias feature, it is kept unchanged.</li>
+     *   <li>If {@code min_k == max_k} (single-valued feature, no information),
+     *       the entry is dropped.</li>
+     *   <li>Otherwise {@code v} is mapped to {@code [lower, upper]}; if the
+     *       scaled value is exactly zero, the entry is dropped to preserve
+     *       sparsity.</li>
+     * </ul>
+     *
+     * <p>When {@code params.isYScaling()} is {@code true}, every {@link #y}
+     * value is mapped from {@code [yMin, yMax]} to {@code [yLower, yUpper]}.
+     * If all labels are identical ({@code yMin == yMax}), labels are set to
+     * {@code yLower} without interpolation.
+     *
+     * <p>The {@code Feature[]} arrays are reallocated; references held by the
+     * caller before this call become stale.
+     *
+     * @param params the parameters produced by {@link #fitScale}
+     */
+    public void applyScale(ScaleParams params) {
+        int maxIndex = bias >= 0 ? n - 1 : n;
+
+        for (int i = 0; i < l; i++) {
+            Feature[] row = x[i];
+            List<Feature> newRow = new ArrayList<>(row.length);
+            for (Feature f : row) {
+                if (f == null) {
+                    newRow.add(null);                 // 未填的 bias 槽位
+                    continue;
+                }
+                int idx = f.getIndex();
+                if (idx < 1 || idx > maxIndex) {
+                    newRow.add(f);                    // bias：原样保留
+                    continue;
+                }
+                double min = params.featureMin[idx];
+                double max = params.featureMax[idx];
+                if (min == max)
+                    continue;             // 单值特征：丢弃
+                double v = f.getValue();
+                double scaled;
+                if (v == min) scaled = params.lower;
+                else if (v == max) scaled = params.upper;
+                else scaled = params.lower + (params.upper - params.lower)
+                            * (v - min) / (max - min);
+                if (scaled != 0) {
+                    newRow.add(new Feature(idx, scaled));
+                }
+            }
+            x[i] = newRow.toArray(new Feature[0]);
+        }
+
+        if (params.yScaling) {
+            if (params.yMax == params.yMin) {
+                Arrays.fill(y, params.yLower);
+            } else {
+                double span = params.yMax - params.yMin;
+                for (int i = 0; i < l; i++) {
+                    if (y[i] == params.yMin) y[i] = params.yLower;
+                    else if (y[i] == params.yMax) y[i] = params.yUpper;
+                    else y[i] = params.yLower + (params.yUpper - params.yLower)
+                                * (y[i] - params.yMin) / span;
+                }
+            }
+        }
+    }
+
+    /**
+     * Fits scaling parameters and applies them to this problem in place.
+     *
+     * <p>Equivalent to calling {@link #fitScale(double, double)} followed by
+     * {@link #applyScale(ScaleParams)}, and returning the fitted parameters so
+     * they can be persisted and reused on test data.
+     *
+     * @param lower the target lower bound for features
+     * @param upper the target upper bound for features; must be > {@code lower}
+     * @return the parameters that were applied
+     * @throws IllegalArgumentException if {@code upper <= lower}
+     */
+    public ScaleParams scale(double lower, double upper) {
+        ScaleParams p = fitScale(lower, upper);
+        applyScale(p);
+        return p;
+    }
+
+    /**
+     * Fits and applies scaling parameters for features and labels in place.
+     *
+     * @param lower  the target lower bound for features
+     * @param upper  the target upper bound for features; must be > {@code lower}
+     * @param yLower the target lower bound for labels, or {@code NaN} to skip
+     * @param yUpper the target upper bound for labels, or {@code NaN} to skip
+     * @return the parameters that were applied
+     * @throws IllegalArgumentException if bounds are inconsistent
+     */
+    public ScaleParams scale(double lower, double upper,
+            double yLower, double yUpper) {
+        ScaleParams p = fitScale(lower, upper, yLower, yUpper);
+        applyScale(p);
+        return p;
     }
 }

@@ -9,7 +9,27 @@ package pdk.util.svm.linear;
  */
 public class LinearSVR extends LinearSVM {
 
-    public LinearSVR() {}
+    public LinearSVR() {
+        this(SolverType.L2R_L2LOSS_SVR);
+    }
+
+    public LinearSVR(SolverType solverType) {
+        super();
+        setSolverType(solverType);
+    }
+
+    public LinearSVR(SolverType solverType, double p) {
+        setSolverType(solverType);
+        setCost(1.0);
+        setEpsilon(p);
+    }
+
+    public LinearSVR(SolverType solverType, double cost, double eps, double p) {
+        setSolverType(solverType);
+        setCost(cost);
+        setEPS(eps);
+        setEpsilon(p);
+    }
 
     @Override
     public void setSolverType(SolverType solverType) {
@@ -20,8 +40,25 @@ public class LinearSVR extends LinearSVM {
         super.setSolverType(solverType);
     }
 
+    /**
+     * Sets the epsilon parameter in the loss function of epsilon-SVR (default 0.1).
+     *
+     * @param epsilon SVR epsilon; must be greater than or equal to 0
+     * @throws IllegalArgumentException if {@code p < 0}
+     */
     public void setEpsilon(double epsilon) {
-        parameter_.setEpsilon(epsilon);
+        if (epsilon < 0) {
+            throw new IllegalArgumentException("epsilon must not be less than 0");
+        }
+        parameter_.p = epsilon;
     }
 
+    /**
+     * Returns the epsilon parameter in the loss function of epsilon-SVR (default 0.1).
+     *
+     * @return the current SVR epsilon value
+     */
+    public double getEpsilon() {
+        return parameter_.p;
+    }
 }

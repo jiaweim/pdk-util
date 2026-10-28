@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Random;
 
 import static java.util.Objects.requireNonNull;
@@ -33,11 +34,14 @@ public class LinearSVM {
     protected SVMDataset dataset_;
 
     public LinearSVM() {
-        parameter_.solverType = SolverType.L2R_L2LOSS_SVC_DUAL;
-        parameter_.C = 1.0;
-        parameter_.eps = Double.POSITIVE_INFINITY;
-        parameter_.p = 0.1;
-        Linear.disableDebugOutput();
+        this(SolverType.L2R_L2LOSS_SVC_DUAL, 1.0, Double.POSITIVE_INFINITY, 0.1);
+    }
+
+    public LinearSVM(SolverType solverType, double cost, double eps, double p) {
+        parameter_.setSolverType(solverType);
+        parameter_.setCost(cost);
+        parameter_.setEPS(eps);
+        parameter_.setEpsilon(p);
     }
 
     /**
@@ -52,34 +56,22 @@ public class LinearSVM {
         parameter_.solverType = requireNonNull(solverType);
         if (parameter_.eps == Double.POSITIVE_INFINITY) {
             switch (parameter_.solverType) {
-                case L2R_LR:
-                case L2R_L2LOSS_SVC:
-                    parameter_.setEPS(0.01);
-                    break;
-                case L2R_L2LOSS_SVR:
-                    parameter_.setEPS(0.0001);
-                    break;
-                case L2R_L2LOSS_SVC_DUAL:
-                case L2R_L1LOSS_SVC_DUAL:
-                case MCSVM_CS:
-                case L2R_LR_DUAL:
-                    parameter_.setEPS(0.1);
-                    break;
-                case L1R_L2LOSS_SVC:
-                case L1R_LR:
-                    parameter_.setEPS(0.01);
-                    break;
-                case L2R_L1LOSS_SVR_DUAL:
-                case L2R_L2LOSS_SVR_DUAL:
-                    parameter_.setEPS(0.1);
-                    break;
-                case ONECLASS_SVM:
-                    parameter_.setEPS(0.01);
-                    break;
-                default:
-                    throw new IllegalStateException("unknown solver type: " + parameter_.solverType);
+                case L2R_LR, L2R_L2LOSS_SVC, L1R_L2LOSS_SVC, L1R_LR, ONECLASS_SVM -> parameter_.setEPS(0.01);
+                case L2R_L2LOSS_SVR -> parameter_.setEPS(0.0001);
+                case L2R_L2LOSS_SVC_DUAL, L2R_L1LOSS_SVC_DUAL, MCSVM_CS, L2R_LR_DUAL, L2R_L1LOSS_SVR_DUAL,
+                     L2R_L2LOSS_SVR_DUAL -> parameter_.setEPS(0.1);
+                default -> throw new IllegalStateException("unknown solver type: " + parameter_.solverType);
             }
         }
+    }
+
+    /**
+     * Returns the current solver type.
+     *
+     * @return the solver type
+     */
+    public SolverType getSolverType() {
+        return parameter_.solverType;
     }
 
     /**
@@ -94,7 +86,19 @@ public class LinearSVM {
      * @throws IllegalArgumentException if {@code cost <= 0}
      */
     public void setCost(double cost) {
-        parameter_.setCost(cost);
+        if (cost <= 0) {
+            throw new IllegalArgumentException("cost must be greater than 0");
+        }
+        parameter_.C = cost;
+    }
+
+    /**
+     * Returns the cost of constraints violation.
+     *
+     * @return the current cost value
+     */
+    public double getCost() {
+        return parameter_.C;
     }
 
     /**
@@ -108,11 +112,41 @@ public class LinearSVM {
      * @throws IllegalArgumentException if {@code eps <= 0}
      */
     public void setEPS(double eps) {
-        parameter_.setEPS(eps);
+        if (eps <= 0) {
+            throw new IllegalArgumentException("eps must not be <= 0");
+        }
+        parameter_.eps = eps;
     }
 
+    /**
+     * Returns the stopping criterion tolerance.
+     *
+     * @return the current epsilon value
+     */
+    public double getEPS() {
+        return parameter_.eps;
+    }
+
+    /**
+     * Sets the maximum number of iterations.
+     *
+     * @param maxIterations maximum iterations; must be greater than 0
+     * @throws IllegalArgumentException if {@code iters <= 0}
+     */
     public void setMaxIterations(int maxIterations) {
-        parameter_.setMaxIterations(maxIterations);
+        if (maxIterations <= 0) {
+            throw new IllegalArgumentException("max iterations must not be <= 0");
+        }
+        parameter_.max_iters = maxIterations;
+    }
+
+    /**
+     * Returns the maximum number of iterations.
+     *
+     * @return the current maximum iteration limit
+     */
+    public int getMaxIterations() {
+        return parameter_.max_iters;
     }
 
     /**
@@ -130,6 +164,15 @@ public class LinearSVM {
     }
 
     /**
+     * Returns whether the bias term is regularized.
+     *
+     * @return {@code true} if the bias term is regularized
+     */
+    public boolean isRegularizeBias() {
+        return parameter_.regularize_bias;
+    }
+
+    /**
      * Assigns per-class weights to overcome class imbalance.
      *
      * <p>The two arrays must have the same length. Each entry {@code i}
@@ -143,11 +186,78 @@ public class LinearSVM {
      * @throws IllegalArgumentException if the array lengths differ
      */
     public void setWeights(double[] weights, int[] labels) {
-        parameter_.setWeights(weights, labels);
+        requireNonNull(weights, "weights must not be null");
+        requireNonNull(labels, "labels must not be null");
+        if (weights.length != labels.length) {
+            throw new IllegalArgumentException("weights and labels must have same length");
+        }
+        parameter_.weight = Arrays.copyOf(weights, weights.length);
+        parameter_.weightLabel = Arrays.copyOf(labels, labels.length);
+    }
+
+    /**
+     * Returns a copy of the class weights.
+     *
+     * @return a copy of the weight array, or {@code null} if no weights are set
+     * @see #setWeights(double[], int[])
+     */
+    public double[] getWeights() {
+        if (parameter_.weight == null) {
+            return null;
+        }
+        return Arrays.copyOf(parameter_.weight, parameter_.weight.length);
+    }
+
+    /**
+     * Returns a copy of the weight labels.
+     *
+     * @return a copy of the weight label array, or {@code null} if no weights
+     * are set
+     * @see #setWeights(double[], int[])
+     */
+    public int[] getWeightLabels() {
+        if (parameter_.weightLabel == null) {
+            return null;
+        }
+        return Arrays.copyOf(parameter_.weightLabel, parameter_.weightLabel.length);
+    }
+
+    /**
+     * Returns the number of configured class weights.
+     *
+     * @return the number of weights, or {@code 0} if no weights are set
+     * @see #setWeights(double[], int[])
+     */
+    public int getNumWeights() {
+        if (parameter_.weight == null)
+            return 0;
+        return parameter_.weight.length;
     }
 
     public void setRandom(Random random) {
         parameter_.setRandom(random);
+    }
+
+    /**
+     * Sets the initial solution vector.
+     * <p>
+     * This is only supported for primal solvers, e.g. {@link SolverType#L2R_LR} and
+     * {@link SolverType#L2R_L2LOSS_SVC}. Passing {@code null} clears the
+     * initial solution.
+     *
+     * @param initSol the initial solution array, or {@code null}
+     */
+    public void setInitSolution(double[] initSol) {
+        parameter_.setInitSol(initSol);
+    }
+
+    /**
+     * Returns a copy of the initial solution vector.
+     *
+     * @return a copy of the initial solution array, or {@code null} if not set
+     */
+    public double[] getInitSol() {
+        return parameter_.getInitSol();
     }
 
     /**
@@ -171,6 +281,11 @@ public class LinearSVM {
     public void setDataset(Path datasetFile, boolean addBias) throws InvalidInputDataException, IOException {
         double bias = addBias ? 1.0 : -1.0;
         this.dataset_ = SVMDataset.read(datasetFile, bias);
+    }
+
+    public void setDataset(SVMDataset dataset) {
+        requireNonNull(dataset);
+        this.dataset_ = dataset;
     }
 
     public void setQuietMode(boolean quietMode) {

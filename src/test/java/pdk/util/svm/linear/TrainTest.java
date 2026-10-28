@@ -1,11 +1,18 @@
 package pdk.util.svm.linear;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import pdk.util.io.FileUtils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static pdk.util.svm.linear.SolverType.L2R_L2LOSS_SVC;
@@ -19,6 +26,34 @@ import static pdk.util.svm.linear.SolverType.L2R_LR;
  * @since 27 Oct 2026, 3:14 PM
  */
 class TrainTest {
+
+    private final SVMModel testModel = LinearTest.createRandomModel();
+    private final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+    @BeforeEach
+    public void setUp() {
+        Linear.setDebugOutput(new PrintStream(byteArrayOutputStream));
+        assertTrue(testModel.getNrClass() >= 2);
+        assertTrue(testModel.getNrFeature() >= 10);
+    }
+
+    @Test
+    void testTrainAndPredict(@TempDir Path tempDir) throws Exception {
+        String modelFile = tempDir.resolve("model").toString();
+        Train.main(new String[]{"-s", "0", "src/test/resources/pdk/util/svm/linear/dna.scale", modelFile});
+
+        Path predictionsFile = tempDir.resolve("predictions");
+        Predict.main(new String[]{"-b", "1", "src/test/resources/pdk/util/svm/linear/dna.scale.t", modelFile, predictionsFile.toString()});
+        List<String> predictions = Files.readAllLines(predictionsFile, Linear.FILE_CHARSET);
+        assertEquals(1187, predictions.size());
+        assertEquals("labels 3 1 2", predictions.get(0));
+        System.out.println(predictions.getLast());
+        System.out.println("Last:"+ predictions.getLast());
+
+        String loggedString = byteArrayOutputStream.toString();
+        System.out.println("final: "+ loggedString);
+        assertTrue(Pattern.matches("Accuracy = 95[.,]0253% \\(1127/1186\\)", loggedString));
+    }
 
     @Test
     void testCrossValidationOnIris() throws InvalidInputDataException, IOException {
@@ -44,7 +79,6 @@ class TrainTest {
             }
         }
     }
-
 
     @Test
     void testDoCrossValidationOnIrisDataSet() throws Exception {

@@ -35,7 +35,6 @@ public class Predict {
         }
 
         Formatter out = new Formatter(writer);
-
         if (flag_predict_probability) {
             int[] labels = model.getLabels();
             prob_estimates = new double[nr_class];
@@ -46,8 +45,7 @@ public class Predict {
             printf(out, "\n");
         }
 
-
-        String line = null;
+        String line;
         while ((line = reader.readLine()) != null) {
             List<Feature> x = new ArrayList<>();
             StringTokenizer st = new StringTokenizer(line, " \t\n");
@@ -114,8 +112,7 @@ public class Predict {
             ++total;
         }
 
-        if (model.solverType.isSupportVectorRegression()) //
-        {
+        if (model.solverType.isSupportVectorRegression()) {
             info("Mean squared error = %g (regression)%n", error / total);
             info("Squared correlation coefficient = %g (regression)%n", //
                     ((total * sumpt - sump * sumt) * (total * sumpt - sump * sumt)) / ((total * sumpp - sump * sump) * (total * sumtt - sumt * sumt)));
@@ -150,12 +147,10 @@ public class Predict {
                         exit_with_help();
                     }
                     break;
-
                 case 'q':
                     i--;
                     Linear.disableDebugOutput();
                     break;
-
                 default:
                     System.err.printf("unknown option: -%d%n", argv[i - 1].charAt(1));
                     exit_with_help();

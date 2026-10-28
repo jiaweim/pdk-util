@@ -10,7 +10,17 @@ package pdk.util.svm.linear;
 public class LinearSVC extends LinearSVM {
 
     public LinearSVC() {
-        parameter_.solverType = SolverType.L2R_L2LOSS_SVC_DUAL;
+        this(SolverType.L2R_L2LOSS_SVC_DUAL);
+    }
+
+    /**
+     * Create a Linear Support Vector Classification with given {@link SolverType}
+     *
+     * @param solverType {@link SolverType} instance (0-7)
+     */
+    public LinearSVC(SolverType solverType) {
+        super();
+        setSolverType(solverType);
     }
 
     /**
@@ -63,6 +73,9 @@ public class LinearSVC extends LinearSVM {
     public ParameterSearchResult findParameters(int numberOfFold, double startC, double startP) {
         if (numberOfFold < 2) {
             throw new IllegalArgumentException("Number of Folds must be at least 2");
+        }
+        if (dataset_ == null) {
+            throw new IllegalStateException("Dataset has not been initialized");
         }
         SolverType solverType = parameter_.solverType;
         if (solverType != SolverType.L2R_LR && solverType != SolverType.L2R_L2LOSS_SVC) {

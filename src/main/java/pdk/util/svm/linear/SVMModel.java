@@ -186,6 +186,73 @@ public final class SVMModel implements Serializable {
         return rho;
     }
 
+    /**
+     * Predicts the class label of a single instance and writes the estimated
+     * class probabilities into {@code prob_estimates}.
+     *
+     * <p>Probability output is only supported for logistic regression models.
+     * For models trained with an SVM solver, the decision values are signed
+     * distances to the hyperplane and carry no probability semantics; calling
+     * this method on such a model throws {@link IllegalArgumentException}.
+     *
+     * <p>{@code prob_estimates[i]} corresponds to the class label at index
+     * {@code i} of {@link SVMModel#getLabels()}, not necessarily to the integer
+     * {@code i}. Callers that need to map a probability back to a label must
+     * consult {@link SVMModel#getLabels()}. The entries sum to 1.
+     *
+     * <p>{@code prob_estimates} is an output parameter that must be
+     * pre-allocated by the caller with length at least
+     * {@link SVMModel#getNrClass()}; a shorter array causes an
+     * {@link ArrayIndexOutOfBoundsException
+     *
+     * @param x              the feature vector of the instance to predict; must
+     *                       not be {@code null}
+     * @param prob_estimates the output array for per-class probabilities; must
+     *                       be non-null and have length at least {@link SVMModel#getNrClass()}
+     * @return the predicted class label
+     * @throws IllegalArgumentException if model is not probabilistic (see {@link SVMModel#isProbabilityModel()})
+     */
+    public double predictProbability(Feature[] x, double[] probEstimates) throws IllegalArgumentException {
+        if (!this.isProbabilityModel()) {
+            StringBuilder sb = new StringBuilder("probability output is only supported for logistic regression");
+            sb.append(". This is currently only supported by the following solvers: ");
+            int i = 0;
+            for (SolverType solverType : SolverType.values()) {
+                if (solverType.isLogisticRegressionSolver()) {
+                    if (i++ > 0) {
+                        sb.append(", ");
+                    }
+                    sb.append(solverType.name());
+                }
+            }
+            throw new IllegalArgumentException(sb.toString());
+        }
+        int nr_w; // number of weights
+        if (nr_class == 2) // 二分类，只训练一个权重向量，决策函数为 sign(w^T x)
+            nr_w = 1;
+        else
+            nr_w = nr_class; // One-vs-Rest
+
+        double label = predictValues(this, x, probEstimates);
+        for (int i = 0; i < nr_w; i++)
+            probEstimates[i] = 1 / (1 + Math.exp(-probEstimates[i])); // sigmoid 变换
+
+        if (nr_class == 2) // for binary classification
+            probEstimates[1] = 1. - probEstimates[0];
+        else {
+            double sum = 0;
+            for (int i = 0; i < nr_class; i++)
+                sum += probEstimates[i];
+
+            for (int i = 0; i < nr_class; i++)
+                probEstimates[i] = probEstimates[i] / sum;
+        }
+
+        return label;
+    }
+
+
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("Model");
@@ -198,7 +265,7 @@ public final class SVMModel implements Serializable {
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(getBias(), nr_class, nr_feature, getSolverType(), rho);
+        int result = Objects.hash(bias, nr_class, nr_feature, getSolverType(), rho);
         result = 31 * result + Arrays.hashCode(label);
         result = 31 * result + arrayHashCode(w);
         return result;

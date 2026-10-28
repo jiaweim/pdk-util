@@ -337,7 +337,7 @@ public class Linear {
         if (Double.isNaN(d) || Double.isInfinite(d)) {
             throw new IllegalArgumentException("NaN or Infinity in input: " + s);
         }
-        return (d);
+        return d;
     }
 
     /**
@@ -361,6 +361,30 @@ public class Linear {
     }
 
     /**
+     * Predicts the class label of a single instance and writes the estimated
+     * class probabilities into {@code prob_estimates}.
+     *
+     * <p>Probability output is only supported for logistic regression models.
+     * For models trained with an SVM solver, the decision values are signed
+     * distances to the hyperplane and carry no probability semantics; calling
+     * this method on such a model throws {@link IllegalArgumentException}.
+     *
+     * <p>{@code prob_estimates[i]} corresponds to the class label at index
+     * {@code i} of {@link SVMModel#getLabels()}, not necessarily to the integer
+     * {@code i}. Callers that need to map a probability back to a label must
+     * consult {@link SVMModel#getLabels()}. The entries sum to 1.
+     *
+     * <p>{@code prob_estimates} is an output parameter that must be
+     * pre-allocated by the caller with length at least
+     * {@link SVMModel#getNrClass()}; a shorter array causes an
+     * {@link ArrayIndexOutOfBoundsException
+     *
+     * @param model          the trained model; must be a probability model
+     * @param x              the feature vector of the instance to predict; must
+     *                       not be {@code null}
+     * @param prob_estimates the output array for per-class probabilities; must
+     *                       be non-null and have length at least {@link SVMModel#getNrClass()}
+     * @return the predicted class label
      * @throws IllegalArgumentException if model is not probabilistic (see {@link SVMModel#isProbabilityModel()})
      */
     public static double predictProbability(SVMModel model, Feature[] x, double[] prob_estimates) throws IllegalArgumentException {
@@ -379,15 +403,15 @@ public class Linear {
             throw new IllegalArgumentException(sb.toString());
         }
         int nr_class = model.nr_class;
-        int nr_w;
-        if (nr_class == 2)
+        int nr_w; // number of weights
+        if (nr_class == 2) // 二分类，只训练一个权重向量，决策函数为 sign(w^T x)
             nr_w = 1;
         else
-            nr_w = nr_class;
+            nr_w = nr_class; // One-vs-Rest
 
         double label = predictValues(model, x, prob_estimates);
         for (int i = 0; i < nr_w; i++)
-            prob_estimates[i] = 1 / (1 + Math.exp(-prob_estimates[i]));
+            prob_estimates[i] = 1 / (1 + Math.exp(-prob_estimates[i])); // sigmoid 变换
 
         if (nr_class == 2) // for binary classification
             prob_estimates[1] = 1. - prob_estimates[0];

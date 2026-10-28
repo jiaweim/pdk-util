@@ -1,0 +1,308 @@
+package pdk.util.svm.linear;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import pdk.util.io.FileUtils;
+
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static pdk.util.svm.linear.SolverType.*;
+
+
+class RegressionTest {
+
+    private static final Logger log = LoggerFactory.getLogger(RegressionTest.class);
+
+    protected static final List<SolverType> SOLVERS = Stream.of(SolverType.values())
+            .filter(solver -> !solver.isOneClass())
+            .collect(Collectors.toList());
+
+    private static Collection<TestParams> data() {
+        List<TestParams> params = new ArrayList<>();
+        for (String dataset : new String[]{"splice", "dna.scale"}) {
+            for (SolverType solverType : SOLVERS) {
+                for (int bias : new int[]{-1, 1}) {
+                    for (boolean regularizeBias : new boolean[]{false, true}) {
+                        if (!regularizeBias && bias != 1) {
+                            continue;
+                        }
+                        if (!regularizeBias) {
+                            // -R option supported only for solver L2R_LR, L2R_L2LOSS_SVC, L1R_L2LOSS_SVC, L1R_LR, and L2R_L2LOSS_SVR
+                            if (!EnumSet.of(L2R_LR, L2R_L2LOSS_SVC, L1R_L2LOSS_SVC, L1R_LR, L2R_L2LOSS_SVR).contains(solverType)) {
+                                continue;
+                            }
+                        }
+                        params.add(new TestParams(dataset, solverType, bias, regularizeBias, getExpectedAccuracy(dataset, solverType, bias, regularizeBias)));
+                    }
+                }
+            }
+        }
+        return params;
+    }
+
+    private static Double getExpectedAccuracy(String dataset, SolverType solverType, int bias, boolean regularizeBias) {
+        if (solverType.isSupportVectorRegression() || solverType.isOneClass()) {
+            return null;
+        }
+        return switch (dataset) {
+            case "splice" -> switch (solverType) {
+                case L2R_LR -> switch (bias) {
+                    case -1 -> 0.84184;
+                    case 1 -> regularizeBias ? 0.84552 : 0.84414;
+                    default -> throw new IllegalArgumentException("Unexpected bias: " + bias);
+                };
+                case L2R_L2LOSS_SVC_DUAL -> switch (bias) {
+                    case -1 -> 0.84368;
+                    case 1 -> 0.85241;
+                    default -> throw new IllegalArgumentException("Unexpected bias: " + bias);
+                };
+                case L2R_L2LOSS_SVC -> switch (bias) {
+                    case -1 -> 0.84276;
+                    case 1 -> regularizeBias ? 0.85057 : 0.85149;
+                    default -> throw new IllegalArgumentException("Unexpected bias: " + bias);
+                };
+                case L2R_L1LOSS_SVC_DUAL -> switch (bias) {
+                    case -1 -> 0.83494;
+                    case 1 -> 0.83402;
+                    default -> throw new IllegalArgumentException("Unexpected bias: " + bias);
+                };
+                case MCSVM_CS -> switch (bias) {
+                    case -1 -> 0.8377;
+                    case 1 -> 0.83862;
+                    default -> throw new IllegalArgumentException("Unexpected bias: " + bias);
+                };
+                case L1R_L2LOSS_SVC -> switch (bias) {
+                    case -1 -> 0.8478;
+                    case 1 -> regularizeBias ? 0.8478 : 0.84782;
+                    default -> throw new IllegalArgumentException("Unexpected bias: " + bias);
+                };
+                case L1R_LR -> switch (bias) {
+                    case -1 -> 0.8473;
+                    case 1 -> regularizeBias ? 0.84782 : 0.84598;
+                    default -> throw new IllegalArgumentException("Unexpected bias: " + bias);
+                };
+                case L2R_LR_DUAL -> switch (bias) {
+                    case -1 -> 0.8423;
+                    case 1 -> 0.8492;
+                    default -> throw new IllegalArgumentException("Unexpected bias: " + bias);
+                };
+                default -> throw new IllegalArgumentException("Unexpected solverType: " + solverType);
+            };
+            case "dna.scale" -> switch (solverType) {
+                case L2R_LR -> switch (bias) {
+                    case -1 -> 0.94941;
+                    case 1 -> regularizeBias ? 0.950253 : 0.951096;
+                    default -> throw new IllegalArgumentException("Unexpected bias: " + bias);
+                };
+                case L2R_L2LOSS_SVC_DUAL -> switch (bias) {
+                    case -1, 1 -> 0.9452;
+                    default -> throw new IllegalArgumentException("Unexpected bias: " + bias);
+                };
+                case L2R_L2LOSS_SVC -> switch (bias) {
+                    case -1 -> 0.94941;
+                    case 1 -> 0.95194;
+                    default -> throw new IllegalArgumentException("Unexpected bias: " + bias);
+                };
+                case L2R_L1LOSS_SVC_DUAL -> switch (bias) {
+                    case -1 -> 0.94688;
+                    case 1 -> 0.94604;
+                    default -> throw new IllegalArgumentException("Unexpected bias: " + bias);
+                };
+                case MCSVM_CS -> switch (bias) {
+                    case -1 -> 0.9292;
+                    case 1 -> 0.92749;
+                    default -> throw new IllegalArgumentException("Unexpected bias: " + bias);
+                };
+                case L1R_L2LOSS_SVC -> switch (bias) {
+                    case -1 -> 0.9553;
+                    case 1 -> regularizeBias ? 0.956998 : 0.95363;
+                    default -> throw new IllegalArgumentException("Unexpected bias: " + bias);
+                };
+                case L1R_LR -> switch (bias) {
+                    case -1 -> 0.9536;
+                    case 1 -> regularizeBias ? 0.95194 : 0.95278;
+                    default -> throw new IllegalArgumentException("Unexpected bias: " + bias);
+                };
+                case L2R_LR_DUAL -> switch (bias) {
+                    case -1 -> 0.9486;
+                    case 1 -> 0.94941;
+                    default -> throw new IllegalArgumentException("Unexpected bias: " + bias);
+                };
+                default -> throw new IllegalArgumentException("Unexpected solverType: " + solverType);
+            };
+            default ->
+                    throw new IllegalArgumentException("Unknown expectation: " + dataset + ", " + solverType + ", " + bias);
+        };
+    }
+
+    private static class TestParams {
+
+        private final String dataset;
+        private final SolverType solverType;
+        private final int bias;
+        private final boolean regularizeBias;
+        private final Double expectedAccuracy;
+
+        private TestParams(String dataset, SolverType solverType, int bias, boolean regularizeBias, Double expectedAccuracy) {
+            this.dataset = dataset;
+            this.solverType = solverType;
+            this.bias = bias;
+            this.regularizeBias = regularizeBias;
+            this.expectedAccuracy = expectedAccuracy;
+        }
+
+        @Override
+        public String toString() {
+            return "dataset: " + dataset + ", solver: " + solverType + ", bias: " + bias + (!regularizeBias ? " (not regularized)" : "");
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("data")
+    void regressionTest(TestParams params) throws Exception {
+        log.info("Running regression test for '{}'", params);
+        URL url = RegressionTest.class.getResource(params.dataset);
+        Path trainingFile = FileUtils.toPath(url);
+        SVMDataset problem = SVMDataset.read(trainingFile, params.bias);
+        Parameter parameter = new Parameter(params.solverType, 1, 0.1);
+        parameter.setRegularizeBias(params.regularizeBias);
+        SVMModel model = Linear.train(problem, parameter);
+
+        Path testFile = FileUtils.toPath(RegressionTest.class.getResource(params.dataset + ".t"));
+        SVMDataset testProblem = SVMDataset.read(testFile, params.bias);
+
+        String filename = "predictions_" + params.solverType.name();
+        if (!params.regularizeBias) {
+            filename += "_notRegularizedBias";
+        } else {
+            filename += "_bias_" + params.bias;
+        }
+        Path expectedFile = Paths.get("src/test/resources/regression", params.dataset, filename);
+        final List<String> expectedPredictions;
+        if (!Files.exists(expectedFile)) {
+            expectedPredictions = Collections.emptyList();
+            log.warn("Recording predictions to {}", expectedFile);
+        } else {
+            expectedPredictions = Files.readAllLines(expectedFile, StandardCharsets.UTF_8);
+            assertEquals(expectedPredictions.size(), testProblem.l);
+            assertEquals(testProblem.x.length, expectedPredictions.size());
+        }
+
+        int correctPredictions = 0;
+
+        for (int i = 0; i < testProblem.l; i++) {
+            Feature[] x = testProblem.x[i];
+            double[] predictedValues = new double[model.getNrClass()];
+            final double prediction;
+            if (params.solverType.isLogisticRegressionSolver()) {
+                prediction = Linear.predictProbability(model, x, predictedValues);
+            } else {
+                prediction = Linear.predictValues(model, x, predictedValues);
+            }
+
+            if (params.expectedAccuracy != null) {
+                int expectation = (int) testProblem.y[i];
+                int actual = (int) prediction;
+                if (actual == expectation) {
+                    correctPredictions++;
+                }
+            }
+
+            if (expectedPredictions.isEmpty()) {
+                final String line;
+                if (model.getNrClass() == 2) {
+                    line = predictedValues[0] + "\n";
+                } else {
+                    line = Arrays.stream(predictedValues)
+                            .mapToObj(Double::toString)
+                            .collect(Collectors.joining(" ")) + " \n";
+                }
+                Files.createDirectories(expectedFile.getParent());
+                Files.write(expectedFile, line.getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND, StandardOpenOption.CREATE);
+                continue;
+            }
+
+            List<Double> expectedValues = parseExpectedValues(expectedPredictions, i);
+
+            if (model.getNrClass() == 2) {
+                assertEquals(expectedValues.size(), 1);
+                assertEquals(predictedValues[0], expectedValues.get(0), 1e-9);
+            } else {
+                assertEquals(expectedValues.size(), predictedValues.length);
+                for (int n = 0; n < predictedValues.length; n++) {
+                    assertEquals(predictedValues[n], expectedValues.get(n), 1e-9);
+                }
+            }
+        }
+
+        if (params.expectedAccuracy != null) {
+            double accuracy = correctPredictions / (double) testProblem.l;
+            assertEquals(accuracy, params.expectedAccuracy.doubleValue(), 1e-4);
+        }
+    }
+
+    @Test
+    void testOneClass(@TempDir Path tempDir) throws Exception {
+        URL url = RegressionTest.class.getResource("splice");
+        Path trainingFile = FileUtils.toPath(url);
+
+        Path spliceClass1 = tempDir.resolve("splice-class-1");
+        Path spliceClass2 = tempDir.resolve("splice-class-2");
+
+        for (String line : Files.readAllLines(trainingFile, StandardCharsets.ISO_8859_1)) {
+            final Path targetFile;
+            if (line.startsWith("+1")) {
+                targetFile = spliceClass1;
+            } else {
+                targetFile = spliceClass2;
+            }
+            Files.write(targetFile, Arrays.asList(line), StandardCharsets.UTF_8, StandardOpenOption.APPEND, StandardOpenOption.CREATE);
+        }
+
+        SVMDataset problem1 = SVMDataset.read(spliceClass1, StandardCharsets.UTF_8, -1);
+        Parameter param = new Parameter(ONECLASS_SVM, 1, 0.01);
+        param.setNu(0.1);
+        SVMModel model = Linear.train(problem1, param);
+
+        SVMModel expectedModel = SVMModel.load(FileUtils.toPath(RegressionTest.class.getResource("one_class_model")));
+        assertEquals(expectedModel, model);
+
+        SVMDataset problem2 = SVMDataset.read(spliceClass2, StandardCharsets.UTF_8, -1);
+
+        // expected values determined with C-version of liblinear (v2.41)
+        assertEquals(0.897485, calculatePredictionAccuracy(model, problem1), 1e-6);
+        assertEquals(0.0703934, calculatePredictionAccuracy(model, problem2), 1e-6);
+    }
+
+    private static double calculatePredictionAccuracy(SVMModel model, SVMDataset problem) {
+        int correct = 0;
+        for (Feature[] x : problem.x) {
+            double prediction = Linear.predict(model, x);
+            if (prediction == problem.y[0]) {
+                correct++;
+            }
+        }
+        return (double) correct / problem.l;
+    }
+
+    private List<Double> parseExpectedValues(List<String> expectedPredictions, int i) {
+        return Stream.of(expectedPredictions.get(i)
+                        .split(" "))
+                .map(Double::parseDouble)
+                .collect(Collectors.toList());
+    }
+
+}
