@@ -187,6 +187,16 @@ public final class SVMModel implements Serializable {
     }
 
     /**
+     *
+     * @param x          feature values
+     * @param dec_values output decision values
+     * @return the label
+     */
+    public double predictValues(Feature[] x, double[] dec_values) {
+        return Linear.predictValues(this, x, dec_values);
+    }
+
+    /**
      * Predicts the class label of a single instance and writes the estimated
      * class probabilities into {@code prob_estimates}.
      *
@@ -233,7 +243,7 @@ public final class SVMModel implements Serializable {
         else
             nr_w = nr_class; // One-vs-Rest
 
-        double label = predictValues(this, x, probEstimates);
+        double label = Linear.predictValues(this, x, probEstimates);
         for (int i = 0; i < nr_w; i++)
             probEstimates[i] = 1 / (1 + Math.exp(-probEstimates[i])); // sigmoid 变换
 
@@ -250,7 +260,6 @@ public final class SVMModel implements Serializable {
 
         return label;
     }
-
 
 
     @Override
@@ -334,6 +343,11 @@ public final class SVMModel implements Serializable {
         }
     }
 
+    /**
+     * Writes the model to the modelOutput. It uses {@link java.util.Locale#ENGLISH} for number formatting.
+     *
+     * <p><b>Note: The modelOutput is closed after writing or in case of an exception.</b></p>
+     */
     public void save(Writer writer) throws IOException {
         int w_size = nr_feature;
         if (bias >= 0)

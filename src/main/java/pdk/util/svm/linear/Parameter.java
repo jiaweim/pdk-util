@@ -214,6 +214,9 @@ public final class Parameter implements Cloneable {
 
     /**
      * Sets the cost of constraints violation. (we usually use 1 to 1000)
+     * <p>
+     * cost 越大，分类错误的惩罚越大，模型趋向于减少分类错误，分类间隔更窄；
+     * cost 越小，分类错误的惩罚越小，模型趋向于增大分类间隔，允许少量分类错误。
      *
      * @param C cost value; must be greater than 0
      * @throws IllegalArgumentException if {@code C <= 0}

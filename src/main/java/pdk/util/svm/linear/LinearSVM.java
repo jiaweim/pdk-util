@@ -42,6 +42,7 @@ public class LinearSVM {
         parameter_.setCost(cost);
         parameter_.setEPS(eps);
         parameter_.setEpsilon(p);
+        Linear.disableDebugOutput();
     }
 
     /**

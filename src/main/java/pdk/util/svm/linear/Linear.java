@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.PrintStream;
-import java.io.Writer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -427,6 +426,13 @@ public class Linear {
         return label;
     }
 
+    /**
+     *
+     * @param model      {@link SVMModel}
+     * @param x          feature values
+     * @param dec_values output decision values
+     * @return the label
+     */
     public static double predictValues(SVMModel model, Feature[] x, double[] dec_values) {
         int n;
         if (model.bias >= 0)
@@ -436,14 +442,13 @@ public class Linear {
 
         double[] w = model.w;
 
-        int nr_w;
+        int nr_w; // number of weights
         if (model.nr_class == 2 && model.solverType != MCSVM_CS)
             nr_w = 1;
         else
             nr_w = model.nr_class;
 
-        for (int i = 0; i < nr_w; i++)
-            dec_values[i] = 0;
+        Arrays.fill(dec_values, 0, nr_w, 0);
 
         for (Feature lx : x) {
             int idx = lx.getIndex();
@@ -455,7 +460,7 @@ public class Linear {
             }
         }
         if (model.solverType.isOneClass()) {
-            dec_values[0] -= model.rho;
+            dec_values[0] -= model.rho; // f(x)=w*x-ρ
         }
 
         if (model.nr_class == 2) {
@@ -480,61 +485,6 @@ public class Linear {
         IOException ioException = formatter.ioException();
         if (ioException != null)
             throw ioException;
-    }
-
-    /**
-     * Writes the model to the modelOutput. It uses {@link java.util.Locale#ENGLISH} for number formatting.
-     *
-     * <p><b>Note: The modelOutput is closed after writing or in case of an exception.</b></p>
-     */
-    public static void saveModel(Writer modelOutput, SVMModel model) throws IOException {
-        int nr_feature = model.nr_feature;
-        int w_size = nr_feature;
-        if (model.bias >= 0)
-            w_size++;
-
-        int nr_w = model.nr_class;
-        if (model.nr_class == 2 && model.solverType != MCSVM_CS)
-            nr_w = 1;
-
-        try (Formatter formatter = new Formatter(modelOutput, DEFAULT_LOCALE)) {
-            printf(formatter, "solver_type %s\n", model.solverType.name());
-            printf(formatter, "nr_class %d\n", model.nr_class);
-
-            if (model.label != null) {
-                printf(formatter, "label");
-                for (int i = 0; i < model.nr_class; i++) {
-                    printf(formatter, " %d", model.label[i]);
-                }
-                printf(formatter, "\n");
-            }
-
-            printf(formatter, "nr_feature %d\n", nr_feature);
-            printf(formatter, "bias %.17g\n", model.bias);
-
-            if (model.solverType.isOneClass())
-                printf(formatter, "rho %.17g\n", model.rho);
-
-            printf(formatter, "w\n");
-            for (int i = 0; i < w_size; i++) {
-                for (int j = 0; j < nr_w; j++) {
-                    double value = model.w[i * nr_w + j];
-
-                    /* this optimization is the reason for {@link Model#equals(double[], double[])} */
-                    if (value == 0.0) {
-                        printf(formatter, "%d ", 0);
-                    } else {
-                        printf(formatter, "%.17g ", value);
-                    }
-                }
-                printf(formatter, "\n");
-            }
-
-            formatter.flush();
-            IOException ioException = formatter.ioException();
-            if (ioException != null)
-                throw ioException;
-        }
     }
 
     /*
