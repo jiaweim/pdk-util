@@ -158,8 +158,5 @@ class AMGSamplerTest {
 
         assertEquals(0.082, StatUtils.mean(sds1), 1E-3);
         assertEquals(0.048, StatUtils.mean(sds2), 1E-3);
-
-        System.out.println(Model.getHighestDensityInterval(sds1));
-        System.out.println(Model.getHighestDensityInterval(sds2));
     }
 }

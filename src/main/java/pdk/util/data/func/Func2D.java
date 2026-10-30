@@ -2,10 +2,9 @@ package pdk.util.data.func;
 
 import pdk.chart.Chart;
 import pdk.chart.LineChart;
+import pdk.chart.data.general.DatasetUtils;
 import pdk.chart.data.xy.XYSeries;
-import pdk.chart.model.Data;
 import pdk.util.data.Point;
-import pdk.util.data.Point1D;
 import pdk.util.data.Point2D;
 
 import java.util.ArrayList;
@@ -65,6 +64,6 @@ public interface Func2D {
             s1.add(point2D.getX(), point2D.getY());
         }
 
-        return new LineChart(Data.createXY(s1), "X", "Y");
+        return new LineChart(DatasetUtils.createXY(s1), "X", "Y");
     }
 }
