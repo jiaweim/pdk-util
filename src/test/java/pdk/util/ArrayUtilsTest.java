@@ -1,13 +1,16 @@
 package pdk.util;
 
 import org.apache.commons.numbers.arrays.Selection;
+import org.apache.commons.rng.UniformRandomProvider;
+import org.apache.commons.rng.simple.RandomSource;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import pdk.util.tuple.Tuple;
-import pdk.util.tuple.Tuple2;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Arrays;
-import java.util.Comparator;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -21,8 +24,8 @@ class ArrayUtilsTest {
 
     @Test
     void concat() {
-        double[] array = ArrayUtils.concat(new double[]{1, 2, 3}, new double[]{4, 5});
-        assertArrayEquals(new double[]{1, 2, 3, 4, 5}, array);
+        assertThat(ArrayUtils.concat(new double[]{1, 2, 3}, new double[]{4, 5}))
+                .isEqualTo(new double[]{1, 2, 3, 4, 5});
     }
 
     @Test
@@ -261,5 +264,182 @@ class ArrayUtilsTest {
         int[] val = {1, 2, 3, 3, 3};
         assertEquals(3, ArrayUtils.longestConsecutive(val));
         assertEquals(3, ArrayUtils.longestConsecutive(new int[]{1, 2, 3, 3, 3, 5, 5}));
+    }
+
+    private static UniformRandomProvider rng(long seed) {
+        return RandomSource.SPLIT_MIX_64.create(seed);
+    }
+
+    @Test
+    void shuffleNullArg() {
+        assertThatThrownBy(() -> ArrayUtils.shuffle(null, 0, 0, rng(1)))
+                .isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> ArrayUtils.shuffle("abs".toCharArray(), 0, 3, null))
+                .isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    void shuffleIntArg() {
+        assertThatThrownBy(() -> ArrayUtils.shuffle("abc".toCharArray(), -1, 3, rng(1)))
+                .isInstanceOf(IndexOutOfBoundsException.class);
+
+        assertThatThrownBy(() -> ArrayUtils.shuffle("abc".toCharArray(), 0, 4, rng(1)))
+                .isInstanceOf(IndexOutOfBoundsException.class);
+
+        assertThatThrownBy(() -> ArrayUtils.shuffle("abc".toCharArray(), 2, 1, rng(1)))
+                .isInstanceOf(IndexOutOfBoundsException.class);
+    }
+
+    @Test
+    void shuffleEmptyArray() {
+        char[] array = new char[0];
+        assertThatNoException().isThrownBy(() -> ArrayUtils.shuffle(array, 0, 0, rng(1)));
+        assertThat(array).isEqualTo(new char[0]);
+    }
+
+    @Test
+    void shuffleEmptyRange() {
+        char[] array = "abcdef".toCharArray();
+        char[] copy = array.clone();
+        ArrayUtils.shuffle(array, 3, 3, rng(1));
+        assertThat(array).isEqualTo(copy);
+    }
+
+    @Test
+    void shuffleSingleElement() {
+        char[] array = "abcdef".toCharArray();
+        char[] copy = array.clone();
+        ArrayUtils.shuffle(array, 2, 3, rng(1));
+        assertThat(array).isEqualTo(copy);
+    }
+
+    @Test
+    @DisplayName("two-element range may or may not swap")
+    void shuffleTwoElementRange() {
+        // With many trials, at least one swap and at least one no-op
+        // must occur, otherwise the RNG is not being consumed properly.
+        char[] array = {'a', 'b'};
+        boolean sawSwap = false;
+        boolean sawNoOp = false;
+        UniformRandomProvider rng = rng(1);
+        for (int i = 0; i < 1000 && !(sawSwap && sawNoOp); i++) {
+            array[0] = 'a';
+            array[1] = 'b';
+            ArrayUtils.shuffle(array, 0, 2, rng);
+            if (array[0] == 'b') {
+                sawSwap = true;
+            } else {
+                sawNoOp = true;
+            }
+        }
+        assertThat(sawSwap).withFailMessage("two-element shuffle never swapped")
+                .isTrue();
+        assertThat(sawNoOp).withFailMessage("two-element shuffle always swapped")
+                .isTrue();
+    }
+
+    @Test
+    @DisplayName("elements outside the range are untouched")
+    void shuffleOutsideRangeUntouched() {
+        char[] array = "abcdefgh".toCharArray();
+        ArrayUtils.shuffle(array, 2, 6, rng(42));
+        assertThat(array[0]).isEqualTo('a');
+        assertThat(array[1]).isEqualTo('b');
+        assertThat(array[6]).isEqualTo('g');
+        assertThat(array[7]).isEqualTo('h');
+    }
+
+    @ParameterizedTest(name = "seed = {0}")
+    @ValueSource(longs = {0L, 1L, 42L, -1L, Long.MAX_VALUE, Long.MIN_VALUE})
+    @DisplayName("the multiset of elements is preserved")
+    void shuffleMultisetPreserved(long seed) {
+        char[] original = "abcdefghijklmnop".toCharArray();
+        char[] shuffled = original.clone();
+        ArrayUtils.shuffle(shuffled, 0, shuffled.length, rng(seed));
+
+        char[] sortedOriginal = original.clone();
+        char[] sortedShuffled = shuffled.clone();
+        Arrays.sort(sortedOriginal);
+        Arrays.sort(sortedShuffled);
+        assertArrayEquals(sortedOriginal, sortedShuffled,
+                "shuffle changed the multiset of elements");
+    }
+
+    @Test
+    @DisplayName("shuffle on a sub-range preserves the multiset of that sub-range")
+    void shuffleMultisetPreservedInSubRange() {
+        char[] array = "0123456789".toCharArray();
+        ArrayUtils.shuffle(array, 3, 7, rng(42));
+
+        char[] subBefore = "3456".toCharArray();
+        char[] subAfter = Arrays.copyOfRange(array, 3, 7);
+        Arrays.sort(subBefore);
+        Arrays.sort(subAfter);
+        assertArrayEquals(subBefore, subAfter);
+    }
+
+    @Test
+    @DisplayName("two RNGs with the same seed produce identical results")
+    void shuffleSameSeedSameResult() {
+        char[] a = "abcdefghij".toCharArray();
+        char[] b = "abcdefghij".toCharArray();
+        ArrayUtils.shuffle(a, 0, a.length, rng(123));
+        ArrayUtils.shuffle(b, 0, b.length, rng(123));
+        assertArrayEquals(a, b);
+    }
+
+    @Test
+    @DisplayName("different seeds (likely) produce different results")
+    void differentSeedsDifferentResults() {
+        // Not strictly guaranteed, but for a 10-element array the
+        // chance of collision is astronomically small.
+        char[] a = "abcdefghij".toCharArray();
+        char[] b = "abcdefghij".toCharArray();
+        ArrayUtils.shuffle(a, 0, a.length, rng(1));
+        ArrayUtils.shuffle(b, 0, b.length, rng(2));
+        assertThat(a).withFailMessage("different seeds produced identical shuffles")
+                .isNotEqualTo(b);
+    }
+
+    /**
+     * For a 3-element array, there are 6 permutations. With 60,000 trials
+     * the expected count per permutation is 10,000; the bounds
+     * [7,000, 13,000] are wide enough that a correct Fisher-Yates
+     * implementation will essentially never fail, while a biased one
+     * (e.g. a buggy loop range) will.
+     */
+    @Test
+    @DisplayName("all 6 permutations of a 3-element range occur with similar frequency")
+    void allPermutationsAppear() {
+        int trials = 60_000;
+        char[][] perms = {
+                {'a', 'b', 'c'}, {'a', 'c', 'b'}, {'b', 'a', 'c'},
+                {'b', 'c', 'a'}, {'c', 'a', 'b'}, {'c', 'b', 'a'}
+        };
+        int[] counts = new int[perms.length];   // ← 一维计数器
+
+        UniformRandomProvider rng = rng(2024);
+        char[] base = {'a', 'b', 'c'};
+        for (int t = 0; t < trials; t++) {
+            char[] arr = base.clone();
+            ArrayUtils.shuffle(arr, 0, arr.length, rng);
+            counts[indexOfPermutation(perms, arr)]++;
+        }
+
+        for (int i = 0; i < perms.length; i++) {
+            int count = counts[i];
+            assertTrue(count >= 7_000 && count <= 13_000,
+                    "permutation " + Arrays.toString(perms[i])
+                            + " occurred " + count + " times; expected ~10,000");
+        }
+    }
+
+    private static int indexOfPermutation(char[][] perms, char[] arr) {
+        for (int i = 0; i < perms.length; i++) {
+            if (Arrays.equals(perms[i], arr)) {
+                return i;
+            }
+        }
+        throw new AssertionError("unexpected permutation: " + Arrays.toString(arr));
     }
 }

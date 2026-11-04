@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntComparators;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import org.apache.commons.numbers.arrays.Selection;
+import org.apache.commons.rng.UniformRandomProvider;
 import org.jspecify.annotations.Nullable;
 
 import java.util.*;
@@ -444,17 +445,18 @@ public final class ArrayUtils {
      * This method does nothing for a {@code null} input array.
      * </p>
      *
-     * @param array              the array to reverse, may be {@code null}
-     * @param fromIndexInclusive the starting index.
-     * @param toIndexExclusive   elements up to endIndex-1 are reversed in the array.
+     * @param array         the array to reverse, may be {@code null}
+     * @param fromInclusive the starting index.
+     * @param toExclusive   elements up to endIndex-1 are reversed in the array.
      * @since 2025-02-20 ⭐
      */
-    public static void reverse(final char[] array, final int fromIndexInclusive, final int toIndexExclusive) {
-        if (array == null) return;
-        checkFromToIndex(fromIndexInclusive, toIndexExclusive, array.length);
+    public static void reverse(final char[] array, final int fromInclusive, final int toExclusive) {
+        if (array == null)
+            return;
+        checkFromToIndex(fromInclusive, toExclusive, array.length);
 
         char tmp;
-        for (int i = fromIndexInclusive, j = toIndexExclusive - 1; i < j; i++, j--) {
+        for (int i = fromInclusive, j = toExclusive - 1; i < j; i++, j--) {
             tmp = array[i];
             array[i] = array[j];
             array[j] = tmp;
@@ -557,6 +559,36 @@ public final class ArrayUtils {
             T tmp = array[i];
             array[i] = array[j];
             array[j] = tmp;
+        }
+    }
+
+    /**
+     * Randomly shuffles the specified range of the array
+     * using the Fisher-Yates algorithm.
+     * <p>
+     * The shuffle is uniform: every permutation of the range's elements
+     * is equally likely.
+     *
+     * @param array         the array to shuffle; must not be {@code null}
+     * @param fromInclusive the starting index (inclusive)
+     * @param toExclusive   the ending index (exclusive)
+     * @param rng           the random number generator; must not be {@code null}
+     * @throws NullPointerException      if {@code array} or {@code rng} is {@code null}
+     * @throws IndexOutOfBoundsException if the range is invalid
+     */
+    @API(status = API.Status.STABLE, since = "2.15.0")
+    public static void shuffle(char[] array, int fromInclusive, int toExclusive, UniformRandomProvider rng) {
+        requireNonNull(array);
+        requireNonNull(rng);
+        checkFromToIndex(fromInclusive, toExclusive, array.length);
+        // Fisher-Yates shuffle
+        for (int i = toExclusive - 1; i > fromInclusive; i--) {
+            int j = rng.nextInt(fromInclusive, i + 1);
+            if (i != j) {
+                char tmp = array[i];
+                array[i] = array[j];
+                array[j] = tmp;
+            }
         }
     }
 

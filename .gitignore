@@ -24,3 +24,5 @@ hs_err_pid*
 replay_pid*
 .idea
 /target
+/src/test/resources/regression/dna.scale/
+/src/test/resources/regression/splice/
